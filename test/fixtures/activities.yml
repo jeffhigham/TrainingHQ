@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  sport: MyString
+  activityid: MyString
+  creatorname: MyString
+  unitid: MyString
+  productid: MyString
+
+two:
+  sport: MyString
+  activityid: MyString
+  creatorname: MyString
+  unitid: MyString
+  productid: MyString

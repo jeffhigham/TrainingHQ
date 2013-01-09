@@ -1,0 +1,31 @@
+<h1>Listing activities</h1>
+
+<table>
+  <tr>
+    <th>Sport</th>
+    <th>Activityid</th>
+    <th>Creatorname</th>
+    <th>Unitid</th>
+    <th>Productid</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @activities.each do |activity| %>
+  <tr>
+    <td><%= activity.sport %></td>
+    <td><%= activity.activityid %></td>
+    <td><%= activity.creatorname %></td>
+    <td><%= activity.unitid %></td>
+    <td><%= activity.productid %></td>
+    <td><%= link_to 'Show', activity %></td>
+    <td><%= link_to 'Edit', edit_activity_path(activity) %></td>
+    <td><%= link_to 'Destroy', activity, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Activity', new_activity_path %>

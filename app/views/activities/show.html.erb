@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Sport:</b>
+  <%= @activity.sport %>
+</p>
+
+<p>
+  <b>Activityid:</b>
+  <%= @activity.activityid %>
+</p>
+
+<p>
+  <b>Creatorname:</b>
+  <%= @activity.creatorname %>
+</p>
+
+<p>
+  <b>Unitid:</b>
+  <%= @activity.unitid %>
+</p>
+
+<p>
+  <b>Productid:</b>
+  <%= @activity.productid %>
+</p>
+
+
+<%= link_to 'Edit', edit_activity_path(@activity) %> |
+<%= link_to 'Back', activities_path %>
