@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  starttime: MyString
+  totaltimeseconds: 9.99
+  distancemeters: 9.99
+  maximumspeed: 9.99
+  calories: 1
+  averageheartratebpm: 1
+  maximumheartratebpm: 1
+  intensity: MyString
+  cadence: 
+  avgwatts: 
+
+two:
+  starttime: MyString
+  totaltimeseconds: 9.99
+  distancemeters: 9.99
+  maximumspeed: 9.99
+  calories: 1
+  averageheartratebpm: 1
+  maximumheartratebpm: 1
+  intensity: MyString
+  cadence: 
+  avgwatts: 

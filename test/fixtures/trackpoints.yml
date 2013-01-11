@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  lap_id: 1
+  time: MyString
+  latitudedegrees: 9.99
+  longitudedegrees: 9.99
+  altitudemeters: 9.99
+  distancemeters: 9.99
+  heartratebpm: 1
+  cadence: 1
+  watts: 1
+
+two:
+  lap_id: 1
+  time: MyString
+  latitudedegrees: 9.99
+  longitudedegrees: 9.99
+  altitudemeters: 9.99
+  distancemeters: 9.99
+  heartratebpm: 1
+  cadence: 1
+  watts: 1

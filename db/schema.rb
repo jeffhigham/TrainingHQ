@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130108235735) do
+ActiveRecord::Schema.define(:version => 20130110234540) do
 
   create_table "activities", :force => true do |t|
     t.string   "sport"
@@ -25,6 +25,36 @@ ActiveRecord::Schema.define(:version => 20130108235735) do
     t.string   "datafile_content_type"
     t.integer  "datafile_file_size"
     t.datetime "datafile_updated_at"
+  end
+
+  create_table "laps", :force => true do |t|
+    t.string   "starttime"
+    t.decimal  "totaltimeseconds"
+    t.decimal  "distancemeters"
+    t.decimal  "maximumspeed"
+    t.integer  "calories"
+    t.integer  "averageheartratebpm"
+    t.integer  "maximumheartratebpm"
+    t.string   "intensity"
+    t.integer  "cadence"
+    t.integer  "avgwatts"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
+    t.integer  "activity_id"
+  end
+
+  create_table "trackpoints", :force => true do |t|
+    t.integer  "lap_id"
+    t.string   "time"
+    t.decimal  "latitudedegrees"
+    t.decimal  "longitudedegrees"
+    t.decimal  "altitudemeters"
+    t.decimal  "distancemeters"
+    t.integer  "heartratebpm"
+    t.integer  "cadence"
+    t.integer  "watts"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
   end
 
   create_table "workouts", :force => true do |t|
