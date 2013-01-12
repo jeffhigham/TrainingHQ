@@ -29,42 +29,32 @@ ActiveRecord::Schema.define(:version => 20130110234540) do
 
   create_table "laps", :force => true do |t|
     t.string   "starttime"
-    t.decimal  "totaltimeseconds"
-    t.decimal  "distancemeters"
-    t.decimal  "maximumspeed"
+    t.decimal  "totaltimeseconds",    :precision => 10, :scale => 0
+    t.decimal  "distancemeters",      :precision => 10, :scale => 0
+    t.decimal  "maximumspeed",        :precision => 10, :scale => 0
     t.integer  "calories"
     t.integer  "averageheartratebpm"
     t.integer  "maximumheartratebpm"
     t.string   "intensity"
     t.integer  "cadence"
     t.integer  "avgwatts"
-    t.datetime "created_at",          :null => false
-    t.datetime "updated_at",          :null => false
+    t.datetime "created_at",                                         :null => false
+    t.datetime "updated_at",                                         :null => false
     t.integer  "activity_id"
   end
 
   create_table "trackpoints", :force => true do |t|
     t.integer  "lap_id"
     t.string   "time"
-    t.decimal  "latitudedegrees"
-    t.decimal  "longitudedegrees"
-    t.decimal  "altitudemeters"
-    t.decimal  "distancemeters"
+    t.decimal  "latitudedegrees",  :precision => 10, :scale => 0
+    t.decimal  "longitudedegrees", :precision => 10, :scale => 0
+    t.decimal  "altitudemeters",   :precision => 10, :scale => 0
+    t.decimal  "distancemeters",   :precision => 10, :scale => 0
     t.integer  "heartratebpm"
     t.integer  "cadence"
     t.integer  "watts"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
-  end
-
-  create_table "workouts", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at",            :null => false
-    t.datetime "updated_at",            :null => false
-    t.string   "datafile_file_name"
-    t.string   "datafile_content_type"
-    t.integer  "datafile_file_size"
-    t.datetime "datafile_updated_at"
+    t.datetime "created_at",                                      :null => false
+    t.datetime "updated_at",                                      :null => false
   end
 
 end

@@ -6,6 +6,9 @@ module Guppy
     attr_accessor :calories
     attr_accessor :average_heart_rate
     attr_accessor :max_heart_rate
+    attr_accessor :average_watts
+    attr_accessor :average_cadence
+    attr_accessor :intensity
     attr_reader   :track_points
     
     def initialize
@@ -15,6 +18,9 @@ module Guppy
       @calories           = 0
       @average_heart_rate = 0
       @max_heart_rate     = 0
+      @average_watts      = 0
+      @average_cadence    = 0
+      @intensity          = "unknown"
       @track_points       = []
     end
 

@@ -6,6 +6,7 @@ gem 'rails', '3.2.10'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'sqlite3'
+gem 'mysql2'
 
 
 # Gems used only for assets and not required
@@ -39,4 +40,4 @@ gem 'jquery-rails'
 
 gem 'paperclip'
 gem 'nokogiri'
-#gem 'guppy', :git => 'https://github.com/rubyist/guppy.git'
+gem 'guppy', :git => 'https://github.com/rubyist/guppy.git'
