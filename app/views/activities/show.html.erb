@@ -25,19 +25,37 @@
   <%= @activity.product_id %>
 </p>
 
-<!--
 <h2>Laps</h2>
+<table>
+  <tr>
+    <td >ID</td>
+    <td>Time</td>
+    <td>Min HR</td>
+    <td>Ave HR</td>
+    <td>Max HR</td>
+    <td>Min Cadence</td>
+    <td>Ave Cadence</td>
+    <td>Max Cadence</td>
+    <td>Min Watts</td>
+    <td>Ave Watts</td>
+    <td>Max Watts</td>
+  <tr>
 <% @activity.laps.each do |lap| %>
-  <h3>Lap: <%= lap.id %></h3>
-  <%= lap.totaltimeseconds %> Sec<br/>
-  <%= lap.distancemeters %> Meters<br/>
-  <%= lap.calories %> Calories<br/>
-  <%= lap.averageheartratebpm %> Avg Heartrate<br/>
-  <%= lap.cadence %> Avg Cadence<br/>
-  <%= lap.avgwatts %> Avg Watts<br/>
+  <tr>
+    <td><%= lap.id %></td>
+    <td><%= lap.total_time %></td>
+    <td><%= lap.min_heart_rate %></td>
+    <td><%= lap.ave_heart_rate %></td>
+    <td><%= lap.max_heart_rate %></td>
+    <td><%= lap.min_cadence %></td>
+    <td><%= lap.ave_cadence %></td>
+    <td><%= lap.max_cadence %></td>
+    <td><%= lap.min_watts %> (z<%= lap.min_power_zone %>)</td>
+    <td><%= lap.ave_watts %> (z<%= lap.ave_power_zone %>)</td>
+    <td><%= lap.max_watts %> (z<%= lap.max_power_zone %>)</td>
+  <tr>
 <% end %>
-
-//-->
+</table>
 
 <%= link_to 'Edit', edit_activity_path(@activity) %> |
 <%= link_to 'Back', activities_path %>

@@ -10,8 +10,14 @@ module Guppy
     attr_accessor :watts
 
     def initialize
-      @watts      = 0
+      @latitude   = 0
+      @longitude  = 0
+      @altitude   = 0
+      @heart_rate = 0
+      @distance   = 0
+      @time       = 0
       @cadence    = 0
+      @watts      = 0
     end
     
   end
