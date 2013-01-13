@@ -12,19 +12,32 @@
 
 <p>
   <b>Creatorname:</b>
-  <%= @activity.creatorname %>
+  <%= @activity.creator_name %>
 </p>
 
 <p>
   <b>Unitid:</b>
-  <%= @activity.unitid %>
+  <%= @activity.unit_id %>
 </p>
 
 <p>
   <b>Productid:</b>
-  <%= @activity.productid %>
+  <%= @activity.product_id %>
 </p>
 
+<!--
+<h2>Laps</h2>
+<% @activity.laps.each do |lap| %>
+  <h3>Lap: <%= lap.id %></h3>
+  <%= lap.totaltimeseconds %> Sec<br/>
+  <%= lap.distancemeters %> Meters<br/>
+  <%= lap.calories %> Calories<br/>
+  <%= lap.averageheartratebpm %> Avg Heartrate<br/>
+  <%= lap.cadence %> Avg Cadence<br/>
+  <%= lap.avgwatts %> Avg Watts<br/>
+<% end %>
+
+//-->
 
 <%= link_to 'Edit', edit_activity_path(@activity) %> |
 <%= link_to 'Back', activities_path %>

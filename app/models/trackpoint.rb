@@ -1,4 +1,4 @@
 class Trackpoint < ActiveRecord::Base
-  attr_accessible :altitudemeters, :cadence, :distancemeters, :heartratebpm, :latitudedegrees, :longitudedegrees, :time, :watts
+  attr_accessible :altitude, :cadence, :distance, :heart_rate, :latitude, :longitude, :time, :watts
   belongs_to :lap
 end

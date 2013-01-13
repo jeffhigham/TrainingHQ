@@ -35,7 +35,12 @@ module Guppy
     def build_activity(activity_node)
       activity = Activity.new
       activity.sport = activity_node['Sport']
-      activity.date = Time.parse(activity_node.xpath('xmlns:Id', namespaces).inner_text)
+      activity.id = activity_node.xpath('xmlns:Id', namespaces).inner_text.to_s
+      activity.creator_name = activity_node.xpath('xmlns:Creator/xmlns:Name', namespaces).inner_text.to_s
+      activity.unit_id = activity_node.xpath('xmlns:Creator/xmlns:UnitId', namespaces).inner_text.to_s
+      activity.product_id = activity_node.xpath('xmlns:Creator/xmlns:ProductID', namespaces).inner_text.to_s
+      activity.author_name = activity_node.xpath('xmlns:Creator/xmlns:Name', namespaces).inner_text.to_s
+      activity.activity_date = Time.parse(activity_node.xpath('xmlns:Id', namespaces).inner_text)
 
       activity_node.xpath('xmlns:Lap', namespaces).each do |lap_node|
         activity.laps << build_lap(lap_node)
@@ -50,10 +55,10 @@ module Guppy
       lap.max_speed = lap_node.xpath('xmlns:MaximumSpeed', namespaces).inner_text.to_f
       lap.time = lap_node.xpath('xmlns:TotalTimeSeconds', namespaces).inner_text.to_f
       lap.calories = lap_node.xpath('xmlns:Calories', namespaces).inner_text.to_f
-      lap.average_heart_rate = lap_node.xpath('xmlns:AverageHeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
+      lap.ave_heart_rate = lap_node.xpath('xmlns:AverageHeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
       lap.max_heart_rate = lap_node.xpath('xmlns:MaximumHeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
-      lap.average_watts = lap_node.xpath('xmlns:Extensions', namespaces).inner_text.to_i
-      lap.average_cadence = lap_node.xpath('xmlns:Cadence', namespaces).inner_text.to_i
+      lap.ave_watts = lap_node.xpath('xmlns:Extensions', namespaces).inner_text.to_i
+      lap.ave_cadence = lap_node.xpath('xmlns:Cadence', namespaces).inner_text.to_i
       lap.intensity = lap_node.xpath('xmlns:Intensity', namespaces).inner_text.to_s.downcase
 
       lap_node.xpath('xmlns:Track/xmlns:Trackpoint', namespaces).each do |track_point_node|

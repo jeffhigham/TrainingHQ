@@ -14,11 +14,13 @@
 ActiveRecord::Schema.define(:version => 20130110234540) do
 
   create_table "activities", :force => true do |t|
+    t.string   "activity_date"
     t.string   "sport"
     t.string   "activityid"
-    t.string   "creatorname"
-    t.string   "unitid"
-    t.string   "productid"
+    t.string   "creator_name"
+    t.string   "unit_id"
+    t.string   "product_id"
+    t.string   "author_name"
     t.datetime "created_at",            :null => false
     t.datetime "updated_at",            :null => false
     t.string   "datafile_file_name"
@@ -28,33 +30,33 @@ ActiveRecord::Schema.define(:version => 20130110234540) do
   end
 
   create_table "laps", :force => true do |t|
-    t.string   "starttime"
-    t.decimal  "totaltimeseconds",    :precision => 10, :scale => 0
-    t.decimal  "distancemeters",      :precision => 10, :scale => 0
-    t.decimal  "maximumspeed",        :precision => 10, :scale => 0
+    t.string   "start_time"
+    t.decimal  "total_time",     :precision => 10, :scale => 0
+    t.decimal  "distance",       :precision => 10, :scale => 0
+    t.decimal  "max_speed",      :precision => 10, :scale => 0
     t.integer  "calories"
-    t.integer  "averageheartratebpm"
-    t.integer  "maximumheartratebpm"
+    t.integer  "ave_heart_rate"
+    t.integer  "max_heart_rate"
     t.string   "intensity"
-    t.integer  "cadence"
-    t.integer  "avgwatts"
-    t.datetime "created_at",                                         :null => false
-    t.datetime "updated_at",                                         :null => false
+    t.integer  "ave_cadence"
+    t.integer  "ave_watts"
+    t.datetime "created_at",                                    :null => false
+    t.datetime "updated_at",                                    :null => false
     t.integer  "activity_id"
   end
 
   create_table "trackpoints", :force => true do |t|
     t.integer  "lap_id"
     t.string   "time"
-    t.decimal  "latitudedegrees",  :precision => 10, :scale => 0
-    t.decimal  "longitudedegrees", :precision => 10, :scale => 0
-    t.decimal  "altitudemeters",   :precision => 10, :scale => 0
-    t.decimal  "distancemeters",   :precision => 10, :scale => 0
-    t.integer  "heartratebpm"
+    t.decimal  "latitude",   :precision => 10, :scale => 0
+    t.decimal  "longitude",  :precision => 10, :scale => 0
+    t.decimal  "altitude",   :precision => 10, :scale => 0
+    t.decimal  "distance",   :precision => 10, :scale => 0
+    t.integer  "heart_rate"
     t.integer  "cadence"
     t.integer  "watts"
-    t.datetime "created_at",                                      :null => false
-    t.datetime "updated_at",                                      :null => false
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
   end
 
 end

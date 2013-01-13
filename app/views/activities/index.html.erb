@@ -3,11 +3,11 @@
 <table>
   <tr>
     <th>Sport</th>
-    <th>Activityid</th>
-    <th>Creatorname</th>
-    <th>Unitid</th>
-    <th>Productid</th>
-    <th></th>
+    <th>Activity Id</th>
+    <th>Creator Name</th>
+    <th>Unit Id</th>
+    <th>Product Id</th>
+    <th>Laps</th>
     <th></th>
     <th></th>
   </tr>
@@ -16,9 +16,10 @@
   <tr>
     <td><%= activity.sport %></td>
     <td><%= activity.activityid %></td>
-    <td><%= activity.creatorname %></td>
-    <td><%= activity.unitid %></td>
-    <td><%= activity.productid %></td>
+    <td><%= activity.creator_name %></td>
+    <td><%= activity.unit_id %></td>
+    <td><%= activity.product_id %></td>
+    <td><%= activity.laps.count %></td>
     <td><%= link_to 'Show', activity %></td>
     <td><%= link_to 'Edit', edit_activity_path(activity) %></td>
     <td><%= link_to 'Destroy', activity, method: :delete, data: { confirm: 'Are you sure?' } %></td>

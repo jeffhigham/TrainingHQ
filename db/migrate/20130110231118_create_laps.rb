@@ -1,16 +1,16 @@
 class CreateLaps < ActiveRecord::Migration
   def change
     create_table :laps do |t|
-      t.string :starttime
-      t.decimal :totaltimeseconds
-      t.decimal :distancemeters
-      t.decimal :maximumspeed
+      t.string  :start_time
+      t.decimal :total_time
+      t.decimal :distance
+      t.decimal :max_speed
       t.integer :calories
-      t.integer :averageheartratebpm
-      t.integer :maximumheartratebpm
-      t.string :intensity
-      t.integer :cadence
-      t.integer :avgwatts
+      t.integer :ave_heart_rate
+      t.integer :max_heart_rate
+      t.string  :intensity
+      t.integer :ave_cadence
+      t.integer :ave_watts
 
       t.timestamps
     end
