@@ -1,0 +1,101 @@
+<canvas id="cvs" width="900px" height="350">[No canvas support]</canvas>
+<br/>
+    
+    <script>
+        window.onload = function ()
+        {
+            var gutterLeft = 150;
+            var gutterRight = 25;
+            var gutterTop   = 25;
+
+            var line1 = new RGraph.Line('cvs', [<%= @activity.power_numbers * ","  %>]);
+
+            line1.Set('ymax', <%= @activity.power_numbers.max %>);
+            line1.Set('hmargin', 5);
+            line1.Set('gutter.right', gutterRight);
+            line1.Set('gutter.left', gutterLeft);
+            line1.Set('gutter.top', gutterTop);
+            line1.Set('colors', ['blue', 'red', 'green', 'orange']);
+            line1.Set('key', ['Power(w)', 'Heart Rate(bpm)', 'Altitude(ft)', 'Cadence(rpm)']);
+            line1.Set('key.position', 'gutter');
+            line1.Set('key.position.gutter.boxed', false);
+            line1.Set('key.position.x', 275);
+            line1.Set('noaxes', true);
+            line1.Set('ylabels', false);
+            line1.Draw();
+    
+            var line2 = new RGraph.Line('cvs', [<%= @activity.heart_rate_numbers * ","  %>]);
+            line2.Set('ymax', <%= @activity.heart_rate_numbers.max %>);
+            line2.Set('background.grid', false);
+            line2.Set('colors', ['red']);
+            line2.Set('hmargin', 5);
+            line2.Set('gutter.right', gutterRight);
+            line2.Set('gutter.left', gutterLeft);
+            line2.Set('gutter.top', gutterTop);
+            line2.Set('ylabels', false);
+            line2.Set('noaxes', true);
+            line2.Draw();
+
+            var altitude = new RGraph.Line('cvs', [<%= @activity.altitude_numbers * ","  %>]);
+            altitude.Set('ymax', <%= @activity.altitude_numbers.max %>);
+            altitude.Set('background.grid', false);
+            altitude.Set('colors', ['green']);
+            altitude.Set('hmargin', 5);
+            altitude.Set('gutter.right', gutterRight);
+            altitude.Set('gutter.left', gutterLeft);
+            altitude.Set('gutter.top', gutterTop);
+            altitude.Set('ylabels', false);
+            altitude.Set('noaxes', true);
+            altitude.Draw();
+    
+            var line3 = new RGraph.Line('cvs', [<%= @activity.cadence_numbers * ","  %>]);
+            line3.Set('ymax', <%= @activity.cadence_numbers.max %>);
+            line3.Set('background.grid', false);
+            line3.Set('ylabels', false);
+            line3.Set('noaxes', true);
+            line3.Set('colors', ['orange']);
+            line3.Set('hmargin', 5);
+            line3.Set('gutter.right', gutterRight);
+            line3.Set('gutter.left', gutterLeft);
+            line3.Set('gutter.top', gutterTop);    
+    
+    
+            myFunc = function ()
+            {
+                RGraph.DrawAxes(line1, {
+                                        'axis.x': line1.canvas.width - gutterRight,
+                                        'axis.color': 'blue',
+                                        'axis.text.color': 'blue',
+                                        'axis.max': <%= @activity.power_numbers.max %>,
+                                        'axis.min': 0,
+                                        'axis.align': 'right'
+                                       });
+                RGraph.DrawAxes(line2, {
+                                        'axis.x': 100,
+                                        'axis.y': 25,
+                                        'axis.color': 'red',
+                                        'axis.text.color': 'red',
+                                        'axis.max': <%= @activity.heart_rate_numbers.max %>
+                                       });
+                RGraph.DrawAxes(altitude, {
+                                        'axis.x': 68,
+                                        'axis.y': 25,
+                                        'axis.color': 'green',
+                                        'axis.text.color': 'green',
+                                        'axis.max': <%= @activity.altitude_numbers.max %>
+                                       });
+                RGraph.DrawAxes(line3, {
+                                        'axis.x': 25,
+                                        'axis.y': 25,
+                                        'axis.color': 'orange',
+                                        'axis.text.color': 'orange',
+                                        'axis.max': <%= @activity.cadence_numbers.max %>
+                                       });
+            };
+            RGraph.AddCustomEventListener(line3, 'ondraw', myFunc);
+    
+    
+    
+            line3.Draw();
+        }
+    </script>
