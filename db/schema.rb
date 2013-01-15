@@ -33,13 +33,16 @@ ActiveRecord::Schema.define(:version => 20130110234540) do
     t.string   "start_time"
     t.decimal  "total_time",     :precision => 10, :scale => 0
     t.decimal  "distance",       :precision => 10, :scale => 0
+    t.decimal  "ave_speed",      :precision => 10, :scale => 0
     t.decimal  "max_speed",      :precision => 10, :scale => 0
     t.integer  "calories"
     t.integer  "ave_heart_rate"
     t.integer  "max_heart_rate"
     t.string   "intensity"
     t.integer  "ave_cadence"
+    t.integer  "max_cadence"
     t.integer  "ave_watts"
+    t.integer  "max_watts"
     t.datetime "created_at",                                    :null => false
     t.datetime "updated_at",                                    :null => false
     t.integer  "activity_id"
@@ -55,6 +58,7 @@ ActiveRecord::Schema.define(:version => 20130110234540) do
     t.integer  "heart_rate"
     t.integer  "cadence"
     t.integer  "watts"
+    t.decimal  "speed",      :precision => 10, :scale => 0
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
   end

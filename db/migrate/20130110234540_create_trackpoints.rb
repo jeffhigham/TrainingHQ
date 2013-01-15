@@ -10,6 +10,7 @@ class CreateTrackpoints < ActiveRecord::Migration
       t.integer :heart_rate
       t.integer :cadence
       t.integer :watts
+      t.decimal :speed
 
       t.timestamps
     end

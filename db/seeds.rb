@@ -9,6 +9,7 @@
 require './src/guppy/lib/guppy.rb'
 
 datafile = "./src/2013-01-09-11-53-04-formated.tcx"
+#datafile = "./src/testfile-watts-cadence-hr-temp-formated.tcx"
 
 db = Guppy::Db.open(datafile)
 db.activities.each do |activity|
@@ -24,37 +25,42 @@ db.activities.each do |activity|
   puts
 
 	new_activity = Activity.create(
-    activity_date: activity.activity_date,
+   activity_date: activity.activity_date,
 		sport: activity.sport,
 		activityid: activity.id,
     creator_name: activity.creator_name,
     unit_id: activity.unit_id,
     product_id: activity.product_id,
     author_name: activity.author_name,
-
   )
 
   activity.laps.each do |lap|
   	puts "Lap Time: #{lap.time}"
   	puts "Lap Distance: #{lap.distance}"
+    puts "Lap Ave Speed: #{lap.ave_speed}"
   	puts "Lap Max Speed: #{lap.max_speed}"
   	puts "Lap Calories: #{lap.calories}"
   	puts "Lap Avg Heart Rate: #{lap.ave_heart_rate}"
   	puts "Lap Max Heart Rate: #{lap.max_heart_rate}"
-  	puts "Lap Avg Watts: #{lap.ave_watts}"
-  	puts "Lap Avg Cadence: #{lap.ave_cadence}"
+  	puts "Lap Ave Watts: #{lap.ave_watts}"
+    puts "Lap Max Watts: #{lap.max_watts}"
+  	puts "Lap Ave Cadence: #{lap.ave_cadence}"
+    puts "Lap Max Cadence: #{lap.max_cadence}"
   	puts "Lap Intensity: #{lap.intensity}"
 	 puts
 
 	new_lap = new_activity.laps.create(
 			total_time: lap.time,
 			distance: lap.distance,
+      ave_speed: lap.ave_speed,
 			max_speed: lap.max_speed,
 			calories: lap.calories,
 			ave_heart_rate: lap.ave_heart_rate,
 			max_heart_rate: lap.max_heart_rate,
 			ave_watts: lap.ave_watts,
+      max_watts: lap.max_watts,
 			ave_cadence: lap.ave_cadence,
+      max_cadence: lap.max_cadence,
 	 	  intensity: lap.intensity
 		)
 
@@ -66,6 +72,7 @@ db.activities.each do |activity|
   		puts "\t\tLongitude: #{track_point.longitude}"
   		puts "\t\tCadence: #{track_point.cadence}"
   		puts "\t\tWatts: #{track_point.watts}\n"
+      puts "\t\tSpeed: #{track_point.speed}\n"
       puts "\t\tHeart Rate: #{track_point.heart_rate}\n"
       puts "\t\tAltidude: #{track_point.altitude}\n"
       puts "\t\tDistance: #{track_point.distance}\n\n"
@@ -76,6 +83,7 @@ db.activities.each do |activity|
          longitude: track_point.longitude,
          cadence: track_point.cadence,
          watts: track_point.watts,
+         speed: track_point.speed,
          heart_rate: track_point.heart_rate,
          altitude: track_point.altitude,
          distance: track_point.distance

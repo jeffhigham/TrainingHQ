@@ -30,6 +30,8 @@
   <tr>
     <td >ID</td>
     <td>Time</td>
+    <td>Distance</td>
+    <td>Calories</td>
     <td>Min HR</td>
     <td>Ave HR</td>
     <td>Max HR</td>
@@ -39,20 +41,24 @@
     <td>Min Watts</td>
     <td>Ave Watts</td>
     <td>Max Watts</td>
+    <td>Intensity</td>
   <tr>
 <% @activity.laps.each do |lap| %>
   <tr>
     <td><%= lap.id %></td>
     <td><%= lap.total_time %></td>
+    <td><%= lap.distance %> </td>
+    <td><%= lap.calories %> </td>
     <td><%= lap.min_heart_rate %></td>
     <td><%= lap.ave_heart_rate %></td>
     <td><%= lap.max_heart_rate %></td>
     <td><%= lap.min_cadence %></td>
     <td><%= lap.ave_cadence %></td>
-    <td><%= lap.max_cadence %></td>
+    <td><%= lap.get_max_cadence %></td>
     <td><%= lap.min_watts %> (z<%= lap.min_power_zone %>)</td>
     <td><%= lap.ave_watts %> (z<%= lap.ave_power_zone %>)</td>
-    <td><%= lap.max_watts %> (z<%= lap.max_power_zone %>)</td>
+    <td><%= lap.get_max_watts %> (z<%= lap.max_power_zone %>)</td>
+    <td><%= lap.intensity %></td>
   <tr>
 <% end %>
 </table>

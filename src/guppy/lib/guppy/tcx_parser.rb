@@ -52,13 +52,16 @@ module Guppy
     def build_lap(lap_node)
       lap = Guppy::Lap.new
       lap.distance = lap_node.xpath('xmlns:DistanceMeters', namespaces).inner_text.to_f
+      lap.ave_speed = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:AvgSpeed', namespaces).inner_text.to_f
       lap.max_speed = lap_node.xpath('xmlns:MaximumSpeed', namespaces).inner_text.to_f
       lap.time = lap_node.xpath('xmlns:TotalTimeSeconds', namespaces).inner_text.to_f
       lap.calories = lap_node.xpath('xmlns:Calories', namespaces).inner_text.to_f
       lap.ave_heart_rate = lap_node.xpath('xmlns:AverageHeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
       lap.max_heart_rate = lap_node.xpath('xmlns:MaximumHeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
-      lap.ave_watts = lap_node.xpath('xmlns:Extensions', namespaces).inner_text.to_i
+      lap.ave_watts = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:AvgWatts', namespaces).inner_text.to_i
+      lap.max_watts = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:MaxWatts', namespaces).inner_text.to_i
       lap.ave_cadence = lap_node.xpath('xmlns:Cadence', namespaces).inner_text.to_i
+      lap.max_cadence = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:MaxBikeCadence', namespaces).inner_text.to_i
       lap.intensity = lap_node.xpath('xmlns:Intensity', namespaces).inner_text.to_s.downcase
 
       lap_node.xpath('xmlns:Track/xmlns:Trackpoint', namespaces).each do |track_point_node|
@@ -69,6 +72,7 @@ module Guppy
     end
 
     def build_track_point(track_point_node)
+
       track_point = Guppy::TrackPoint.new
       track_point.latitude = track_point_node.xpath('xmlns:Position/xmlns:LatitudeDegrees', namespaces).inner_text.to_f
       track_point.longitude = track_point_node.xpath('xmlns:Position/xmlns:LongitudeDegrees', namespaces).inner_text.to_f
@@ -77,13 +81,15 @@ module Guppy
       track_point.heart_rate = track_point_node.xpath('xmlns:HeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
       track_point.time = Time.parse(track_point_node.xpath('xmlns:Time', namespaces).inner_text)
       track_point.cadence = track_point_node.xpath('xmlns:Cadence', namespaces).inner_text.to_i
-      track_point.watts = track_point_node.xpath('xmlns:Extensions', namespaces).inner_text.to_i
-      
+      track_point.watts = track_point_node.xpath('xmlns:Extensions/ns3:TPX/ns3:Watts', namespaces ).inner_text.to_i
+      track_point.speed = track_point_node.xpath('xmlns:Extensions/ns3:TPX/ns3:Speed', namespaces ).inner_text.to_f
       track_point
     end
     
     def namespaces
       @namespaces ||= @doc.root.namespaces
+      @namespaces["xmlns:ns3"] ||= "http://www.garmin.com/xmlschemas/ActivityExtension/v2"
+      @namespaces
     end
   end
 end

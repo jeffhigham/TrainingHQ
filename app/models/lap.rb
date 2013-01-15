@@ -1,6 +1,6 @@
 class Lap < ActiveRecord::Base
-  attr_accessible :ave_heart_rate, :ave_watts, :ave_cadence, :calories, 
-                  :distance, :intensity, :max_heart_rate, :max_speed, :start_time, :total_time
+  attr_accessible :ave_heart_rate, :ave_watts, :max_watts, :ave_cadence, :max_cadence, :calories, 
+                  :distance, :intensity, :max_heart_rate, :ave_speed, :max_speed, :start_time, :total_time
 
   belongs_to :activity
   has_many :trackpoints, dependent: :destroy
@@ -13,8 +13,11 @@ class Lap < ActiveRecord::Base
   	return min_heart_rate
   end
 
-  def max_watts
-  	max_watts = 0
+  def get_max_watts
+
+    return self.max_watts if self.max_watts > 0
+  	
+    max_watts = 0
   	self.trackpoints.each do |trackpoint|
   		max_watts = trackpoint.watts unless trackpoint.watts < max_watts
   	end
@@ -29,7 +32,10 @@ class Lap < ActiveRecord::Base
   	return min_watts
   end
 
-  def max_cadence
+  def get_max_cadence
+
+    return self.max_cadence if self.max_cadence > 0
+
   	max_cadence = 0
   	self.trackpoints.each do |trackpoint|
   		max_cadence = trackpoint.cadence unless trackpoint.cadence < max_cadence

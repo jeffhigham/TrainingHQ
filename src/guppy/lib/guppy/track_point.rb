@@ -8,6 +8,7 @@ module Guppy
     attr_accessor :time
     attr_accessor :cadence
     attr_accessor :watts
+    attr_accessor :speed
 
     def initialize
       @latitude   = 0
@@ -18,6 +19,7 @@ module Guppy
       @time       = 0
       @cadence    = 0
       @watts      = 0
+      @speed      = 0
     end
     
   end
