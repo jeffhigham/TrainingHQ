@@ -6,7 +6,7 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-require './src/guppy/lib/guppy.rb'
+require './lib/guppy/lib/guppy.rb'
 
 #datafile = "./src/2013-01-09-11-53-04-formated.tcx"
 #datafile = "./src/testfile-watts-cadence-hr-temp-formated.tcx"
