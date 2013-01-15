@@ -1,6 +1,7 @@
 class CreateLaps < ActiveRecord::Migration
   def change
     create_table :laps do |t|
+      t.integer :activity_id
       t.string  :start_time
       t.decimal :total_time
       t.decimal :distance
