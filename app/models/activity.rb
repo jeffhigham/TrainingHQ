@@ -3,6 +3,8 @@ class Activity < ActiveRecord::Base
   has_attached_file :datafile
   has_many :laps, dependent: :destroy
 
+  require 'gchart'
+
 
   def max_watts
   	max_watts = 0
@@ -27,6 +29,47 @@ class Activity < ActiveRecord::Base
   	end
   	return (bunch_of_watts.sum/bunch_of_watts.count)
   end
+
+  def power_numbers
+    power_numbers_list = []
+    self.laps.each do |lap|
+      lap.trackpoints.each do |trackpoint|
+        power_numbers_list << trackpoint.watts
+      end
+    end
+    power_numbers_list
+  end
+
+  def heart_rate_numbers
+    heart_rate_list = []
+    self.laps.each do |lap|
+      lap.trackpoints.each do |trackpoint|
+        heart_rate_list << trackpoint.heart_rate
+      end
+    end
+    heart_rate_list
+  end
+
+  def cadence_numbers
+    cadence_list = []
+    self.laps.each do |lap|
+      lap.trackpoints.each do |trackpoint|
+        cadence_list << trackpoint.cadence
+      end
+    end
+    cadence_list
+  end
+
+  def altitude_numbers
+    altitude_list = []
+    self.laps.each do |lap|
+      lap.trackpoints.each do |trackpoint|
+        altitude_list << trackpoint.altitude_feet
+      end
+    end
+    altitude_list
+  end
+
 
 	def crunch_uploaded_file(datafile)
 		require './src/guppy/lib/guppy.rb'

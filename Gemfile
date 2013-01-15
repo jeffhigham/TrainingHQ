@@ -40,4 +40,4 @@ gem 'jquery-rails'
 
 gem 'paperclip'
 gem 'nokogiri'
-gem 'guppy', :git => 'https://github.com/rubyist/guppy.git'
+gem 'googlecharts'
