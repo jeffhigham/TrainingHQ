@@ -99,3 +99,11 @@
             line3.Draw();
         }
     </script>
+
+    <br/>
+
+<%= gmaps({
+        "map_options" => { "type" => "TERRAIN" },
+        "polylines"    => { "data" => @activity.map_data , "options" => { "strokeColor" => "#FF9900", "strokeOpacity" => 1, "strokeWeight" => 2 } }
+     })
+ %>

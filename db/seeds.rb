@@ -10,7 +10,8 @@ require './lib/guppy/lib/guppy.rb'
 
 #datafile = "./src/2013-01-09-11-53-04-formated.tcx"
 #datafile = "./src/testfile-watts-cadence-hr-temp-formated.tcx"
-datafile = "./src/activity_256665652.tcx"
+#datafile = "./src/activity_256665652.tcx"
+datafile = "./src/activity_218654243P2P.tcx"
 
 db = Guppy::Db.open(datafile)
 db.activities.each do |activity|

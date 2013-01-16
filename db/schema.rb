@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(:version => 20130110234540) do
   end
 
   create_table "laps", :force => true do |t|
+    t.integer  "activity_id"
     t.string   "start_time"
     t.decimal  "total_time",     :precision => 10, :scale => 0
     t.decimal  "distance",       :precision => 10, :scale => 0
@@ -45,22 +46,21 @@ ActiveRecord::Schema.define(:version => 20130110234540) do
     t.integer  "max_watts"
     t.datetime "created_at",                                    :null => false
     t.datetime "updated_at",                                    :null => false
-    t.integer  "activity_id"
   end
 
   create_table "trackpoints", :force => true do |t|
     t.integer  "lap_id"
     t.string   "time"
-    t.decimal  "latitude",   :precision => 10, :scale => 0
-    t.decimal  "longitude",  :precision => 10, :scale => 0
-    t.decimal  "altitude",   :precision => 10, :scale => 0
-    t.decimal  "distance",   :precision => 10, :scale => 0
+    t.decimal  "latitude",   :precision => 30, :scale => 20
+    t.decimal  "longitude",  :precision => 30, :scale => 20
+    t.decimal  "altitude",   :precision => 10, :scale => 2
+    t.decimal  "distance",   :precision => 10, :scale => 2
     t.integer  "heart_rate"
     t.integer  "cadence"
     t.integer  "watts"
-    t.decimal  "speed",      :precision => 10, :scale => 0
-    t.datetime "created_at",                                :null => false
-    t.datetime "updated_at",                                :null => false
+    t.decimal  "speed",      :precision => 5,  :scale => 2
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
   end
 
 end

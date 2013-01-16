@@ -40,3 +40,4 @@ gem 'jquery-rails'
 
 gem 'paperclip'
 gem 'nokogiri'
+gem 'gmaps4rails'

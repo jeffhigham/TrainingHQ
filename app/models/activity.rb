@@ -3,8 +3,6 @@ class Activity < ActiveRecord::Base
   has_attached_file :datafile
   has_many :laps, dependent: :destroy
 
-  require 'gchart'
-
 
   def max_watts
   	max_watts = 0
@@ -70,6 +68,20 @@ class Activity < ActiveRecord::Base
     altitude_list
   end
 
+  def map_data
+
+    json = []
+    points = []
+      self.laps.each do |lap|
+      lap.trackpoints.each do |trackpoint|
+        unless  trackpoint.longitude === 0 or trackpoint.latitude === 0
+          points  << { lng: trackpoint.longitude,lat: trackpoint.latitude }
+        end
+      end
+    end
+    json << points
+    return json.to_json
+  end
 
 	def crunch_uploaded_file(datafile)
 		require './src/guppy/lib/guppy.rb'
