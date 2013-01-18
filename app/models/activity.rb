@@ -2,6 +2,7 @@ class Activity < ActiveRecord::Base
   attr_accessible :activityid, :creator_name, :product_id, :sport, :unit_id, :datafile, :author_name, :activity_date
   has_attached_file :datafile
   has_many :laps, dependent: :destroy
+  belongs_to :user
 
 
   def max_watts

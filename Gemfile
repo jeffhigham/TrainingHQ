@@ -39,6 +39,7 @@ gem 'jquery-rails'
 # gem 'debugger'
 #gem 'pg'
 
-gem 'paperclip'
+ gem "paperclip", :git => "git://github.com/thoughtbot/paperclip.git"
+#gem 'paperclip'
 gem 'nokogiri'
 gem 'gmaps4rails'

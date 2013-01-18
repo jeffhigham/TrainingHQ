@@ -1,20 +1,38 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <b>Name:</b>
-  <%= @user.name %>
-</p>
+<%= image_tag @user.avatar.url(:medium) %>
 
-<p>
-  <b>Email:</b>
-  <%= @user.email %>
-</p>
+<h2>Activities: <%= @user.name %></h2>
+<h3>Activities: <%= @user.email %></h3>
 
-<p>
-  <b>Password:</b>
-  <%= @user.password %>
-</p>
 
+<table>
+  <tr>
+    <th>Sport</th>
+    <th>Activity Id</th>
+    <th>Creator Name</th>
+    <th>Unit Id</th>
+    <th>Product Id</th>
+    <th>Laps</th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @user.activities.each do |activity| %>
+  <tr>
+    <td><%= activity.sport %></td>
+    <td><%= activity.activityid %></td>
+    <td><%= activity.creator_name %></td>
+    <td><%= activity.unit_id %></td>
+    <td><%= activity.product_id %></td>
+    <td><%= activity.laps.count %></td>
+    <td><%= link_to 'Show', activity %></td>
+    <td><%= link_to 'Edit', edit_activity_path(activity) %></td>
+    <td><%= link_to 'Destroy', activity, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+</br>
 
 <%= link_to 'Edit', edit_user_path(@user) %> |
 <%= link_to 'Back', users_path %>
