@@ -1,4 +1,13 @@
 TrainingHQ::Application.routes.draw do
+  resources :users
+
+
+  resources :hr_zones
+
+
+  resources :power_zones
+
+
   resources :activities
 
 

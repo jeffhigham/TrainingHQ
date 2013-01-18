@@ -37,7 +37,7 @@ gem 'jquery-rails'
 
 # To use debugger
 # gem 'debugger'
-gem 'pg'
+#gem 'pg'
 
 gem 'paperclip'
 gem 'nokogiri'

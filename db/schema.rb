@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130110234540) do
+ActiveRecord::Schema.define(:version => 20130118154354) do
 
   create_table "activities", :force => true do |t|
     t.string   "activity_date"
@@ -27,6 +27,21 @@ ActiveRecord::Schema.define(:version => 20130110234540) do
     t.string   "datafile_content_type"
     t.integer  "datafile_file_size"
     t.datetime "datafile_updated_at"
+  end
+
+  create_table "hr_zones", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "z0"
+    t.integer  "z1"
+    t.integer  "z2"
+    t.integer  "z3"
+    t.integer  "z4"
+    t.integer  "z5"
+    t.integer  "z6"
+    t.integer  "z7"
+    t.boolean  "enabled"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "laps", :force => true do |t|
@@ -48,6 +63,21 @@ ActiveRecord::Schema.define(:version => 20130110234540) do
     t.datetime "updated_at",                                    :null => false
   end
 
+  create_table "power_zones", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "z0"
+    t.integer  "z1"
+    t.integer  "z2"
+    t.integer  "z3"
+    t.integer  "z4"
+    t.integer  "z5"
+    t.integer  "z6"
+    t.integer  "z7"
+    t.boolean  "enabled"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "trackpoints", :force => true do |t|
     t.integer  "lap_id"
     t.string   "time"
@@ -61,6 +91,18 @@ ActiveRecord::Schema.define(:version => 20130110234540) do
     t.decimal  "speed",      :precision => 5,  :scale => 2
     t.datetime "created_at",                                 :null => false
     t.datetime "updated_at",                                 :null => false
+  end
+
+  create_table "users", :force => true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.string   "password"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
+    t.string   "avatar_file_name"
+    t.string   "avatar_content_type"
+    t.integer  "avatar_file_size"
+    t.datetime "avatar_updated_at"
   end
 
 end

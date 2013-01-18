@@ -1,0 +1,2 @@
+module HrZonesHelper
+end

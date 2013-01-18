@@ -1,0 +1,41 @@
+<h1>Listing power_zones</h1>
+
+<table>
+  <tr>
+    <th>User</th>
+    <th>Z0</th>
+    <th>Z1</th>
+    <th>Z2</th>
+    <th>Z3</th>
+    <th>Z4</th>
+    <th>Z5</th>
+    <th>Z6</th>
+    <th>Z7</th>
+    <th>Enabled</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @power_zones.each do |power_zone| %>
+  <tr>
+    <td><%= power_zone.user_id %></td>
+    <td><%= power_zone.z0 %></td>
+    <td><%= power_zone.z1 %></td>
+    <td><%= power_zone.z2 %></td>
+    <td><%= power_zone.z3 %></td>
+    <td><%= power_zone.z4 %></td>
+    <td><%= power_zone.z5 %></td>
+    <td><%= power_zone.z6 %></td>
+    <td><%= power_zone.z7 %></td>
+    <td><%= power_zone.enabled %></td>
+    <td><%= link_to 'Show', power_zone %></td>
+    <td><%= link_to 'Edit', edit_power_zone_path(power_zone) %></td>
+    <td><%= link_to 'Destroy', power_zone, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Power zone', new_power_zone_path %>

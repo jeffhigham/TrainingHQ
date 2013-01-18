@@ -1,0 +1,41 @@
+<h1>Listing hr_zones</h1>
+
+<table>
+  <tr>
+    <th>User</th>
+    <th>Z0</th>
+    <th>Z1</th>
+    <th>Z2</th>
+    <th>Z3</th>
+    <th>Z4</th>
+    <th>Z5</th>
+    <th>Z6</th>
+    <th>Z7</th>
+    <th>Enabled</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @hr_zones.each do |hr_zone| %>
+  <tr>
+    <td><%= hr_zone.user_id %></td>
+    <td><%= hr_zone.z0 %></td>
+    <td><%= hr_zone.z1 %></td>
+    <td><%= hr_zone.z2 %></td>
+    <td><%= hr_zone.z3 %></td>
+    <td><%= hr_zone.z4 %></td>
+    <td><%= hr_zone.z5 %></td>
+    <td><%= hr_zone.z6 %></td>
+    <td><%= hr_zone.z7 %></td>
+    <td><%= hr_zone.enabled %></td>
+    <td><%= link_to 'Show', hr_zone %></td>
+    <td><%= link_to 'Edit', edit_hr_zone_path(hr_zone) %></td>
+    <td><%= link_to 'Destroy', hr_zone, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Hr zone', new_hr_zone_path %>

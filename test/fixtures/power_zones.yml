@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  user_id: 1
+  z0: 1
+  z1: 1
+  z2: 1
+  z3: 1
+  z4: 1
+  z5: 1
+  z6: 1
+  z7: 1
+  enabled: false
+
+two:
+  user_id: 1
+  z0: 1
+  z1: 1
+  z2: 1
+  z3: 1
+  z4: 1
+  z5: 1
+  z6: 1
+  z7: 1
+  enabled: false
