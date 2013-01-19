@@ -1,38 +1,41 @@
-<p id="notice"><%= notice %></p>
 
-<%= image_tag @user.avatar.url(:medium) %>
+<%= image_tag @user.avatar.url(:thumb) %>
 
-<h2>Activities: <%= @user.name %></h2>
-<h3>Activities: <%= @user.email %></h3>
+<h2>Athlete: <%= @user.name %></h2>
+<h3>Email: <%= @user.email %></h3>
 
 
 <table>
   <tr>
+    <th>Date</th>
     <th>Sport</th>
-    <th>Activity Id</th>
-    <th>Creator Name</th>
-    <th>Unit Id</th>
-    <th>Product Id</th>
+    <th>Name</th>
+    <th>Ride Time</th>
+    <th>Distance(Miles)</th>
+    <th>Avg HR (bpm)</th>
+    <th>Avg Watts(w)</th>
+    <th>Avg Cadence</th>
     <th>Laps</th>
-    <th></th>
-    <th></th>
+    <th colspan=2></th>
   </tr>
 
 <% @user.activities.each do |activity| %>
   <tr>
+    <td><%= activity.activity_date %></td>
     <td><%= activity.sport %></td>
-    <td><%= activity.activityid %></td>
-    <td><%= activity.creator_name %></td>
-    <td><%= activity.unit_id %></td>
-    <td><%= activity.product_id %></td>
+    <td><%= link_to(activity.name, user_activity_path(activity)) %></td>
+    <td><%= activity.total_time_formatted %></td>
+    <td><%= activity.total_distance_formatted %></td>
+    <td><%= activity.avg_heart_rate %></td>
+    <td><%= activity.avg_watts %></td>
+    <td><%= activity.avg_cadence %></td>
     <td><%= activity.laps.count %></td>
-    <td><%= link_to 'Show', activity %></td>
-    <td><%= link_to 'Edit', edit_activity_path(activity) %></td>
-    <td><%= link_to 'Destroy', activity, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td><%= link_to 'Edit', edit_user_activity_path(activity) %></td>
+    <td><%= link_to 'Del', user_activity_path(activity), method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
 <% end %>
 </table>
 </br>
 
 <%= link_to 'Edit', edit_user_path(@user) %> |
-<%= link_to 'Back', users_path %>
+<%= link_to 'Back', @user %>

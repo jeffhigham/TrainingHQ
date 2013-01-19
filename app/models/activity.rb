@@ -1,9 +1,11 @@
 class Activity < ActiveRecord::Base
-  attr_accessible :activityid, :creator_name, :product_id, :sport, :unit_id, :datafile, :author_name, :activity_date
+
+  attr_accessible :activityid, :creator_name, :product_id, :sport, :unit_id, :datafile, :author_name, :activity_date, :name
   has_attached_file :datafile
   has_many :laps, dependent: :destroy
   belongs_to :user
 
+  require "./lib/shared_methods.rb"
 
   def max_watts
   	max_watts = 0
@@ -21,12 +23,48 @@ class Activity < ActiveRecord::Base
   	return min_watts
   end
 
-  def ave_watts
+  def avg_watts
   	bunch_of_watts = []
   	self.laps.each do |lap|
   		bunch_of_watts << lap.ave_watts
   	end
   	return (bunch_of_watts.sum/bunch_of_watts.count)
+  end
+
+  def avg_heart_rate
+    bunch_of_hr = []
+    self.laps.each do |lap|
+      bunch_of_hr << lap.ave_heart_rate
+    end
+    return (bunch_of_hr.sum/bunch_of_hr.count)
+  end
+
+  def avg_cadence
+    bunch_of_cadence = []
+    self.laps.each do |lap|
+      bunch_of_cadence << lap.ave_cadence
+    end
+    return (bunch_of_cadence.sum/bunch_of_cadence.count)
+  end
+
+  def total_time_formatted
+    time_in_seconds = 0
+    self.laps.each do |lap|
+      time_in_seconds += lap.total_time
+    end
+    return ride_time_formatted(time_in_seconds)
+  end
+
+  def total_distance_formatted
+    return ride_distance_formatted(distance_meters_to_feet(self.distance_meters)).round(2)
+  end
+
+  def distance_meters
+    distance_meters = 0
+    self.laps.each do |lap|
+      distance_meters += lap.distance
+    end
+    return distance_meters
   end
 
   def power_numbers

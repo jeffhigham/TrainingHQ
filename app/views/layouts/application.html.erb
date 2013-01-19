@@ -7,9 +7,30 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
+<h1>TrainingHQ Rails Application</h2>
+	<hr/>
+	<br/>
+<div id="user_nav">
+  <% if current_user %>
+    Logged in as <%= current_user.email %>.
+    <%= link_to "Log out", logout_path %>
+  <% else %>
+    <%= link_to "Sign up", signup_path %> or
+    <%= link_to "log in", login_path %>
+  <% end %>
+</div>
+
+<% flash.each do |name, msg| %>
+  <%= content_tag :div, msg, :id => "flash_#{name}" %>
+<% end %>
 
 <%= yield %>
 <%= yield :scripts %>
+
+<%= debug(params) if Rails.env.development? %>
+<%= debug(session) if Rails.env.development? %>
+<%= debug(current_user) if Rails.env.development? %>
+
 
 </body>
 </html>

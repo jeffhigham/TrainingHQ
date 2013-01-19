@@ -1,6 +1,8 @@
 class UsersController < ApplicationController
+  skip_before_filter :check_login, :only => [ :new, :create ]
   # GET /users
   # GET /users.json
+
   def index
     @users = User.all
 
@@ -13,8 +15,8 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
-    @user = User.find(params[:id])
-
+    @user = current_user || User.find(params[:id])
+    #@user = current_user
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @user }

@@ -5,6 +5,8 @@ class Lap < ActiveRecord::Base
   belongs_to :activity
   has_many :trackpoints, dependent: :destroy
 
+  require "./lib/shared_methods.rb"
+
   def min_heart_rate
   	min_heart_rate = 500 # something way too high.
   	self.trackpoints.each do |trackpoint|
@@ -87,6 +89,14 @@ class Lap < ActiveRecord::Base
   	power_zones.each do |zone_range|
   		return power_zones.index(zone_range)+1 if zone_range.include?(watts)
   	end
+  end
+
+  def total_time_formatted
+      return ride_time_formatted(total_time)
+  end
+
+  def total_distance_formatted
+    return ride_distance_formatted(distance_meters_to_feet(self.distance)).round(2)
   end
 
 end

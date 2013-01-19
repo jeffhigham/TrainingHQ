@@ -3,7 +3,7 @@
   <tr>
     <td >ID</td>
     <td>Time</td>
-    <td>Distance</td>
+    <td>Distance (Miles)</td>
     <td>Calories</td>
     <td>Min HR</td>
     <td>Ave HR</td>
@@ -19,8 +19,8 @@
 <% @activity.laps.each do |lap| %>
   <tr>
     <td><%= lap.id %></td>
-    <td><%= lap.total_time %></td>
-    <td><%= lap.distance %> </td>
+    <td><%= lap.total_time_formatted %></td>
+    <td><%= lap.total_distance_formatted %> </td>
     <td><%= lap.calories %> </td>
     <td><%= lap.min_heart_rate %></td>
     <td><%= lap.ave_heart_rate %></td>

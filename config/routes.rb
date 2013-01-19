@@ -1,18 +1,20 @@
 TrainingHQ::Application.routes.draw do
   resources :users
+  resources :sessions
+  #resources :hr_zones
+  #resources :power_zones
+  #resources :activities
+  #esources :workouts
+    resources :users do
+    resources :activities
+    resources :hr_zones
+    resources :power_zones
+  end
 
-
-  resources :hr_zones
-
-
-  resources :power_zones
-
-
-  resources :activities
-
-
-  resources :workouts
-
+  get "logout" => "sessions#destroy", :as => "logout"
+  get "login" => "sessions#new", :as => "login"
+  get "signup" => "users#new", :as => "signup"
+  root :to => "users#index"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
