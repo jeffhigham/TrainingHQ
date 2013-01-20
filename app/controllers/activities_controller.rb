@@ -2,7 +2,7 @@ class ActivitiesController < ApplicationController
   # GET /activities
   # GET /activities.json
   def index
-    @activities = Activity.all
+    @activities = Activity.where(:processed => 1)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -41,6 +41,7 @@ class ActivitiesController < ApplicationController
   # POST /activities.json
   def create
     @activity = Activity.new(params[:activity])
+    @activity[:user_id] = current_user.id
 
     respond_to do |format|
       if @activity.save

@@ -16,7 +16,7 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
     @user = current_user || User.find(params[:id])
-    #@user = current_user
+    @activities = @user.activities.where(:processed => 1)
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @user }

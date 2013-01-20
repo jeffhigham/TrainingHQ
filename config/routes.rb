@@ -1,10 +1,10 @@
 TrainingHQ::Application.routes.draw do
   resources :users
   resources :sessions
-  #resources :hr_zones
-  #resources :power_zones
-  #resources :activities
-  #esources :workouts
+  resources :hr_zones
+  resources :power_zones
+  resources :activities
+  resources :workouts
     resources :users do
     resources :activities
     resources :hr_zones
