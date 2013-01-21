@@ -1,17 +1,20 @@
 
 namespace :THQ do
 
-  desc "Load new files for activities."
+  desc "Load unprocessed TCX files for all users, update activity, lap, and trackpoint data."
     task :load_new_activities => :environment do
 
     		require './lib/guppy/lib/guppy.rb'
-        activities = Activity.where(:processed => 0)
-        first_activity = activities.first
-        datafile = first_activity.datafile.path
-        user_id =  first_activity.user_id
+        unprocessed_activities = Activity.where(:processed => 0)
+        activity_count = unprocessed_activities.count
+        
+# unprocessed_activities.each do |current_activity|
+        current_activity = unprocessed_activities.first
 
-        puts "datafile: #{datafile}\nuser_id: #{user_id}\n"
-        exit
+        datafile = current_activity.datafile.path
+        user_id =  current_activity.user_id
+        puts "Loading #{activity_count} into the database...\n"
+        puts "Processing #{datafile}\n "
 
         db = Guppy::Db.open(datafile)
         db.activities.each do |activity|
@@ -27,7 +30,7 @@ namespace :THQ do
           puts "Laps: #{activity.laps.count}"
           puts
 
-          first_activity.update_attributes = ([{
+          current_activity.update_attributes({
             user_id: user_id,
             activity_date: activity.activity_date,
             sport: activity.sport,
@@ -36,7 +39,8 @@ namespace :THQ do
             unit_id: activity.unit_id,
             product_id: activity.product_id,
             author_name: activity.author_name,
-          }])
+            status: 50
+          })
 
           activity.laps.each do |lap|
             puts "Lap Time: #{lap.time}"
@@ -53,7 +57,7 @@ namespace :THQ do
             puts "Lap Intensity: #{lap.intensity}"
            puts
 
-          new_lap = first_activity.laps.create(
+          new_lap = current_activity.laps.create([{
               total_time: lap.time,
               distance: lap.distance,
               ave_speed: lap.ave_speed,
@@ -66,7 +70,7 @@ namespace :THQ do
               ave_cadence: lap.ave_cadence,
               max_cadence: lap.max_cadence,
               intensity: lap.intensity
-            )
+            }])
 
 
             bunch_of_track_points = []
@@ -93,13 +97,21 @@ namespace :THQ do
                  distance: track_point.distance
               }
 
+              #new_lap.first.trackpoints.create([this_track_point])
               bunch_of_track_points << this_track_point
           
             end
 
-            new_lap.trackpoints.create(bunch_of_track_points)
+          
+
+           new_lap.first.trackpoints.create(bunch_of_track_points)
           
           end
+          puts "#{current_activity.name} is now active.\n\n"
+          current_activity.update_attributes({
+            processed: 1,
+            status: 100
+          })
     end
 
   end

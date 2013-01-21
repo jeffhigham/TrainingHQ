@@ -2,9 +2,9 @@
 <%= image_tag @user.avatar.url(:thumb) %>
 
 <h2>Athlete: <%= @user.name %></h2>
-<h3>Email: <%= @user.email %></h3>
+<b>Email: <%= @user.email %></b>
 
-
+<h2>Active Activities</h2>
 <table>
   <tr>
     <th>Date</th>
@@ -38,6 +38,22 @@
 </br>
 
 <%= link_to 'Edit', edit_user_path(@user) %> |
-<%= link_to 'Back', @user %> |
 <%= link_to 'New', new_user_activity_path(@user.id) %> 
 
+<div id="activity_queue"></div>
+
+<script type="text/javascript">
+ 
+$(function() {
+ 
+    getStatus(); 
+});
+ 
+function getStatus() {
+ 
+    $('div#activity_queue').load('/status.txt');
+    setTimeout("getStatus()",1000);
+ 
+}
+
+</script>
