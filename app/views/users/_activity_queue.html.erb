@@ -1,0 +1,11 @@
+<div id="activity_queue"></div>
+<script type="text/javascript">
+$(function() {
+    getImportStatus(); 
+});
+ 
+function getImportStatus() {
+    $('div#activity_queue').load("<%= activity_queue_status_url %>");
+    setTimeout("getImportStatus()",1000);
+}
+</script>

@@ -3,6 +3,13 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
 
+  def activity_queue_status
+    @pending_activities = current_user.activities.where(:processed => 0)
+    respond_to do |format|
+      format.html { render  'activity_queue_dynamic', :layout => false }
+    end
+  end
+
   def index
     @users = User.all
 

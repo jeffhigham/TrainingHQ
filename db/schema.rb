@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130120042236) do
+ActiveRecord::Schema.define(:version => 20130122000831) do
 
   create_table "activities", :force => true do |t|
     t.string   "activity_date"
@@ -21,16 +21,16 @@ ActiveRecord::Schema.define(:version => 20130120042236) do
     t.string   "unit_id"
     t.string   "product_id"
     t.string   "author_name"
-    t.datetime "created_at",                                        :null => false
-    t.datetime "updated_at",                                        :null => false
+    t.datetime "created_at",                                                                        :null => false
+    t.datetime "updated_at",                                                                        :null => false
     t.string   "datafile_file_name"
     t.string   "datafile_content_type"
     t.integer  "datafile_file_size"
     t.datetime "datafile_updated_at"
-    t.integer  "user_id",               :default => 0
-    t.string   "name",                  :default => "New Activity"
-    t.boolean  "processed",             :default => false
-    t.integer  "status",                :default => 0
+    t.integer  "user_id",                                               :default => 0
+    t.string   "name",                                                  :default => "New Activity"
+    t.boolean  "processed",                                             :default => false
+    t.decimal  "status",                :precision => 23, :scale => 20
   end
 
   create_table "hr_zones", :force => true do |t|

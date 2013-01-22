@@ -4,56 +4,9 @@
 <h2>Athlete: <%= @user.name %></h2>
 <b>Email: <%= @user.email %></b>
 
-<h2>Active Activities</h2>
-<table>
-  <tr>
-    <th>Date</th>
-    <th>Sport</th>
-    <th>Name</th>
-    <th>Ride Time</th>
-    <th>Distance(Miles)</th>
-    <th>Avg HR (bpm)</th>
-    <th>Avg Watts(w)</th>
-    <th>Avg Cadence</th>
-    <th>Laps</th>
-    <th colspan=2></th>
-  </tr>
-
-<% @activities.each do |activity| %>
-  <tr>
-    <td><%= activity.activity_date %></td>
-    <td><%= activity.sport %></td>
-    <td><%= link_to(activity.name, user_activity_path(@user.id,activity.id) )%></td>
-    <td><%= activity.total_time_formatted %></td>
-    <td><%= activity.total_distance_formatted %></td>
-    <td><%= activity.avg_heart_rate %></td>
-    <td><%= activity.avg_watts %></td>
-    <td><%= activity.avg_cadence %></td>
-    <td><%= activity.laps.count %></td>
-    <td><%= link_to 'Edit', edit_user_activity_path(activity) %></td>
-    <td><%= link_to 'Del', user_activity_path(activity), method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
-<% end %>
-</table>
-</br>
+<%= render 'activities' %>
 
 <%= link_to 'Edit', edit_user_path(@user) %> |
 <%= link_to 'New', new_user_activity_path(@user.id) %> 
 
-<div id="activity_queue"></div>
-
-<script type="text/javascript">
- 
-$(function() {
- 
-    getStatus(); 
-});
- 
-function getStatus() {
- 
-    $('div#activity_queue').load('/status.txt');
-    setTimeout("getStatus()",1000);
- 
-}
-
-</script>
+<%= render "activity_queue" %>

@@ -8,7 +8,6 @@
 </head>
 <body>
 <h1>TrainingHQ Rails Application</h2>
-	<hr/>
 	<br/>
 <div id="user_nav">
   <% if current_user %>
@@ -19,6 +18,8 @@
     <%= link_to "log in", login_path %>
   <% end %>
 </div>
+<hr/>
+<br/>
 
 <% flash.each do |name, msg| %>
   <%= content_tag :div, msg, :id => "flash_#{name}" %>
@@ -27,9 +28,13 @@
 <%= yield %>
 <%= yield :scripts %>
 
-<%= debug(params) if Rails.env.development? %>
-<%= debug(session) if Rails.env.development? %>
-<%= debug(current_user) if Rails.env.development? %>
+<%=  
+if Rails.env.development?
+  #debug(params)
+  #debug(session) 
+  #debug(current_user) 
+end
+%>
 
 
 </body>

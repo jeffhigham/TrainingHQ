@@ -1,0 +1,17 @@
+<h2>Activity Process Queue</h2>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Import Status</th>
+      </tr>
+      <tr>
+        <td>Breck 100</td>
+        <td><progress max="100" value="40"></progress>
+</td>
+      </tr>
+       <tr>
+        <td>24 Hours of Moab</td>
+        <td><progress max="100" value="99"></progress></td>
+      </tr>
+    </table>
+    </br>

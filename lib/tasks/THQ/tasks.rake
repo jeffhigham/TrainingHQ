@@ -10,13 +10,27 @@ namespace :THQ do
         
 # unprocessed_activities.each do |current_activity|
         current_activity = unprocessed_activities.first
-
         datafile = current_activity.datafile.path
         user_id =  current_activity.user_id
-        puts "Loading #{activity_count} into the database...\n"
-        puts "Processing #{datafile}\n "
-
+        
         db = Guppy::Db.open(datafile)
+
+        total_trackpoint_list = []
+        db.activities.each do |activity|
+          activity.laps.each do |lap|
+           total_trackpoint_list << lap.track_points.count
+          end
+        end
+        
+        total_trackpoints = total_trackpoint_list.sum.to_f
+        trackpoint_progress_percent = (100/total_trackpoints).to_f # for status bar
+        trackpoint_progress = (trackpoint_progress_percent*50)
+
+        puts "Loading #{activity_count} activity into the database...\n"
+        puts "Processing #{total_trackpoints} trackpoints in #{current_activity.name} from #{datafile}\n"
+        puts "Each trackpoint is #{trackpoint_progress_percent} of the whole activity.\n"
+        
+
         db.activities.each do |activity|
           
           puts "User Id: #{user_id}"
@@ -39,7 +53,7 @@ namespace :THQ do
             unit_id: activity.unit_id,
             product_id: activity.product_id,
             author_name: activity.author_name,
-            status: 50
+            status: trackpoint_progress
           })
 
           activity.laps.each do |lap|
@@ -73,17 +87,18 @@ namespace :THQ do
             }])
 
 
-            bunch_of_track_points = []
+            #bunch_of_track_points = []
+            trackpoint_count = 0
             lap.track_points.each do |track_point|
-              puts "\t\tTrackpoint: #{track_point.time}"
-              puts "\t\tLatitude: #{track_point.latitude}"
-              puts "\t\tLongitude: #{track_point.longitude}"
-              puts "\t\tCadence: #{track_point.cadence}"
-              puts "\t\tWatts: #{track_point.watts}\n"
-              puts "\t\tSpeed: #{track_point.speed}\n"
-              puts "\t\tHeart Rate: #{track_point.heart_rate}\n"
-              puts "\t\tAltidude: #{track_point.altitude}\n"
-              puts "\t\tDistance: #{track_point.distance}\n\n"
+             # puts "\t\tTrackpoint: #{track_point.time}"
+             # puts "\t\tLatitude: #{track_point.latitude}"
+             # puts "\t\tLongitude: #{track_point.longitude}"
+             # puts "\t\tCadence: #{track_point.cadence}"
+             # puts "\t\tWatts: #{track_point.watts}\n"
+             # puts "\t\tSpeed: #{track_point.speed}\n"
+             # puts "\t\tHeart Rate: #{track_point.heart_rate}\n"
+             # puts "\t\tAltidude: #{track_point.altitude}\n"
+             # puts "\t\tDistance: #{track_point.distance}\n\n"
 
               this_track_point = {
                  time: track_point.time,
@@ -97,14 +112,21 @@ namespace :THQ do
                  distance: track_point.distance
               }
 
-              #new_lap.first.trackpoints.create([this_track_point])
-              bunch_of_track_points << this_track_point
+              new_lap.first.trackpoints.create([this_track_point])
+              #bunch_of_track_points << this_track_point
+              trackpoint_count += 1
+              if(trackpoint_count == 50)
+                status_complete_percent = (current_activity.status + trackpoint_progress )
+                puts "Current Activity Status: #{current_activity.status}\n"
+                puts "Trackpoint Progress: #{trackpoint_progress}\n"
+                puts "Status Complete: #{status_complete_percent}\n\n"
+                current_activity.update_attributes({ status: status_complete_percent })
+                trackpoint_count = 0
+              end
           
             end
-
-          
-
-           new_lap.first.trackpoints.create(bunch_of_track_points)
+            #new_lap.first.trackpoints.create(bunch_of_track_points)
+            
           
           end
           puts "#{current_activity.name} is now active.\n\n"
