@@ -8,7 +8,7 @@ namespace :THQ do
         unprocessed_activities = Activity.where(:processed => 0)
         activity_count = unprocessed_activities.count
         
-# unprocessed_activities.each do |current_activity|
+    # unprocessed_activities.each do |current_activity|
         current_activity = unprocessed_activities.first
         datafile = current_activity.datafile.path
         user_id =  current_activity.user_id
@@ -135,7 +135,53 @@ namespace :THQ do
             status: 100
           })
     end
+  end #desc
 
-  end
+  desc "Calculate elevation gain and loss for activities in the database"
+    task :calculate_elevation_for_existing => :environment do
 
-end
+      activities = Activity.all
+
+      # Calculate lap altitude loss/gain
+      activities.each do |this_activity|
+        puts "\nProcessing activity #{this_activity.name}\n"
+        total_elevation_loss = 0
+        total_elevation_gain = 0
+        this_activity.laps.each do |this_lap|
+
+          elevation_loss = 0
+          elevation_gain = 0
+          this_altitude = 0
+          last_altitude = 0
+
+          this_lap.trackpoints.each do |this_trackpoint|
+            
+            this_altitude = this_trackpoint.altitude.to_i
+            # handle initial loop case
+
+            if last_altitude == 0
+              last_altitude = this_altitude
+            # handle everything else
+            else
+              if last_altitude < this_altitude
+                elevation_gain += (this_altitude - last_altitude)
+              else
+                elevation_loss += (last_altitude - this_altitude)
+              end #if/else
+              #puts "VALUES => this_altitude: #{this_altitude}, last_altitude: #{last_altitude}, elevation_gain: #{elevation_gain}, elevation_loss: #{elevation_loss}\n"
+              last_altitude = this_altitude
+
+            end #if/else
+          end #trackpoint.each
+          puts "  Updating lap #{this_lap.id}, gain: #{elevation_gain}, loss: #{elevation_loss}\n"
+          total_elevation_loss += elevation_loss
+          total_elevation_gain += elevation_gain
+          this_lap.update_attributes({:elevation_gain => elevation_gain, :elevation_loss => elevation_loss})
+        end #laps.each
+          puts "Activity Totals, loss: #{total_elevation_loss}, gain: #{total_elevation_gain}\n\n"
+          this_activity.update_attributes({:elevation_gain => total_elevation_gain, :elevation_loss => total_elevation_loss})
+      end #activity.each
+    end # task
+  end # desc
+
+#end # namespace

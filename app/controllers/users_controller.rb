@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   # GET /users.json
 
   def activity_queue_status
-    @pending_activities = current_user.activities.where(:processed => 0)
+    @pending_activities = @user.activities.where(:processed => 0).order('created_at')
     respond_to do |format|
       format.html { render  'activity_queue_dynamic', :layout => false }
     end
@@ -12,7 +12,6 @@ class UsersController < ApplicationController
 
   def index
     @users = User.all
-
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @users }
@@ -23,8 +22,7 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
     @user = current_user || User.find(params[:id])
-    @activities = @user.activities.where(:processed => 1)
-    @pending_activities = @user.activities.where(:processed => 0)
+    @activities = @user.activities.where(:processed => 1).order('activity_date')
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @user }

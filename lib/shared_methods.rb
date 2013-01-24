@@ -12,13 +12,13 @@ def ride_time_formatted(time_in_seconds)
     seconds = (time_in_seconds - (minutes * 60 + hours * 3600))
 
     return sprintf("%02d:%02d:%02d\n", hours, minutes, seconds)
-  end
+end
 
-	def distance_meters_to_feet(meters)
-  	return (meters * 3.281).round(1)	
-  end
+def distance_meters_to_feet(meters)
+  return (meters * 3.281).round(1)	
+end
 
-  def altitude_meters_to_feet(altitude)
-  	return (altitude * 3.281).round(1)
-  end
+def altitude_meters_to_feet(altitude)
+  return (altitude * 3.281).round(1)
+end
 

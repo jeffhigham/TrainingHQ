@@ -1,11 +1,21 @@
 class Activity < ActiveRecord::Base
 
-  attr_accessible :activityid, :creator_name, :product_id, :sport, :unit_id, :datafile, :author_name, :activity_date, :name, :user_id, :processed, :status
+  attr_accessible :activityid, :creator_name, :product_id, :sport, :unit_id, :datafile, 
+                  :author_name, :activity_date, :name, :user_id, :processed, :status, 
+                  :elevation_gain, :elevation_loss
   has_attached_file :datafile
   has_many :laps, dependent: :destroy
   belongs_to :user
 
   require "./lib/shared_methods.rb"
+
+  def elevation_loss_feet
+    return distance_meters_to_feet(self.elevation_loss)
+  end
+
+  def elevation_gain_feet
+    return distance_meters_to_feet(self.elevation_gain)
+  end
 
   def max_watts
   	max_watts = 0

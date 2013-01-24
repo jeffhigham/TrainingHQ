@@ -1,6 +1,7 @@
 class Lap < ActiveRecord::Base
   attr_accessible :ave_heart_rate, :ave_watts, :max_watts, :ave_cadence, :max_cadence, :calories, 
-                  :distance, :intensity, :max_heart_rate, :ave_speed, :max_speed, :start_time, :total_time
+                  :distance, :intensity, :max_heart_rate, :ave_speed, :max_speed, :start_time, :total_time,
+                  :elevation_gain, :elevation_loss
 
   belongs_to :activity
   has_many :trackpoints, dependent: :destroy
@@ -65,12 +66,20 @@ class Lap < ActiveRecord::Base
   	return power_zone(self.max_watts)
   end
 
+    def elevation_loss_feet
+    return distance_meters_to_feet(self.elevation_loss)
+  end
+
+  def elevation_gain_feet
+    return distance_meters_to_feet(self.elevation_gain)
+  end
+
   def distance_feet
-  	return (self.distance * 3.281).round(1)	
+  	return distance_meters_to_feet(self.distance)	
   end
 
   def altitude_feet
-  	return (self.altitude * 3.281).round(1)
+  	return distance_meters_to_feet(self.altitude)
   end
 
 	def power_zone_ranges

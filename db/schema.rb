@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130122000831) do
+ActiveRecord::Schema.define(:version => 20130122222838) do
 
   create_table "activities", :force => true do |t|
     t.string   "activity_date"
@@ -31,6 +31,8 @@ ActiveRecord::Schema.define(:version => 20130122000831) do
     t.string   "name",                                                  :default => "New Activity"
     t.boolean  "processed",                                             :default => false
     t.decimal  "status",                :precision => 23, :scale => 20
+    t.integer  "elevation_loss",                                        :default => 0
+    t.integer  "elevation_gain",                                        :default => 0
   end
 
   create_table "hr_zones", :force => true do |t|
@@ -63,8 +65,10 @@ ActiveRecord::Schema.define(:version => 20130122000831) do
     t.integer  "max_cadence"
     t.integer  "ave_watts"
     t.integer  "max_watts"
-    t.datetime "created_at",                                    :null => false
-    t.datetime "updated_at",                                    :null => false
+    t.datetime "created_at",                                                   :null => false
+    t.datetime "updated_at",                                                   :null => false
+    t.integer  "elevation_loss",                                :default => 0
+    t.integer  "elevation_gain",                                :default => 0
   end
 
   create_table "power_zones", :force => true do |t|

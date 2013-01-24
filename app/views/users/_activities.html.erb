@@ -6,6 +6,8 @@
     <th>Name</th>
     <th>Ride Time</th>
     <th>Distance(Miles)</th>
+    <th>Elevation Gain(Feet)</th>
+    <th>Elevation Loss(Feet)</th>
     <th>Avg HR (bpm)</th>
     <th>Avg Watts(w)</th>
     <th>Avg Cadence</th>
@@ -20,11 +22,12 @@
     <td><%= link_to(activity.name, user_activity_path(@user.id,activity.id) )%></td>
     <td><%= activity.total_time_formatted %></td>
     <td><%= activity.total_distance_formatted %></td>
+    <td><%= activity.elevation_gain_feet %></td>
+    <td><%= activity.elevation_loss_feet %></td>
     <td><%= activity.avg_heart_rate %></td>
     <td><%= activity.avg_watts %></td>
     <td><%= activity.avg_cadence %></td>
     <td><%= activity.laps.count %></td>
-    <td><%= link_to 'Edit', edit_user_activity_path(activity) %></td>
     <td><%= link_to 'Del', user_activity_path(@user.id,activity.id), method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
 <% end %>

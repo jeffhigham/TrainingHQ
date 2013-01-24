@@ -1,34 +1,16 @@
 <p id="notice"><%= notice %></p>
-
+<h2><%= @activity.activity_date %></h2>
+<h3>Device Type: <%= @activity.creator_name %></h3>
 <p>
   <b>Sport:</b>
   <%= @activity.sport %>
 </p>
 
-<p>
-  <b>Activityid:</b>
-  <%= @activity.activityid %>
-</p>
 
-<p>
-  <b>Creatorname:</b>
-  <%= @activity.creator_name %>
-</p>
+<%= render 'total_summary' %>
 
-<p>
-  <b>Unitid:</b>
-  <%= @activity.unit_id %>
-</p>
 
-<p>
-  <b>Productid:</b>
-  <%= @activity.product_id %>
-</p>
-
-<h2>Laps</h2>
-<%= render 'laps_data' %>
-
-<h2>Fancy Graphs</h2>
+<h2>Map</h2>
 <%= render 'graph_data' %>
 
 
