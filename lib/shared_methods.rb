@@ -5,7 +5,7 @@ def ride_distance_formatted(distance_in_feet)
 	return distance_in_feet/5280.to_f
 end
 
-def ride_time_formatted(time_in_seconds)
+def time_formatted(time_in_seconds)
     
     hours = time_in_seconds/3600.to_i
     minutes = (time_in_seconds/60 - hours * 60).to_i

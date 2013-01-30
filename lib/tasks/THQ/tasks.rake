@@ -86,19 +86,8 @@ namespace :THQ do
               intensity: lap.intensity
             }])
 
-
-            #bunch_of_track_points = []
             trackpoint_count = 0
             lap.track_points.each do |track_point|
-             # puts "\t\tTrackpoint: #{track_point.time}"
-             # puts "\t\tLatitude: #{track_point.latitude}"
-             # puts "\t\tLongitude: #{track_point.longitude}"
-             # puts "\t\tCadence: #{track_point.cadence}"
-             # puts "\t\tWatts: #{track_point.watts}\n"
-             # puts "\t\tSpeed: #{track_point.speed}\n"
-             # puts "\t\tHeart Rate: #{track_point.heart_rate}\n"
-             # puts "\t\tAltidude: #{track_point.altitude}\n"
-             # puts "\t\tDistance: #{track_point.distance}\n\n"
 
               this_track_point = {
                  time: track_point.time,
@@ -113,7 +102,6 @@ namespace :THQ do
               }
 
               new_lap.first.trackpoints.create([this_track_point])
-              #bunch_of_track_points << this_track_point
               trackpoint_count += 1
               if(trackpoint_count == 50)
                 status_complete_percent = (current_activity.status + trackpoint_progress )
@@ -125,9 +113,7 @@ namespace :THQ do
               end
           
             end
-            #new_lap.first.trackpoints.create(bunch_of_track_points)
-            
-          
+                      
           end
           puts "#{current_activity.name} is now active.\n\n"
           current_activity.update_attributes({
@@ -182,6 +168,94 @@ namespace :THQ do
           this_activity.update_attributes({:elevation_gain => total_elevation_gain, :elevation_loss => total_elevation_loss})
       end #activity.each
     end # task
-  end # desc
 
-#end # namespace
+  desc "Calculate Joules for activities and inserts into the database"
+    task :calculate_kj => :environment do
+      #activities << Activity.find(6)
+      activities = Activity.all
+      time = 0
+      last_time = 0
+      total_activity_joules = 0
+      total_lap_joules = 0
+      elapsed_time = 0
+
+      activities.each do |this_activity|
+        puts "\nProcessing activity #{this_activity.name}\n"
+        this_activity.laps.each do |this_lap|
+          puts "\tProcessing lap #{this_lap.id}\n"
+          this_lap.trackpoints.each do |this_trackpoint|
+            time = Time.parse(this_trackpoint.time)
+            if(last_time==0)
+              last_time=time
+            else
+              elapsed_time = time - last_time
+              joules = this_trackpoint.watts * elapsed_time
+              total_activity_joules += joules
+              total_lap_joules += joules
+              #puts "\t\tWatts: #{this_trackpoint.watts}, Time: #{elapsed_time}, Joules: #{joules}\n"
+              this_trackpoint.update_attributes({:joules => joules})
+              last_time=time
+            end
+          end #this_trackpoint
+      
+          this_lap.update_attributes({:kjoules => total_lap_joules/1000})
+          puts "\nTotal Lap kJ: #{this_lap.kjoules}\n"
+          total_lap_joules = 0
+        end #this_activity.laps   
+      
+      this_activity.update_attributes({:kjoules => total_activity_joules/1000})
+      puts "\nTotal Activity kJ: #{this_activity.kjoules}\n\n"
+      total_activity_joules = 0
+      end #activities.each
+    end # task
+
+    desc "Calculate lap ride time and inserts into the database"
+    task :calculate_ride_time => :environment do
+      
+
+      activities = Activity.all
+      time = 0
+      last_time = 0
+      elapsed_time = 0
+      distance = 0
+      last_distance = 0
+      trackpoint_distance = 0
+      lap_ride_time = 0
+      
+
+      activities.each do |this_activity|
+        puts "\nProcessing activity #{this_activity.name}\n"
+        this_activity.laps.each do |this_lap|
+          puts "\tProcessing lap #{this_lap.id}\n"
+          this_lap.trackpoints.each do |this_trackpoint|
+
+            time = Time.parse(this_trackpoint.time)
+            distance = this_trackpoint.distance
+            
+            if(last_time == 0 || last_distance == 0 )
+              last_time = time
+              last_distance = distance
+            else
+              elapsed_time = time - last_time
+              trackpoint_distance = distance - last_distance
+
+              # only increment time if we changed distance, moved a pedal, or generated a watt.
+              if( trackpoint_distance > 0 || this_trackpoint.cadence > 0 || this_trackpoint.watts > 0 )
+                lap_ride_time += elapsed_time 
+              end
+              puts "\t\tElapsed Time: #{elapsed_time}, Trackpoint Distance: #{trackpoint_distance}, Cadence: #{this_trackpoint.cadence}, Watts: #{this_trackpoint.watts}, Lap Ride Time: #{lap_ride_time}\n"
+              last_time = time
+              last_distance = distance
+
+            end
+          end #this_trackpoint
+      
+          this_lap.update_attributes({:ride_time => lap_ride_time})
+          puts "\nLap Ride Time: #{this_lap.ride_time}, Lap Total Time: #{this_lap.total_time}\n"
+          lap_ride_time = 0
+        
+        end #this_activity.laps
+           
+      end #activities.each
+    end # task  
+end #namespace

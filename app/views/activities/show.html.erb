@@ -1,18 +1,16 @@
 <p id="notice"><%= notice %></p>
-<h2><%= @activity.activity_date %></h2>
-<h3>Device Type: <%= @activity.creator_name %></h3>
+<h2><%= @activity.name %></h2>
+<h3>Date: <%= @activity.activity_date %></h3>
+<h4>Device Type: <%= @activity.creator_name %></h4>
 <p>
   <b>Sport:</b>
   <%= @activity.sport %>
 </p>
 
 
-<%= render 'total_summary' %>
-
-
-<h2>Map</h2>
-<%= render 'graph_data' %>
-
+<%= render 'total_summary' %><br/>
+<%= render 'power_zones' %><br/>
+<%= render 'heart_rate_zones' %><br/>
 
 <%= link_to 'Edit', edit_user_activity_path(@activity) %> |
 <%= link_to 'Back', current_user %>

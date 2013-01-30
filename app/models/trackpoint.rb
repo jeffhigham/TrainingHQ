@@ -1,5 +1,6 @@
 class Trackpoint < ActiveRecord::Base
-  attr_accessible :altitude, :cadence, :distance, :heart_rate, :latitude, :longitude, :time, :watts, :speed
+  attr_accessible :altitude, :cadence, :distance, :heart_rate, :latitude, 
+  								:longitude, :time, :watts, :speed, :joules
   belongs_to :lap
  
 
