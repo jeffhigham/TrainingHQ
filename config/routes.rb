@@ -1,14 +1,15 @@
 TrainingHQ::Application.routes.draw do
+  resources :journal_entries
   resources :users
   resources :sessions
   resources :hr_zones
   resources :power_zones
   resources :activities
-  resources :workouts
-    resources :users do
+  resources :users do
     resources :activities
     resources :hr_zones
     resources :power_zones
+    resources :journal_entries
   end
 
   get "logout" => "sessions#destroy", :as => "logout"

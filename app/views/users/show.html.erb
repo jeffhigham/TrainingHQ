@@ -2,7 +2,8 @@
 <%= image_tag @user.avatar.url(:thumb) %>
 
 <h2>Athlete: <%= @user.name %></h2>
-<b>Email: <%= @user.email %></b>
+<b>Email: <%= @user.email %></b></br/>
+<b>Journal Entries: <%= @user.journal_entries.count %></b>
 
 <%= render 'activities' %>
 

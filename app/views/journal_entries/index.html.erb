@@ -1,0 +1,29 @@
+<h1>Listing journal_entries</h1>
+
+<table>
+  <tr>
+    <th>User</th>
+    <th>Category</th>
+    <th>Subject</th>
+    <th>Body</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @journal_entries.each do |journal_entry| %>
+  <tr>
+    <td><%= journal_entry.user_id %></td>
+    <td><%= journal_entry.category %></td>
+    <td><%= journal_entry.subject %></td>
+    <td><%= journal_entry.body %></td>
+    <td><%= link_to 'Show', journal_entry %></td>
+    <td><%= link_to 'Edit', edit_journal_entry_path(journal_entry) %></td>
+    <td><%= link_to 'Destroy', journal_entry, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Journal entry', new_journal_entry_path %>

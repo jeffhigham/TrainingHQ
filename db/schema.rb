@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130129164636) do
+ActiveRecord::Schema.define(:version => 20130201212345) do
 
   create_table "activities", :force => true do |t|
     t.string   "activity_date"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(:version => 20130129164636) do
     t.integer  "elevation_loss",                                        :default => 0
     t.integer  "elevation_gain",                                        :default => 0
     t.integer  "kjoules",                                               :default => 0
+    t.text     "notes"
   end
 
   create_table "hr_zones", :force => true do |t|
@@ -47,6 +48,15 @@ ActiveRecord::Schema.define(:version => 20130129164636) do
     t.integer  "z6"
     t.integer  "z7"
     t.boolean  "enabled"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "journal_entries", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "category"
+    t.string   "subject"
+    t.text     "body"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end

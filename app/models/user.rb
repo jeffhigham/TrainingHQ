@@ -16,5 +16,6 @@ class User < ActiveRecord::Base
   has_many :activities, dependent: :destroy
   has_many :power_zones, dependent: :destroy
   has_many :hr_zones, dependent: :destroy
+  has_many :journal_entries, dependent: :destroy
 
 end
