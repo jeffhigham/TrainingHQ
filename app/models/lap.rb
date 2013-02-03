@@ -7,6 +7,7 @@ class Lap < ActiveRecord::Base
   has_many :trackpoints, dependent: :destroy
 
   require "./lib/shared_methods.rb"
+  include SharedMethods
 
   def min_heart_rate
   	min_heart_rate = 500 # something way too high.
@@ -101,7 +102,7 @@ class Lap < ActiveRecord::Base
   end
 
   def total_time_formatted
-      return ride_time_formatted(total_time)
+      return time_formatted(total_time)
   end
 
   def total_distance_formatted

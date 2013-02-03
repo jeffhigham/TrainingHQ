@@ -1,22 +1,4 @@
 
-<table>
-  <tr>
-    <td >ID</td>
-    <td>Time</td>
-    <td>Distance (Miles)</td>
-    <td>Calories</td>
-    <td>Min HR</td>
-    <td>Ave HR</td>
-    <td>Max HR</td>
-    <td>Min Cadence</td>
-    <td>Ave Cadence</td>
-    <td>Max Cadence</td>
-    <td>Min Watts</td>
-    <td>Ave Watts</td>
-    <td>Max Watts</td>
-    <td>Intensity</td>
-  <tr>
-<% @activity.laps.each do |lap| %>
   <tr>
     <td><%= lap.id %></td>
     <td><%= lap.total_time_formatted %></td>
@@ -33,5 +15,3 @@
     <td><%= lap.get_max_watts %> (z<%= lap.max_power_zone %>)</td>
     <td><%= lap.intensity %></td>
   <tr>
-<% end %>
-</table>

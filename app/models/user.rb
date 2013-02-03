@@ -18,4 +18,7 @@ class User < ActiveRecord::Base
   has_many :hr_zones, dependent: :destroy
   has_many :journal_entries, dependent: :destroy
 
+  require "./lib/shared_methods.rb"
+  include SharedMethods
+
 end

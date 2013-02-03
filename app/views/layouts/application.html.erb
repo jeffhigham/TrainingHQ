@@ -20,19 +20,17 @@
 </div>
 <hr/>
 <br/>
-
-<% flash.each do |name, msg| %>
-  <%= content_tag :div, msg, :id => "flash_#{name}" %>
+<% flash.each do |key, value| %>
+    <div class="flash <%= key %>"><%= value %></div>
 <% end %>
-
 <%= yield %>
 <%= yield :scripts %>
 
 <%=  
 if Rails.env.development?
-  #debug(params)
-  #debug(session) 
-  #debug(current_user) 
+  debug(params)
+  debug(session) 
+  debug(current_user) 
 end
 %>
 

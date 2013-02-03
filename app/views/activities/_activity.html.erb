@@ -1,21 +1,4 @@
-<h2>Active Activities</h2>
-<table>
-  <tr>
-    <th>Date</th>
-    <th>Sport</th>
-    <th>Name</th>
-    <th>Ride Time</th>
-    <th>Distance(Miles)</th>
-    <th>Elevation Gain(Feet)</th>
-    <th>Elevation Loss(Feet)</th>
-    <th>Avg HR (bpm)</th>
-    <th>Avg Watts(w)</th>
-    <th>Avg Cadence</th>
-    <th>Laps</th>
-    <th colspan=2></th>
-  </tr>
 
-<% @activities.each do |activity| %>
   <tr>
     <td><%= activity.activity_date %></td>
     <td><%= activity.sport %></td>
@@ -30,6 +13,3 @@
     <td><%= activity.laps.count %></td>
     <td><%= link_to 'Del', user_activity_path(@user.id,activity.id), method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
-<% end %>
-</table>
-</br>

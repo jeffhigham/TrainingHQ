@@ -8,6 +8,7 @@ class Activity < ActiveRecord::Base
   belongs_to :user
 
   require "./lib/shared_methods.rb"
+  include SharedMethods
 
   def elevation_loss_feet
     return distance_meters_to_feet(self.elevation_loss)
