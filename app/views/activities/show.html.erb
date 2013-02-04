@@ -1,4 +1,6 @@
 <p id="notice"><%= notice %></p>
+<%= image_tag @activity.user.avatar.url(:thumb) %>
+<h2>Athlete: <%= @activity.user.name %> </h2>
 <h2><%= @activity.name %></h2>
 <h3>Date: <%= @activity.activity_date %></h3>
 <h4>Device Type: <%= @activity.creator_name %></h4>

@@ -1,9 +1,31 @@
 class ActivitiesController < ApplicationController
+  
+  # status of the activity queue for AJAX requests.
+  def show_activity_queue
+    @pending_activities = Activity.where(:processed => 0).order('created_at')
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def hide_activity_queue
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def update_activity_queue_realtime
+    @pending_activities = Activity.where(:processed => 0).order('created_at')
+    respond_to do |format|
+      format.js
+    end
+  end
+
   # GET /activities
   # GET /activities.json
   def index
-    @activities = Activity.where(:processed => 1)
-
+    @user = current_user
+    @activities = Activity.where({processed: 1, user_id: current_user.id})
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @activities }
@@ -14,7 +36,6 @@ class ActivitiesController < ApplicationController
   # GET /activities/1.json
   def show
     @activity = Activity.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @activity }
@@ -25,10 +46,16 @@ class ActivitiesController < ApplicationController
   # GET /activities/new.json
   def new
     @activity = Activity.new
-
     respond_to do |format|
       format.html # new.html.erb
+      format.js
       format.json { render json: @activity }
+    end
+  end
+
+  def cancel_new
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -45,7 +72,7 @@ class ActivitiesController < ApplicationController
 
     respond_to do |format|
       if @activity.save
-        format.html { redirect_to current_user, notice: 'Activity was successfully created.' }
+        format.html { redirect_to activities_path, notice: 'Activity was successfully created.' }
         format.json { render json: @activity, status: :created, location: @activity }
       else
         format.html { render action: "new" }
@@ -75,9 +102,12 @@ class ActivitiesController < ApplicationController
   def destroy
     @activity = Activity.find(params[:id])
     @activity.destroy
-
     respond_to do |format|
       format.html { redirect_to activities_url }
+      format.js { 
+                  @pending_activities = Activity.where(:processed => 0).order('created_at')
+                  render action: "show_activity_queue"
+                }
       format.json { head :no_content }
     end
   end

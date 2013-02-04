@@ -1,0 +1,9 @@
+<%= form_for(@activity) do |f| %>
+  <table>
+    <tr>
+    <td><%= f.label :name %> <%= f.text_field :name %></td>
+    <td><%= f.label :datafile %><%= f.file_field :datafile %></td>
+    <td><%= f.submit %></td>
+    </tr>
+</table>
+<% end %>

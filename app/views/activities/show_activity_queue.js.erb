@@ -1,0 +1,19 @@
+$('#activity_queue').html("<%=j render 'activity_queue_dynamic' %>")
+$('#activity_queue_button').attr('value', 'Hide Pending Activities')
+$('#activity_queue_button').closest('form')[0].setAttribute('action', '/hide_activity_queue');
+$("html, body").animate({ scrollTop: $(document).height() }, 1000);
+$('#activity_queue').css({'background-color':'lightgreen'}).
+  animate({'background-color':'#FFFFFF'}, 2000);
+$('#activity_queue_button').	
+	//effect("pulsate", { times:2 }, 2000).
+	css({'background-color':'lightgreen'}).
+	animate({'background-color':'#FFFFFF'}, 2000);
+
+$(function() {
+    getQueueStatus(); 
+}); 
+
+function getQueueStatus() {
+    $('#activity_queue').load("/update_activity_queue_realtime");
+    setTimeout("getQueueStatus()",5000);
+}

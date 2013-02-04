@@ -9,16 +9,19 @@
 <body>
 <h1>TrainingHQ Rails Application</h2>
 	<br/>
-<div id="user_nav">
+<nav id="main_nav" style="background:lightblue">
   <% if current_user %>
-    Logged in as <%= current_user.email %>.
-    <%= link_to "Log out", logout_path %>
+    <%= link_to "User Profile", user_path(current_user) %>
+    <%= link_to "Activities", activities_path %>
+    <%= link_to "Log Out", logout_path %>
   <% else %>
     <%= link_to "Sign up", signup_path %> or
     <%= link_to "log in", login_path %>
   <% end %>
-</div>
-<hr/>
+</nav>
+
+
+
 <br/>
 <% flash.each do |key, value| %>
     <div class="flash <%= key %>"><%= value %></div>
@@ -28,9 +31,9 @@
 
 <%=  
 if Rails.env.development?
-  debug(params)
-  debug(session) 
-  debug(current_user) 
+  #debug(params)
+  #debug(session) 
+  #debug(current_user) 
 end
 %>
 

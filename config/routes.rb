@@ -15,7 +15,15 @@ TrainingHQ::Application.routes.draw do
   get "logout" => "sessions#destroy", :as => "logout"
   get "login" => "sessions#new", :as => "login"
   get "signup" => "users#new", :as => "signup"
-  get "activity_queue_status" => "users#activity_queue_status", :as =>"activity_queue_status"
+  get "cancel_new_activity" => "activities#cancel_new", :as => "cancel_new_activity"
+  get "show_activity_queue" => "activities#show_activity_queue", :as =>"show_activity_queue"
+  get "hide_activity_queue" => "activities#hide_activity_queue", :as =>"hide_activity_queue"
+  get "update_activity_queue_realtime" => "activities#update_activity_queue_realtime", 
+      :as =>"update_activity_queue_realtime"
+
+
+  
+
   root :to => "users#index"
 
   # The priority is based upon order of creation:

@@ -1,15 +1,16 @@
 
 <% if @pending_activities.count > 0 %>
-<h2>Activity Process Queue</h2>
+<h2>Activity Queue</h2>
     <table>
       <tr>
         <th>Name</th>
-        <th>Import Status</th>
+        <th colspan=2>Import Status</th>
       </tr>
 <% @pending_activities.each do |activity| %>
       <tr>
         <td><%= activity.name %></td>
         <td><progress max="100" value="<%= activity.status %>"></progress></td>
+        <td><%= button_to 'Delete Activity', activity, method: :delete, data: { confirm: 'Are you sure?' }, :remote => true %></td>
       </tr>
 <% end %>
     </table>

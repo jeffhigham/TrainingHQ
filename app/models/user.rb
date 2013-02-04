@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  attr_accessible :email, :name, :password, :password_confirmation, :avatar
+  attr_accessible :email, :name, :password, :password_confirmation, :avatar, :is_admin
   has_secure_password
   has_attached_file :avatar, :styles => { :medium => "300x300>", :thumb => "100x100>" }
 
@@ -20,5 +20,9 @@ class User < ActiveRecord::Base
 
   require "./lib/shared_methods.rb"
   include SharedMethods
+
+  def is_admin?
+    self.is_admin
+  end
 
 end

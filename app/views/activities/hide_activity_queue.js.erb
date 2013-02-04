@@ -1,0 +1,10 @@
+$('#activity_queue').html("");
+$('#activity_queue_button').attr('value', 'Show Pending Activities');
+$('#activity_queue_button').closest('form')[0].setAttribute('action', '/show_activity_queue');
+
+$('#activity_queue_button').	
+	//effect("pulsate", { times:2 }, 2000).
+	css({'background-color':'lightgreen'}).
+	animate({'background-color':'#FFFFFF'}, 2000);
+
+function getQueueStatus() { }

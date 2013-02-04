@@ -4,30 +4,3 @@
 <h2>Athlete: <%= @user.name %></h2>
 <b>Email: <%= @user.email %></b></br/>
 <b>Journal Entries: <%= @user.journal_entries.count %></b>
-
-<h2>Active Activities</h2>
-<table>
-  <tr>
-    <th>Date</th>
-    <th>Sport</th>
-    <th>Name</th>
-    <th>Ride Time</th>
-    <th>Distance(Miles)</th>
-    <th>Elevation Gain(Feet)</th>
-    <th>Elevation Loss(Feet)</th>
-    <th>Avg HR (bpm)</th>
-    <th>Avg Watts(w)</th>
-    <th>Avg Cadence</th>
-    <th>Laps</th>
-    <th colspan=2></th>
-  </tr>
-  
-<%= render(@user.activities) %>
-
-</table>
-</br>
-
-<%= button_to 'Edit', edit_user_path(@user) %>
-<%= button_to 'New', new_user_activity_path(@user.id) %> 
-
-<%= render "activity_queue" %>

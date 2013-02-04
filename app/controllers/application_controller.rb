@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-	before_filter :check_login, :except => [:login]
+	before_filter :check_login, :except => [:login, :update_activity_queue_realtime ]
   protect_from_forgery
   force_ssl
   

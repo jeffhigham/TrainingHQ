@@ -1,0 +1,7 @@
+$('#new_activity_form').html("");
+$('#new_activity_button').attr('value', 'New Activity');
+$('#new_activity_button').closest('form')[0].setAttribute('action', '/activities/new');
+$('#new_activity_button').	
+	//effect("pulsate", { times:2 }, 2000).
+	css({'background-color':'lightgreen'}).
+	animate({'background-color':'#FFFFFF'}, 2000);

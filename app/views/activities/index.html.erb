@@ -1,32 +1,53 @@
-<h1>Listing activities</h1>
 
+<%= image_tag @user.avatar.url(:thumb) %>
+
+<h2>Athlete: <%= @user.name %></h2>
+<b>Email: <%= @user.email %></b></br/>
+<b>Journal Entries: <%= @user.journal_entries.count %></b>
+
+<h2>Active Activities</h2>
 <table>
   <tr>
+    <th>Date</th>
     <th>Sport</th>
-    <th>Activity Id</th>
-    <th>Creator Name</th>
-    <th>Unit Id</th>
-    <th>Product Id</th>
+    <th>Name</th>
+    <th>Ride Time</th>
+    <th>Distance(Miles)</th>
+    <th>Elevation Gain(Feet)</th>
+    <th>Elevation Loss(Feet)</th>
+    <th>Avg HR (bpm)</th>
+    <th>Avg Watts(w)</th>
+    <th>Avg Cadence</th>
     <th>Laps</th>
-    <th></th>
-    <th></th>
+    <th colspan=2></th>
   </tr>
-
-<% @activities.each do |activity| %>
-  <tr>
-    <td><%= activity.sport %></td>
-    <td><%= activity.activityid %></td>
-    <td><%= activity.creator_name %></td>
-    <td><%= activity.unit_id %></td>
-    <td><%= activity.product_id %></td>
-    <td><%= activity.laps.count %></td>
-    <td><%= link_to 'Show', activity %></td>
-    <td><%= link_to 'Edit', edit_activity_path(activity) %></td>
-    <td><%= link_to 'Destroy', activity, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
-<% end %>
+  
+<%= render(@activities) %>
 </table>
-
-<br />
-
-<%= link_to 'New Activity', new_activity_path %>
+<div id="new_activity_form">
+</div>
+<br/>
+<table>
+    <tr>
+            <td>
+        <%= button_to 'Show Pending Activities', 
+                        show_activity_queue_path, 
+                        method: :get, 
+                        remote: true,
+                        id: "activity_queue_button" 
+                        %>
+    </td>
+    <td>
+        <%= button_to 'New Activity', 
+                        new_activity_path, 
+                        method: :get, 
+                        remote: true,
+                        id: "new_activity_button" 
+                        %>
+    </td>
+</tr>
+</table>
+</br> 
+<div id="activity_queue">
+</div>
+<br/>
