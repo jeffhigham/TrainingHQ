@@ -1,5 +1,26 @@
 module Guppy
+  
   class TcxParser
+
+    attr_accessor :activity_elevation_loss
+    attr_accessor :activity_elevation_gain
+    attr_accessor :lap_elevation_loss
+    attr_accessor :lap_elevation_gain
+    attr_accessor :this_trackpoint_altitude
+    attr_accessor :last_trackpoint_altitude
+
+    def self.reset_lap_counters
+      @lap_elevation_loss = 0
+      @lap_elevation_gain = 0
+      @this_trackpoint_altitude = 0
+      @last_trackpoint_altitude = 0
+    end
+
+    def self.reset_activity_counters
+      @activity_elevation_loss = 0
+      @activity_elevation_gain = 0
+    end
+
     def self.open(file)
       parser = self.new(file)
       parser.parse
@@ -7,6 +28,8 @@ module Guppy
     end
 
     def initialize(file)
+      self.reset_activity_counters
+      self.reset_lap_counters
       @file = file
     end
 
@@ -84,6 +107,7 @@ module Guppy
       track_point.watts = track_point_node.xpath('xmlns:Extensions/ns3:TPX/ns3:Watts', namespaces ).inner_text.to_i
       track_point.speed = track_point_node.xpath('xmlns:Extensions/ns3:TPX/ns3:Speed', namespaces ).inner_text.to_f
       track_point
+
     end
     
     def namespaces

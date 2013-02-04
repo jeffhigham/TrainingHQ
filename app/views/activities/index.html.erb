@@ -1,12 +1,10 @@
 
 <%= image_tag @user.avatar.url(:thumb) %>
-
 <h2>Athlete: <%= @user.name %></h2>
-<b>Email: <%= @user.email %></b></br/>
-<b>Journal Entries: <%= @user.journal_entries.count %></b>
-
-<h2>Active Activities</h2>
 <table>
+    <tr>
+    <th colspan=13>Activities</th>
+    </tr>
   <tr>
     <th>Date</th>
     <th>Sport</th>
