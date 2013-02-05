@@ -1,6 +1,6 @@
 class Lap < ActiveRecord::Base
-  attr_accessible :ave_heart_rate, :ave_watts, :max_watts, :ave_cadence, :max_cadence, :calories, 
-                  :distance, :intensity, :max_heart_rate, :ave_speed, :max_speed, :start_time, :total_time,
+  attr_accessible :avg_heart_rate, :avg_watts, :max_watts, :avg_cadence, :max_cadence, :calories, 
+                  :distance, :intensity, :max_heart_rate, :avg_speed, :max_speed, :start_time, :total_time,
                   :elevation_gain, :elevation_loss, :kjoules, :ride_time
 
   belongs_to :activity
@@ -59,8 +59,8 @@ class Lap < ActiveRecord::Base
   	return power_zone(self.min_watts)
   end
 
-  def ave_power_zone
-  	return power_zone(self.ave_watts)
+  def avg_power_zone
+  	return power_zone(self.avg_watts)
   end
 
   def max_power_zone

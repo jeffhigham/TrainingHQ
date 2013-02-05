@@ -1,5 +1,5 @@
 module Guppy
-  class Db
+  class DB
     def self.file_type(file_name)
       case File.extname(file_name).downcase
       when '.tcx'
@@ -21,7 +21,8 @@ module Guppy
       @file_name = file
     end
     
-    def parse
+    # In-memory Nokogiri.XML object created from file_name
+    def parse 
       case self.class.file_type(@file_name)
       when TCX
         @doc = Guppy::TcxParser.open(@file_name)
@@ -30,7 +31,14 @@ module Guppy
       end
     end
 
-    def activities
+    # Loops through Nokogiri.XML object and 
+    # populates datastructures in current object
+    # calling db.activities again will causes another 
+    # run through the XML parser engine (slow).
+    #
+    # all_activities = @doc.activities
+
+    def activities 
       @doc.activities
     end
 

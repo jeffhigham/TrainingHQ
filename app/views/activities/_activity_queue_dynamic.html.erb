@@ -3,12 +3,18 @@
 <h2>Activity Queue</h2>
     <table>
       <tr>
+        <th>Date Added</th>
         <th>Name</th>
+        <th>File</th>
+        <th>Size</th>
         <th colspan=2>Import Status</th>
       </tr>
 <% @pending_activities.each do |activity| %>
       <tr>
+        <td><%= activity.created_at %></td>
         <td><%= activity.name %></td>
+        <td><%= activity.datafile_file_name %></td>
+        <td><%= (activity.datafile_file_size/1024/1024).to_d %>M</td>
         <td><progress max="100" value="<%= activity.status %>"></progress></td>
         <td><%= button_to 'Delete Activity', activity, method: :delete, data: { confirm: 'Are you sure?' }, :remote => true %></td>
       </tr>
