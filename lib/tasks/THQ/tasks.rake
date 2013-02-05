@@ -209,7 +209,7 @@ namespace :THQ do
       end #activities.each
     end # task
 
-    desc "Calculate lap ride time and inserts into the database"
+  desc "Calculate lap ride time and inserts into the database"
     task :calculate_ride_time => :environment do
       
 

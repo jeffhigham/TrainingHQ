@@ -14,16 +14,18 @@ module Guppy
     attr_accessor :max_speed
     attr_accessor :start_tme
     attr_accessor :total_time
-    attr_accessor :elevation_gain
-    attr_accessor :elevation_loss
+    attr_accessor :elevation_gain_c
+    attr_accessor :elevation_loss_c
     attr_accessor :joules
-    attr_accessor :lap_ride_time
+    attr_accessor :ride_time_c
     attr_accessor :track_points
     
     def initialize
       @track_points = []
       @joules = 0
-      @lap_ride_time = 0
+      @ride_time_c = 0
+      @elevation_loss_c = 0
+      @elevation_gain_c = 0
     end
 
   def total_trackpoints
@@ -46,12 +48,11 @@ module Guppy
         last_time=track_point.time
       end
     end
-
   end
 
   def ride_time
-    load_ride_time if @lap_ride_time == 0
-    @lap_ride_time
+    load_ride_time if @ride_time_c == 0
+    @ride_time_c
   end
 
   def load_ride_time
@@ -66,14 +67,42 @@ module Guppy
       else
         # only increment time if we change distance, move a pedal, or generate a watt.
         if( elapsed(track_point.distance,last_distance) > 0 || track_point.cadence > 0 || track_point.watts > 0 )
-          @lap_ride_time += elapsed(track_point.time,last_time) 
+          @ride_time_c += elapsed(track_point.time,last_time) 
         end
         last_time=track_point.time
         last_distance=track_point.distance
       end
     end
-
   end
+
+  def elevation_gain
+    ( @elevation_gain_c == 0 && @elevation_loss_c == 0 ) && load_elevation_loss_gain
+    @elevation_gain_c
+  end
+
+  def elevation_loss
+    ( @elevation_gain_c == 0 && @elevation_loss_c == 0 ) && load_elevation_loss_gain
+    @elevation_loss_c
+  end
+
+  def load_elevation_loss_gain
+    last_altitude = 0
+    
+    track_points.each do |track_point|
+    
+      if(last_altitude == 0)
+        last_altitude=track_point.altitude
+      else
+        if last_altitude < track_point.altitude
+          @elevation_gain_c += (track_point.altitude - last_altitude)
+        else
+          @elevation_loss_c += (last_altitude - track_point.altitude)
+        end 
+        last_altitude=track_point.altitude
+      end
+    end
+  end
+
 
   def elapsed(current_thing,past_thing)
       current_thing - past_thing

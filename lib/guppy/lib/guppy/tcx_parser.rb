@@ -2,25 +2,6 @@ module Guppy
   
   class TcxParser
 
-    #attr_accessor :activity_elevation_loss
-    #attr_accessor :activity_elevation_gain
-    #attr_accessor :lap_elevation_loss
-    #attr_accessor :lap_elevation_gain
-    #attr_accessor :this_trackpoint_altitude
-    #attr_accessor :last_trackpoint_altitude
-
-    #def self.reset_lap_counters
-    #  @lap_elevation_loss = 0
-    #  @lap_elevation_gain = 0
-    #  @this_trackpoint_altitude = 0
-    #  @last_trackpoint_altitude = 0
-    #end
-
-    #def self.reset_activity_counters
-    #  @activity_elevation_loss = 0
-    #  @activity_elevation_gain = 0
-    #end
-
     def self.open(file)
       tcx_parser = self.new(file)
       tcx_parser.parse
@@ -28,8 +9,6 @@ module Guppy
     end
 
     def initialize(file)
-      # self.reset_activity_counters
-      # self.reset_lap_counters
       @file = file
     end
 
@@ -66,14 +45,7 @@ module Guppy
       activity.activity_date = Time.parse(activity_node.xpath('xmlns:Id', namespaces).inner_text)
 
       activity_node.xpath('xmlns:Lap', namespaces).each do |lap_node|
-
-        ## ADD ##
-        # new_lap = build_lap(lap_node)
-        # activity.xxx = self.some_work(some_data)
-        # ...
-        # activity.laps << new_lap
         activity.laps << build_lap(lap_node)
-      
       end
       
       activity
@@ -94,19 +66,10 @@ module Guppy
       lap.max_cadence = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:MaxBikeCadence', namespaces).inner_text.to_i
       lap.intensity = lap_node.xpath('xmlns:Intensity', namespaces).inner_text.to_s.downcase
 
-      # lap.xxx = self.some_work(some_data)
-
       lap_node.xpath('xmlns:Track/xmlns:Trackpoint', namespaces).each do |track_point_node|
-
-        ## ADD ##
-        # new_trackpoint = build_track_point(track_point_node)
-        # lap.xxx = self.some_work(some_data)
-        # ...
-        # lap.track_points << new_trackpoint
         lap.track_points << build_track_point(track_point_node)
-
       end
-      
+           
       lap
     end
 

@@ -7,8 +7,8 @@ module Guppy
     attr_accessor :unit_id
     attr_accessor :author_name
     attr_accessor :activity_date
-    attr_accessor :elevation_gain
-    attr_accessor :elevation_loss
+    #attr_accessor :elevation_gain
+    #attr_accessor :elevation_loss
     attr_accessor :laps
 
     def initialize
@@ -37,6 +37,14 @@ module Guppy
 
   def distance
     laps.inject(0.0) { |sum,lap| sum + lap.distance }
+  end
+
+  def elevation_gain
+    laps.inject(0.0) { |sum,lap| sum + lap.elevation_gain }
+  end
+
+  def elevation_loss
+    laps.inject(0.0) { |sum,lap| sum + lap.elevation_loss }
   end
 
   end
