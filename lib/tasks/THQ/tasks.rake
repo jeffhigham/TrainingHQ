@@ -125,7 +125,7 @@ namespace :THQ do
 
   desc "Calculate elevation gain and loss for activities in the database"
     task :calculate_elevation_for_existing => :environment do
-
+      return true
       activities = Activity.all
 
       # Calculate lap altitude loss/gain
@@ -171,6 +171,7 @@ namespace :THQ do
 
   desc "Calculate Joules for activities and inserts into the database"
     task :calculate_kj => :environment do
+      return true
       #activities << Activity.find(6)
       activities = Activity.all
       time = 0
@@ -211,7 +212,8 @@ namespace :THQ do
 
   desc "Calculate lap ride time and inserts into the database"
     task :calculate_ride_time => :environment do
-      
+     
+    return true
 
       activities = Activity.all
       time = 0

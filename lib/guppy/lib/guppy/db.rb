@@ -6,6 +6,8 @@ module Guppy
         TCX
       when '.gpx'
         GPX
+      when '.fit'
+        FIT
       else
         raise "Unknown filetype"
       end
@@ -21,22 +23,16 @@ module Guppy
       @file_name = file
     end
     
-    # In-memory Nokogiri.XML object created from file_name
     def parse 
       case self.class.file_type(@file_name)
       when TCX
         @doc = Guppy::TcxParser.open(@file_name)
       when GPX
         @doc = Guppy::GpxParser.open(@file_name)
+      when FIT
+        @doc = Guppy::FitParser.open(@file_name)
       end
     end
-
-    # Loops through Nokogiri.XML object and 
-    # populates datastructures in current object
-    # calling db.activities again will causes another 
-    # run through the XML parser engine (slow).
-    #
-    # all_activities = @doc.activities
 
     def activities 
       @doc.activities

@@ -7,8 +7,6 @@ module Guppy
     attr_accessor :unit_id
     attr_accessor :author_name
     attr_accessor :activity_date
-    #attr_accessor :elevation_gain
-    #attr_accessor :elevation_loss
     attr_accessor :laps
 
     def initialize

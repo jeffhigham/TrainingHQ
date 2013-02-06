@@ -4,16 +4,10 @@ beginning_time = Time.now
 require "~/Sites/rails/TrainingHQ/lib/guppy/lib/guppy.rb" 
 include Guppy
 debug = true
-fit_file_converter = "./Fit2TCX/fit2tcx"
-fit_file = "./Fit2TCX/testfile.fit"
-tcx_file = "/tmp/testfile_out.tcx"
-
-system "#{fit_file_converter} #{fit_file} #{tcx_file}"
-exit if $?.exitstatus > 0
-
+#fit_file = "./Fit2TCX/testfile.fit"
+fit_file = "/tmp/file.tcx"
 file_size = File.stat(fit_file).size/1024
-tcx_data = Guppy::DB.open(tcx_file)
-system "/bin/rm #{tcx_file}"
+tcx_data = Guppy::DB.open(fit_file)
 end_time = Time.now
 puts "\nLoaded/Converted \"#{fit_file} (#{file_size}KB)\" in #{(end_time - beginning_time)*1000} ms\n" if debug
 

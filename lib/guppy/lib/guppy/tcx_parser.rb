@@ -47,7 +47,7 @@ module Guppy
       activity_node.xpath('xmlns:Lap', namespaces).each do |lap_node|
         activity.laps << build_lap(lap_node)
       end
-      
+    
       activity
     end
 
@@ -69,7 +69,7 @@ module Guppy
       lap_node.xpath('xmlns:Track/xmlns:Trackpoint', namespaces).each do |track_point_node|
         lap.track_points << build_track_point(track_point_node)
       end
-           
+      lap.calculate_and_cache_attributes
       lap
     end
 

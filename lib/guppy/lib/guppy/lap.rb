@@ -16,13 +16,13 @@ module Guppy
     attr_accessor :total_time
     attr_accessor :elevation_gain_c
     attr_accessor :elevation_loss_c
-    attr_accessor :joules
+    attr_accessor :joules_c
     attr_accessor :ride_time_c
     attr_accessor :track_points
     
     def initialize
       @track_points = []
-      @joules = 0
+      @joules_c = 0
       @ride_time_c = 0
       @elevation_loss_c = 0
       @elevation_gain_c = 0
@@ -32,81 +32,61 @@ module Guppy
       track_points.count
   end
 
-  def kjoules
-    load_joules if @joules == 0
-    @joules/1000
-  end
-
-  def load_joules
-    last_time = 0
-    track_points.each do |track_point|
-      if(last_time==0)
-        last_time=track_point.time
-      else
-        track_point.joules = track_point.watts*elapsed(track_point.time,last_time)
-        @joules += track_point.joules
-        last_time=track_point.time
-      end
-    end
-  end
-
   def ride_time
-    load_ride_time if @ride_time_c == 0
     @ride_time_c
   end
 
-  def load_ride_time
-    last_time = 0
-    last_distance = 0
-    
-    track_points.each do |track_point|
-    
-      if(last_time==0 || last_distance == 0)
-        last_time=track_point.time
-        last_distance=track_point.distance
-      else
-        # only increment time if we change distance, move a pedal, or generate a watt.
-        if( elapsed(track_point.distance,last_distance) > 0 || track_point.cadence > 0 || track_point.watts > 0 )
-          @ride_time_c += elapsed(track_point.time,last_time) 
-        end
-        last_time=track_point.time
-        last_distance=track_point.distance
-      end
-    end
+  def kjoules
+    @joules_c/1000
   end
 
   def elevation_gain
-    ( @elevation_gain_c == 0 && @elevation_loss_c == 0 ) && load_elevation_loss_gain
     @elevation_gain_c
   end
 
   def elevation_loss
-    ( @elevation_gain_c == 0 && @elevation_loss_c == 0 ) && load_elevation_loss_gain
     @elevation_loss_c
   end
-
-  def load_elevation_loss_gain
-    last_altitude = 0
-    
-    track_points.each do |track_point|
-    
-      if(last_altitude == 0)
-        last_altitude=track_point.altitude
-      else
-        if last_altitude < track_point.altitude
-          @elevation_gain_c += (track_point.altitude - last_altitude)
-        else
-          @elevation_loss_c += (last_altitude - track_point.altitude)
-        end 
-        last_altitude=track_point.altitude
-      end
-    end
-  end
-
 
   def elapsed(current_thing,past_thing)
       current_thing - past_thing
   end
 
+  def calculate_and_cache_attributes
+
+    last_time = 0
+    last_distance = 0
+    last_altitude = 0
+
+    track_points.each do |track_point|
+
+      # Initialize 
+      last_time=track_point.time if last_time == 0
+      last_distance=track_point.distance if last_distance == 0
+      last_altitude=track_point.altitude if last_altitude == 0
+
+      # Joules
+      @joules_c += track_point.watts*elapsed(track_point.time,last_time)
+      
+      # Ride Time
+      if( elapsed(track_point.distance,last_distance) > 0 || track_point.cadence > 0 || track_point.watts > 0 )
+        @ride_time_c += elapsed(track_point.time,last_time) 
+      end
+
+      # Elevation
+      if last_altitude <= track_point.altitude
+        @elevation_gain_c += (track_point.altitude - last_altitude)
+      else
+        @elevation_loss_c += (last_altitude - track_point.altitude)
+      end 
+
+      last_time=track_point.time
+      last_distance=track_point.distance      
+      last_altitude=track_point.altitude
+    
+    end 
+
+  end
+  
   end
 end
