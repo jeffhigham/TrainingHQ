@@ -1,8 +1,9 @@
 class Activity < ActiveRecord::Base
 
-  attr_accessible :activityid, :creator_name, :product_id, :sport, :unit_id, :datafile, 
+  attr_accessible :garmin_activity_id, :creator_name, :product_id, :sport, :unit_id, :datafile, 
                   :author_name, :activity_date, :name, :user_id, :processed, :status, 
-                  :elevation_gain, :elevation_loss, :kjoules
+                  :elevation_gain, :elevation_loss, :kjoules, :total_laps, :total_trackpoints, 
+                  :ride_time, :distance
                   
   has_attached_file :datafile
   has_many :laps, dependent: :destroy
@@ -38,7 +39,7 @@ class Activity < ActiveRecord::Base
   def avg_watts
   	bunch_of_watts = []
   	self.laps.each do |lap|
-  		bunch_of_watts << lap.ave_watts
+  		bunch_of_watts << lap.avg_watts
   	end
   	return (bunch_of_watts.sum/bunch_of_watts.count)
   end
@@ -46,7 +47,7 @@ class Activity < ActiveRecord::Base
   def avg_heart_rate
     bunch_of_hr = []
     self.laps.each do |lap|
-      bunch_of_hr << lap.ave_heart_rate
+      bunch_of_hr << lap.avg_heart_rate
     end
     return (bunch_of_hr.sum/bunch_of_hr.count)
   end
@@ -54,7 +55,7 @@ class Activity < ActiveRecord::Base
   def avg_cadence
     bunch_of_cadence = []
     self.laps.each do |lap|
-      bunch_of_cadence << lap.ave_cadence
+      bunch_of_cadence << lap.avg_cadence
     end
     return (bunch_of_cadence.sum/bunch_of_cadence.count)
   end

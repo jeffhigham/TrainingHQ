@@ -10,7 +10,7 @@ class CreateHrZones < ActiveRecord::Migration
       t.integer :z5
       t.integer :z6
       t.integer :z7
-      t.boolean :enabled
+      t.boolean :enabled, :default => true
 
       t.timestamps
     end

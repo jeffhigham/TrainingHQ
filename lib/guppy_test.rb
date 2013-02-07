@@ -1,11 +1,10 @@
 #!/media/internalcrypt/jeffh/.rvm/bin/ruby 
 
 beginning_time = Time.now
-require "~/Sites/rails/TrainingHQ/lib/guppy/lib/guppy.rb" 
+require "./guppy/lib/guppy.rb" 
 include Guppy
 debug = true
-#fit_file = "./Fit2TCX/testfile.fit"
-fit_file = "/tmp/file.tcx"
+fit_file = "/Volumes/GARMIN/Garmin/Activities/2013-02-06-07-21-14.fit"
 file_size = File.stat(fit_file).size/1024
 tcx_data = Guppy::DB.open(fit_file)
 end_time = Time.now

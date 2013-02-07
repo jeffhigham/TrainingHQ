@@ -1,7 +1,7 @@
 class Lap < ActiveRecord::Base
   attr_accessible :avg_heart_rate, :avg_watts, :max_watts, :avg_cadence, :max_cadence, :calories, 
                   :distance, :intensity, :max_heart_rate, :avg_speed, :max_speed, :start_time, :total_time,
-                  :elevation_gain, :elevation_loss, :kjoules, :ride_time
+                  :elevation_gain, :elevation_loss, :kjoules, :ride_time, :start_time, :total_trackpoints
 
   belongs_to :activity
   has_many :trackpoints, dependent: :destroy

@@ -37,7 +37,7 @@ module Guppy
     def build_activity(activity_node)
       activity = Activity.new
       activity.sport = activity_node['Sport']
-      activity.id = activity_node.xpath('xmlns:Id', namespaces).inner_text.to_s
+      activity.garmin_activity_id = activity_node.xpath('xmlns:Id', namespaces).inner_text.to_s
       activity.creator_name = activity_node.xpath('xmlns:Creator/xmlns:Name', namespaces).inner_text.to_s
       activity.unit_id = activity_node.xpath('xmlns:Creator/xmlns:UnitId', namespaces).inner_text.to_s
       activity.product_id = activity_node.xpath('xmlns:Creator/xmlns:ProductID', namespaces).inner_text.to_s

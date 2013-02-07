@@ -1,6 +1,6 @@
 module Guppy
   class Activity
-    attr_accessor :id
+    attr_accessor :garmin_activity_id
     attr_accessor :creator_name
     attr_accessor :product_id
     attr_accessor :sport
@@ -43,6 +43,25 @@ module Guppy
 
   def elevation_loss
     laps.inject(0.0) { |sum,lap| sum + lap.elevation_loss }
+  end
+
+  def to_hash
+      {
+        garmin_activity_id: garmin_activity_id,
+        creator_name: creator_name,
+        product_id: product_id,
+        sport: sport,
+        unit_id: unit_id,
+        author_name: author_name,
+        activity_date: activity_date,
+        total_laps: total_laps,
+        kjoules: kjoules,
+        ride_time: ride_time,
+        total_trackpoints: total_time,
+        distance: distance,
+        elevation_gain: elevation_gain,
+        elevation_loss: elevation_loss
+      }
   end
 
   end

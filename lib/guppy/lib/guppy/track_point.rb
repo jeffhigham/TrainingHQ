@@ -12,17 +12,26 @@ module Guppy
     attr_accessor :speed
     attr_accessor :joules
 
+    @@attributes = [ :altitude, :cadence, :distance, :heart_rate,
+                     :latitude, :longitude, :time, :watts,
+                     :speed, :joules ]
+
+    attr_accessor *@@attributes
+
     def initialize
-      @altitude   = 0
-      @cadence    = 0
-      @distance   = 0
-      @heart_rate = 0
-      @latitude   = 0
-      @longitude  = 0
-      @time       = 0
-      @watts      = 0
-      @speed      = 0
-      @joules     = 0  
+      zero_all_attrs
+    end
+
+    def zero_all_attrs
+      @@attributes.each do |a|
+        instance_variable_set "@#{a}", 0
+      end
+    end
+
+    def to_hash
+     @@attributes.each_with_object({}) { 
+        |a,h| h[a] = instance_variable_get "@#{a}" 
+      }
     end
     
   end
