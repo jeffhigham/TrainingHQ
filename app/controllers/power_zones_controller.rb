@@ -4,13 +4,13 @@ class PowerZonesController < ApplicationController
   def index
     #@power_zones = PowerZone.all
     @power_zones = PowerZone.where(:user_id => current_user.id)
-
     respond_to do |format|
       format.html # index.html.erb
       format.js
       format.json { render json: @power_zones }
     end
   end
+
 
   # GET /power_zones/1
   # GET /power_zones/1.json

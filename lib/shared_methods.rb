@@ -11,7 +11,11 @@ module SharedMethods
 	    minutes = (time_in_seconds/60 - hours * 60).to_i
 	    seconds = (time_in_seconds - (minutes * 60 + hours * 3600))
 
-	    return sprintf("%02d:%02d:%02d\n", hours, minutes, seconds)
+	    if hours == 0 # 
+	    	return sprintf("%02d:%02d\n", minutes, seconds)
+	    else
+	    	return sprintf("%02d:%02d:%02d\n", hours, minutes, seconds)
+	    end
 	end
 
 	def distance_meters_to_feet(meters)
@@ -21,5 +25,9 @@ module SharedMethods
 	def altitude_meters_to_feet(altitude)
 	  return (altitude * 3.281).round(1)
 	end
+
+	def elapsed(current_thing,past_thing)
+      current_thing - past_thing
+  end
 
 end

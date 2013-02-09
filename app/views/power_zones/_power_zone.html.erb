@@ -1,4 +1,3 @@
-<% if power_zone.enabled %>
 <table>
 <tr>
     <th colspan=6>Power Zones</th>
@@ -17,8 +16,8 @@
     <td>Active Recovery</td>
     <td><%= power_zone.z1  %></td>
     <td><%= power_zone.z2-1 %></td>
-    <td>0:0</td>
-    <td>0%</td>
+    <td><%= power_zone_data.z1_time %></td>
+    <td><%= power_zone_data.z1_percent %></td>
 </tr>
 
 <tr>
@@ -26,8 +25,8 @@
     <td>Endurance</td>
     <td><%= power_zone.z2  %></td>
     <td><%= power_zone.z3-1 %></td>
-    <td>0:0</td>
-    <td>0%</td>
+    <td><%= power_zone_data.z2_time %></td>
+    <td><%= power_zone_data.z2_percent %></td>
 </tr>
 
 <tr>
@@ -35,8 +34,8 @@
     <td>Tempo</td>
     <td><%= power_zone.z3  %></td>
     <td><%= power_zone.z4-1 %></td>
-    <td>0:0</td>
-    <td>0%</td>
+    <td><%= power_zone_data.z3_time %></td>
+    <td><%= power_zone_data.z3_percent %></td>
 </tr>
 
 <tr>
@@ -44,8 +43,8 @@
     <td>Threshold</td>
     <td><%= power_zone.z4  %></td>
     <td><%= power_zone.z5-1 %></td>
-    <td>0:0</td>
-    <td>0%</td>
+    <td><%= power_zone_data.z4_time %></td>
+    <td><%= power_zone_data.z4_percent %></td>
 </tr>
 
 <tr>
@@ -53,8 +52,8 @@
     <td>VO2Max</td>
     <td><%= power_zone.z5  %></td>
     <td><%= power_zone.z6-1 %></td>
-    <td>0:0</td>
-    <td>0%</td>
+    <td><%= power_zone_data.z5_time %></td>
+    <td><%= power_zone_data.z5_percent %></td>
 </tr>
 
 <tr>
@@ -62,9 +61,8 @@
     <td>Anaerobic</td>
     <td><%= power_zone.z6  %></td>
     <td>Max</td>
-    <td>0:0</td>
-    <td>0%</td>
+    <td><%= power_zone_data.z6_time %></td>
+    <td><%= power_zone_data.z6_percent %></td>
 </tr>
 
 </table>
-<% end %>
