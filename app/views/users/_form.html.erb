@@ -1,3 +1,4 @@
+<h2>User Settings</h2>
 <%= form_for(@user, :html => { :remote => false } ) do |f| %>
   <% if @user.errors.any? %>
     <div id="error_explanation">
@@ -26,13 +27,15 @@
   <div class="field">
     <%= f.label :password_confirmation %>
     <%= f.password_field :password_confirmation %>
-  </div>
+  </div><br/>
 
   <div class="field">
   <%= f.file_field :avatar %>
-  </div>
+  </div></br>
 
   <div class="actions">
-    <%= f.submit %>
-  </div>
+    <%= f.submit %> 
+  </div><br/>
 <% end %>
+  <%= button_to "hide", hide_user_edit_path , :remote => true, :method => "get" %>
+

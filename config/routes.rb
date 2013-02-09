@@ -20,9 +20,8 @@ TrainingHQ::Application.routes.draw do
   get "hide_activity_queue" => "activities#hide_activity_queue", :as =>"hide_activity_queue"
   get "update_activity_queue_realtime" => "activities#update_activity_queue_realtime", 
       :as =>"update_activity_queue_realtime"
+  get "hide_user_edit" => "users#hide_edit", :as =>"hide_user_edit"
 
-
-  
 
   root :to => "users#index"
 
