@@ -1,0 +1,84 @@
+<table>
+<tr>
+    <th colspan=6>Heart Rate Zones</th>
+</tr>    
+<tr>
+    <th>Zone</th>
+    <th>Description</th>
+    <th>Low (watts)</th>
+    <th>High (watts)</th>
+    <th>Time</th>
+    <th>%</th>
+</tr>
+<tr>
+    <td>Z0</td>
+    <td>Resting</td>
+    <td><%= hr_zone.z0  %></td>
+    <td><%= hr_zone.z1-1 %></td>
+    <td><%= hr_zone_data.z0_time %></td>
+    <td><%= hr_zone_data.z0_percent %></td>
+</tr>
+<tr>
+    <td>Z1</td>
+    <td>Active Recovery</td>
+    <td><%= hr_zone.z1  %></td>
+    <td><%= hr_zone.z2-1 %></td>
+    <td><%= hr_zone_data.z1_time %></td>
+    <td><%= hr_zone_data.z1_percent %></td>
+</tr>
+
+<tr>
+    <td>Z2</td>
+    <td>Endurance</td>
+    <td><%= hr_zone.z2  %></td>
+    <td><%= hr_zone.z3-1 %></td>
+    <td><%= hr_zone_data.z2_time %></td>
+    <td><%= hr_zone_data.z2_percent %></td>
+</tr>
+
+<tr>
+    <td>Z3</td>
+    <td>Tempo</td>
+    <td><%= hr_zone.z3  %></td>
+    <td><%= hr_zone.z4-1 %></td>
+    <td><%= hr_zone_data.z3_time %></td>
+    <td><%= hr_zone_data.z3_percent %></td>
+</tr>
+
+<tr>
+    <td>Z4</td>
+    <td>Threshold</td>
+    <td><%= hr_zone.z4  %></td>
+    <td><%= hr_zone.z5-1 %></td>
+    <td><%= hr_zone_data.z4_time %></td>
+    <td><%= hr_zone_data.z4_percent %></td>
+</tr>
+
+<tr>
+    <td>Z5</td>
+    <td>VO2Max</td>
+    <td><%= hr_zone.z5  %></td>
+    <td><%= hr_zone.z6-1 %></td>
+    <td><%= hr_zone_data.z5_time %></td>
+    <td><%= hr_zone_data.z5_percent %></td>
+</tr>
+
+<tr>
+    <td>Z6</td>
+    <td>Anaerobic</td>
+    <td><%= hr_zone.z6  %></td>
+    <td>Max</td>
+    <td><%= hr_zone_data.z6_time %></td>
+    <td><%= hr_zone_data.z6_percent %></td>
+</tr>
+
+<tr>
+    <td>Z7</td>
+    <td>Eye Bleading</td>
+    <td><%= hr_zone.z7  %></td>
+    <td>Max</td>
+    <td><%= hr_zone_data.z7_time %></td>
+    <td><%= hr_zone_data.z7_percent %></td>
+</tr>
+
+</table>

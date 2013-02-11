@@ -15,7 +15,8 @@
 %>
 <%= render  :partial => current_user.power_zones.where(:enabled => true).first, 
 						:locals => { :power_zone_data => @power_zone_data } %><br/>
-<%= render 'heart_rate_zones' %><br/>
+<%= render  :partial => current_user.hr_zones.where(:enabled => true).first, 
+						:locals => { :hr_zone_data => @hr_zone_data } %><br/>
 <%= render 'graph_data' %><br/>
 
 <%= link_to 'Edit', edit_user_activity_path(@activity) %> |

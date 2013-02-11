@@ -6,6 +6,7 @@ class HrZonesController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
+      format.js
       format.json { render json: @hr_zones }
     end
   end
@@ -25,9 +26,11 @@ class HrZonesController < ApplicationController
   # GET /hr_zones/new.json
   def new
     @hr_zone = HrZone.new
+    @hr_zones = HrZone.where(:user_id => current_user.id)
 
     respond_to do |format|
       format.html # new.html.erb
+      format.js
       format.json { render json: @hr_zone }
     end
   end
@@ -41,11 +44,13 @@ class HrZonesController < ApplicationController
   # POST /hr_zones.json
   def create
     @hr_zone = HrZone.new(params[:hr_zone])
-
+    @hr_zone.user_id=current_user.id
+    @hr_zones = HrZone.where(:user_id => current_user.id)
     respond_to do |format|
       if @hr_zone.save
-        format.html { redirect_to @hr_zone, notice: 'Hr zone was successfully created.' }
-        format.json { render json: @hr_zone, status: :created, location: @hr_zone }
+        #format.html { redirect_to @hr_zone, notice: 'Hr zone was successfully created.' }
+        format.js  { render action: "index" }
+        #format.json { render json: @hr_zone, status: :created, location: @hr_zone }
       else
         format.html { render action: "new" }
         format.json { render json: @hr_zone.errors, status: :unprocessable_entity }
@@ -60,8 +65,10 @@ class HrZonesController < ApplicationController
 
     respond_to do |format|
       if @hr_zone.update_attributes(params[:hr_zone])
-        format.html { redirect_to @hr_zone, notice: 'Hr zone was successfully updated.' }
-        format.json { head :no_content }
+        @hr_zone = HrZone.where(:user_id => current_user.id)
+        #format.html { redirect_to @hr_zone, notice: 'Hr zone was successfully updated.' }
+        format.js  { render action: "index" }
+        #format.json { head :no_content }
       else
         format.html { render action: "edit" }
         format.json { render json: @hr_zone.errors, status: :unprocessable_entity }
@@ -74,10 +81,11 @@ class HrZonesController < ApplicationController
   def destroy
     @hr_zone = HrZone.find(params[:id])
     @hr_zone.destroy
-
+    @hr_zones = HrZone.where(:user_id => current_user.id)
     respond_to do |format|
-      format.html { redirect_to hr_zones_url }
-      format.json { head :no_content }
+      format.js  { render action: "index" }
+      #format.html { redirect_to hr_zones_url }
+      #format.json { head :no_content }
     end
   end
 end

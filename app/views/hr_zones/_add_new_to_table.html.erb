@@ -1,0 +1,45 @@
+<%= form_for(@hr_zone, :remote => true) do |f| %>
+<table id="hr_zones">
+  <tr>
+    <th>Date</th>
+    <th>Resting(0)</th>
+    <th>Recovery(1)</th>
+    <th>Aerobic(2)</th>
+    <th>Tempo(3)</th>
+    <th>Threshold(4)</th>
+    <th>V02 Max(5)</th>
+    <th>AWC(6)</th>
+    <th>AWC(7)</th>
+    <th colspan=3></th>
+
+  </tr>
+
+	<% @hr_zones.each do |hr_zone| %>
+  <tr>
+    <td><%= hr_zone.created_at %></td>
+    <td><%= hr_zone.z0 %></td>
+    <td><%= hr_zone.z1 %></td>
+    <td><%= hr_zone.z2 %></td>
+    <td><%= hr_zone.z3 %></td>
+    <td><%= hr_zone.z4 %></td>
+    <td><%= hr_zone.z5 %></td>
+    <td><%= hr_zone.z6 %></td>
+    <td><%= hr_zone.z7 %></td>
+    <td><%= link_to 'Edit', edit_hr_zone_path(hr_zone) %></td>
+    <td><%= link_to 'Destroy', hr_zone, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+	<% end %>
+	<tr>
+    <td></td>
+    <td><%= f.text_field :z0, :size => 3  %></td>
+    <td><%= f.text_field :z1, :size => 3  %></td>
+    <td><%= f.text_field :z2, :size => 3 %></td>
+    <td><%= f.text_field :z3, :size => 3 %></td>
+    <td><%= f.text_field :z4, :size => 3 %></td>
+    <td><%= f.text_field :z5, :size => 3 %></td>
+    <td><%= f.text_field :z6, :size => 3 %></td>
+    <td><%= f.text_field :z7, :size => 3 %></td>
+    <td colspan=2><%= f.submit %></td> 
+	</tr>
+</table>
+<% end %>

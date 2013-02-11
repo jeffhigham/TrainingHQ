@@ -38,6 +38,8 @@ class ActivitiesController < ApplicationController
     @activity = Activity.find(params[:id])
     @power_zone_data = PowerZone.where({:user_id => current_user.id, :enabled => true }).first
     @power_zone_data.set_zones_for(@activity)
+    @hr_zone_data = HrZone.where({:user_id => current_user.id, :enabled => true }).first
+    @hr_zone_data.set_zones_for(@activity)
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @activity }
