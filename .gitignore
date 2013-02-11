@@ -15,3 +15,4 @@
 /tmp
 *.tcx
 *.gz
+/public/system/*
