@@ -14,5 +14,9 @@
 /log/*.log
 /tmp
 *.tcx
+*.gxp
+*.fit
+*.srm
 *.gz
+*.sql
 /public/system/*
