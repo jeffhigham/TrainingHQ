@@ -13,6 +13,7 @@
     <th>V02 Max(5)</th>
     <th>AWC(6)</th>
     <th>AWC+(7)</th>
+    <th>Enabled</th>
     <th colspan=2></th>
 
   </tr>
@@ -28,6 +29,7 @@
     <td><%= hr_zone.z5 %></td>
     <td><%= hr_zone.z6 %></td>
     <td><%= hr_zone.z7 %></td>
+    <td><%= hr_zone.enabled %></td>
     <td><%= link_to 'Edit', edit_hr_zone_path(hr_zone), :remote => true %></td>
     <td><%= link_to 'Destroy', hr_zone, method: :delete, data: { confirm: 'Are you sure?' }, :remote => true %></td>
   </tr>

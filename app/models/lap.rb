@@ -55,19 +55,19 @@ class Lap < ActiveRecord::Base
   	return min_cadence
   end
 
-  def min_power_zone
-  	return power_zone(self.min_watts)
-  end
+  #def min_power_zone
+  #	return power_zone(self.min_watts)
+  #end
 
-  def avg_power_zone
-  	return power_zone(self.avg_watts)
-  end
+  #def avg_power_zone
+  #	return power_zone(self.avg_watts)
+  #end
 
-  def max_power_zone
-  	return power_zone(self.max_watts)
-  end
+  #def max_power_zone
+  #	return power_zone(self.max_watts)
+  #end
 
-    def elevation_loss_feet
+  def elevation_loss_feet
     return distance_meters_to_feet(self.elevation_loss)
   end
 
@@ -83,23 +83,23 @@ class Lap < ActiveRecord::Base
   	return distance_meters_to_feet(self.altitude)
   end
 
-	def power_zone_ranges
-		z1 = (0..152)
-  	z2 = (153..208)
-  	z3 = (209..250)  		
-  	z4 = (251..292)
- 		z5 = (293..234)
- 		z6 = (235..417)
-  	z7 = (418..2000)
-  	return [ z1, z2, z3, z4, z5, z6, z7]
-	end
+	#def power_zone_ranges
+	#	z1 = (0..152)
+  #	z2 = (153..208)
+  #	z3 = (209..250)  		
+  #	z4 = (251..292)
+ 	#	z5 = (293..234)
+ 	#	z6 = (235..417)
+  #	z7 = (418..2000)
+  #	return [ z1, z2, z3, z4, z5, z6, z7]
+	#end
 
-  def power_zone(watts)
-   	power_zones = self.power_zone_ranges
-  	power_zones.each do |zone_range|
-  		return power_zones.index(zone_range)+1 if zone_range.include?(watts)
-  	end
-  end
+  #def power_zone(watts)
+  # 	power_zones = self.power_zone_ranges
+  #	  power_zones.each do |zone_range|
+  #		return power_zones.index(zone_range)+1 if zone_range.include?(watts)
+  # 	end
+  #end
 
   def total_time_formatted
       return time_formatted(total_time)

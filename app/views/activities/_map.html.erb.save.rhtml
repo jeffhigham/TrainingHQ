@@ -1,0 +1,116 @@
+
+<canvas id="Activity_Graph" width="900px" height="350" style="background:#FFF; text-color:#FFF">[No canvas support]</canvas>
+<br/>
+
+
+<%
+    power_color = "#003399"
+    hr_color = "#CCCC00"
+    alt_color = "#990099"
+    cadence_color = "#FF9900"
+%>
+    <script>
+        window.onload = function ()
+        {
+            var gutterLeft = 160;
+            var gutterRight = 75;
+            var gutterTop   = 25;
+
+            var power = new RGraph.Line('Activity_Graph', [<%= @activity.power_numbers * ","  %>]);
+            power.Set('ymax', <%= @activity.power_numbers.max %>);
+            power.Set('hmargin', 5);
+            power.Set('gutter.right', gutterRight);
+            power.Set('gutter.left', gutterLeft);
+            power.Set('gutter.top', gutterTop);
+            power.Set('labels', ['0', '<%= @activity.total_time_formatted %>']);
+            power.Set('colors', [ '<%= power_color %>', '<%= hr_color %>', '<%= alt_color %>', '<%= cadence_color %>']);
+            power.Set('key', ['Power(w)', 'Heart Rate(bpm)', 'Altitude(ft)', 'Cadence(rpm)']);
+            power.Set('key.position', 'gutter');
+            power.Set('key.position.gutter.boxed', false);
+            power.Set('key.position.x', 275);
+            power.Set('noaxes', true);
+            power.Set('ylabels', false);
+            power.Draw();
+    
+            var heart_rate = new RGraph.Line('Activity_Graph', [<%= @activity.heart_rate_numbers * ","  %>]);
+            heart_rate.Set('ymax', <%= @activity.heart_rate_numbers.max %>);
+            heart_rate.Set('background.grid', false);
+            heart_rate.Set('colors', ['<%= hr_color %>']);
+            heart_rate.Set('hmargin', 5);
+            heart_rate.Set('gutter.right', gutterRight);
+            heart_rate.Set('gutter.left', gutterLeft);
+            heart_rate.Set('gutter.top', gutterTop);
+            heart_rate.Set('ylabels', false);
+            heart_rate.Set('noaxes', true);
+            heart_rate.Draw();
+
+            var altitude = new RGraph.Line('Activity_Graph', [<%= @activity.altitude_numbers * ","  %>]);
+            altitude.Set('ymax', <%= @activity.altitude_numbers.max %>);
+            altitude.Set('background.grid', false);
+            altitude.Set('colors', ['<%= alt_color %>']);
+            altitude.Set('hmargin', 5);
+            altitude.Set('gutter.right', gutterRight);
+            altitude.Set('gutter.left', gutterLeft);
+            altitude.Set('gutter.top', gutterTop);
+            altitude.Set('ylabels', false);
+            altitude.Set('noaxes', true);
+            altitude.Draw();
+    
+            var cadence = new RGraph.Line('Activity_Graph', [<%= @activity.cadence_numbers * ","  %>]);
+            cadence.Set('ymax', <%= @activity.cadence_numbers.max %>);
+            cadence.Set('background.grid', false);
+            cadence.Set('ylabels', false);
+            cadence.Set('noaxes', true);
+            cadence.Set('colors', ['<%= cadence_color %>']);
+            cadence.Set('hmargin', 5);
+            cadence.Set('gutter.right', gutterRight);
+            cadence.Set('gutter.left', gutterLeft);
+            cadence.Set('gutter.top', gutterTop);    
+    
+    
+            myFunc = function ()
+            {
+                RGraph.DrawAxes(power, {
+                                        'axis.x': power.canvas.width - gutterRight,
+                                        'axis.color': '<%= power_color %>',
+                                        'axis.text.color': '<%= power_color %>',
+                                        'axis.max': <%= @activity.power_numbers.max %>,
+                                        'axis.min': 0,
+                                        'axis.align': 'right'
+                                       });
+                RGraph.DrawAxes(heart_rate, {
+                                        'axis.x': 100,
+                                        'axis.y': 25,
+                                        'axis.color': '<%= hr_color %>',
+                                        'axis.text.color': '<%= hr_color %>',
+                                        'axis.max': <%= @activity.heart_rate_numbers.max %>
+                                       });
+                RGraph.DrawAxes(altitude, {
+                                        'axis.x': 68,
+                                        'axis.y': 25,
+                                        'axis.color': '<%= alt_color %>',
+                                        'axis.text.color': '<%= alt_color %>',
+                                        'axis.max': <%= @activity.altitude_numbers.max %>
+                                       });
+                RGraph.DrawAxes(cadence, {
+                                        'axis.x': 25,
+                                        'axis.y': 25,
+                                        'axis.color': '<%= cadence_color %>',
+                                        'axis.text.color': '<%= cadence_color %>',
+                                        'axis.max': <%= @activity.cadence_numbers.max %>
+                                       });
+            };
+            RGraph.AddCustomEventListener(cadence, 'ondraw', myFunc);
+            cadence.Draw();
+        }
+    </script>
+
+    <br/>
+
+
+
+<%= gmaps({
+        "map_options" => { "type" => "TERRAIN" },
+        "polylines"    => { "data" => @activity.map_data , "options" => { "strokeColor" => "#FF9900", "strokeOpacity" => 1, "strokeWeight" => 2 } }
+     })
+ %>

@@ -12,9 +12,9 @@ module SharedMethods
 	    seconds = (time_in_seconds - (minutes * 60 + hours * 3600))
 
 	    if hours == 0 # 
-	    	return sprintf("%02d:%02d\n", minutes, seconds)
+	    	return sprintf("%02d:%02d", minutes, seconds)
 	    else
-	    	return sprintf("%02d:%02d:%02d\n", hours, minutes, seconds)
+	    	return sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 	    end
 	end
 

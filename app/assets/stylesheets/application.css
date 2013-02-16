@@ -19,8 +19,13 @@ body {
 }
 
 nav, table th {    
-    background-color: #333;
+    background-color: #666;
     color: #FFF;
+}
+
+nav {
+    font-size: 14px;
+    width: 90%;
 }
 
 a {
@@ -44,10 +49,16 @@ a:hover {
 	font-weight: bold;
 }
 
+tr:nth-child(even) {
+    background-color: #333;
+}
+
 table
 {
-width:90%;
-border-collapse:collapse;
+    width:90%;
+    border-collapse:collapse;
+    *border-collapse: collapse; /* IE7 and lower */
+    border-spacing: 0; 
 }
 
 table td, table th 
@@ -67,14 +78,10 @@ border:1px solid #FFF;
 
 }
 
- tr:hover {
+
+tr:hover {
     background-color: #336699;
     color: #FFF;
-}
-
-table {
-    *border-collapse: collapse; /* IE7 and lower */
-    border-spacing: 0; 
 }
 
 th:first-child {

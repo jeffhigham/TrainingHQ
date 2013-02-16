@@ -2,7 +2,8 @@ class HrZonesController < ApplicationController
   # GET /hr_zones
   # GET /hr_zones.json
   def index
-    @hr_zones = HrZone.all
+    #@hr_zones = HrZone.all
+    @hr_zones = HrZone.where(:user_id => current_user.id)
 
     respond_to do |format|
       format.html # index.html.erb

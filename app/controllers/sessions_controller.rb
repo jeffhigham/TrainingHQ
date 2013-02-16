@@ -11,7 +11,7 @@ class SessionsController < ApplicationController
       if user.is_admin?
         redirect_to users_path, :notice => "Logged in as an Admin!"
       else
-        redirect_to user_path(user), :notice => "Logged in as a regular Joe!"
+        redirect_to user_activities_path(user), :notice => "Logged in as a regular Joe!"
       end
     else
       redirect_to login_path, :notice => "Invalid email or password"

@@ -10,6 +10,7 @@
     <th>V02 Max(5)</th>
     <th>AWC(6)</th>
     <th>AWC(7)</th>
+    <th>Enabled</th>
     <th colspan=3></th>
 
   </tr>
@@ -25,6 +26,7 @@
     <td><%= hr_zone.z5 %></td>
     <td><%= hr_zone.z6 %></td>
     <td><%= hr_zone.z7 %></td>
+    <td><%= hr_zone.enabled %></td>
     <td><%= link_to 'Edit', edit_hr_zone_path(hr_zone) %></td>
     <td><%= link_to 'Destroy', hr_zone, method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
@@ -39,6 +41,7 @@
     <td><%= f.text_field :z5, :size => 3 %></td>
     <td><%= f.text_field :z6, :size => 3 %></td>
     <td><%= f.text_field :z7, :size => 3 %></td>
+    <td><%= f.check_box :enabled %></td>
     <td colspan=2><%= f.submit %></td> 
 	</tr>
 </table>

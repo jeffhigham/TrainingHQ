@@ -11,6 +11,7 @@
     <th>Threshold(4)</th>
     <th>V02 Max(5)</th>
     <th>AWC(6)</th>
+    <th>Enabled</th>
     <th colspan=2></th>
 
   </tr>
@@ -24,6 +25,7 @@
     <td><%= power_zone.z4 %></td>
     <td><%= power_zone.z5 %></td>
     <td><%= power_zone.z6 %></td>
+     <td><%= power_zone.enabled %></td>
     <td><%= link_to 'Edit', edit_power_zone_path(power_zone), :remote => true %></td>
     <td><%= link_to 'Destroy', power_zone, method: :delete, data: { confirm: 'Are you sure?' }, :remote => true %></td>
   </tr>

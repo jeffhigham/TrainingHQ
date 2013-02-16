@@ -25,24 +25,36 @@ class ActivitiesController < ApplicationController
   # GET /activities.json
   def index
     @user = current_user
-    @activities = Activity.where({processed: 1, user_id: current_user.id})
+    @activities = Activity.where({processed: 1, user_id: current_user.id}).order('activity_date')
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @activities }
     end
   end
 
-  # GET /activities/1
-  # GET /activities/1.json
   def show
     @activity = Activity.find(params[:id])
-    @power_zone_data = PowerZone.where({:user_id => current_user.id, :enabled => true }).first
-    @power_zone_data.set_zones_for(@activity)
-    @hr_zone_data = HrZone.where({:user_id => current_user.id, :enabled => true }).first
-    @hr_zone_data.set_zones_for(@activity)
+    #@power_zone_data = PowerZone.where({:user_id => current_user.id, :enabled => true }).first
+    #@power_zone_data.set_zones_for(@activity)
+    #@hr_zone_data = HrZone.where({:user_id => current_user.id, :enabled => true }).first
+    #@hr_zone_data.set_zones_for(@activity)
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @activity }
+    end
+  end
+
+  def summary # tabular summary
+    @activity = Activity.find(params[:id])
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def map # map and graph data
+    @activity = Activity.find(params[:id])
+    respond_to do |format|
+      format.js
     end
   end
 

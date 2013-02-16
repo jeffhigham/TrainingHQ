@@ -8,6 +8,7 @@
     <th>Threshold(4)</th>
     <th>V02 Max(5)</th>
     <th>AWC(6)</th>
+    <th>Enabled</th>
     <th colspan=3></th>
 
   </tr>
@@ -21,6 +22,8 @@
     <td><%= power_zone.z4 %></td>
     <td><%= power_zone.z5 %></td>
     <td><%= power_zone.z6 %></td>
+    <td><%= power_zone.enabled %></td>
+
     <td><%= link_to 'Edit', edit_power_zone_path(power_zone) %></td>
     <td><%= link_to 'Destroy', power_zone, method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
@@ -33,6 +36,7 @@
     <td><%= f.text_field :z4, :size => 3 %></td>
     <td><%= f.text_field :z5, :size => 3 %></td>
     <td><%= f.text_field :z6, :size => 3 %></td>
+    <td><%= f.check_box :enabled, :size => 3 %></td>
     <td colspan=2><%= f.submit %></td> 
 	</tr>
 </table>

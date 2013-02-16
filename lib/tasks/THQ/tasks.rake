@@ -28,9 +28,7 @@ namespace :THQ do
                 puts "done.\n"
 
             end
-
-
-
+            db_activity.update_attributes({:status => "100", :processed => true})
         end
 
   end #desc
