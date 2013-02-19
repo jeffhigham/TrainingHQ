@@ -58,6 +58,13 @@ class ActivitiesController < ApplicationController
     end
   end
 
+  def graph_data
+    @activity = Activity.find(params[:id])
+    respond_to do |format|
+      format.js
+    end
+  end
+
   # GET /activities/new
   # GET /activities/new.json
   def new

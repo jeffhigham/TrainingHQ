@@ -8,7 +8,8 @@
 <br/>
 <nav id="activity_nav">
 	<a href="#summary">Summary</a> |
-	<a href="#graph">Graphs</a> |
+	<a href="#map">Map</a> |
+	<a href="#graph">Laps</a> |
 	<a>Power</a> |
 	<a>HR</a> |
 	<a>Edit</a>
@@ -17,17 +18,21 @@
 <br/>
 <br/>
 
-<div id="graph" class="activity_content">
-	<%= render 'graph' %>
+<div id="summary" class="activity_content">
+	<%= 
+	 render 'summary' 
+	%>
+	<%= 
+	render 'graph' 
+	%>
 </div>
 
-<div id="summary" class="activity_content">
-<%= render 'summary' %>
-</div>
+<%= render 'map' %>
 
 
 
 <script>
+
 	$(function(){
  
     function contentSwitcher(settings){
@@ -62,5 +67,5 @@
         });
     }
     contentSwitcher();
-});
+}); 
 </script>

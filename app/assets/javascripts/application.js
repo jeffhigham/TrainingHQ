@@ -13,4 +13,5 @@
 //= require jquery
 //= require jquery-ui
 //= require jquery_ujs
-//= require_tree .
+//= require_tree ./gmaps4rails
+//= require_tree ./RGraph/libraries

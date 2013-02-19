@@ -1,0 +1,195 @@
+ <%
+    power_color = "#FF9900"
+    hr_color = "#ff5600"
+    alt_color = "#7fff00"
+    cadence_color = "#0f8bff"
+    power_numbers = @activity.power_numbers
+    heart_rate_numbers = @activity.heart_rate_numbers
+    cadence_numbers = @activity.cadence_numbers
+    altitude_numbers = @activity.altitude_numbers
+%>
+
+var power_numbers = <%= power_numbers %>;
+
+var heart_rate_numbers = <%= heart_rate_numbers %> ;
+
+var cadence_numbers = <%= cadence_numbers %>;
+
+var altitude_numbers = <%= altitude_numbers  %>;
+
+var power_numbers_max = <%= power_numbers.max %>;
+var power_numbers_min = <%= power_numbers.min %>;
+
+var heart_rate_numbers_max=<%= heart_rate_numbers.max %>;
+var heart_rate_numbers_min=<%= heart_rate_numbers.min %>;
+
+var cadence_numbers_max = <%= cadence_numbers.max %>;
+var cadence_numbers_min = <%= cadence_numbers.min %>;
+
+var altitude_numbers_max=<%= altitude_numbers.max %>;
+var altitude_numbers_min=<%= altitude_numbers.min %>;
+
+        var gutterLeft = 120;
+        var gutterRight = 120;
+        var gutterTop   = 25;
+
+        window.onload = function() {
+            drawEverything()
+        }
+
+        function resetGraph(){
+            RGraph.Reset(document.getElementById('all_ride_data'));
+        }
+
+        function drawLabels(){
+            return true;
+        }
+
+
+        function drawPower(){
+            var power = new RGraph.Line('all_ride_data', power_numbers);
+            power.Set('ymax', power_numbers_max);
+            power.Set('ymin', power_numbers_min);
+            power.Set('hmargin', 5);
+            power.Set('background.grid', false);
+            power.Set('chart.linewidth', 2);          
+            power.Set('gutter.right', gutterRight);
+            power.Set('gutter.left', gutterLeft);
+            power.Set('gutter.top', gutterTop);
+            power.Set('labels', ['0', '<%= @activity.total_time_formatted %>']);
+            power.Set('colors', [ '<%= power_color %>']);
+            //power.Set('key', ['Power(w)']);
+           // power.Set('key.position.gutter.boxed', false);
+            //power.Set('key.color.shape',"circle");
+            //power.Set('key.background',"#FFF");
+            power.Set('noaxes', true);
+            power.Set('ylabels', false);
+            power.Set('chart.text.color', "#999");
+            power.Set('chart.filled', true);
+            power.Set('chart.fillstyle', ['rgba(255,153,0,0.5)']);
+            power.Draw();
+
+
+            RGraph.DrawAxes(power, {
+                                       // 'axis.x': power.canvas.width - gutterRight,
+                                        'axis.x': 940,
+                                        'axis.title': "Power (watts)",
+                                        'axis.color': '<%= power_color %>',
+                                        'axis.text.color': '<%= power_color %>',
+                                        'axis.max': power_numbers_max,
+                                        'axis.min': power_numbers_min,
+                                        'axis.align': 'right'
+                                       });
+
+        }
+
+        function drawHR(){
+            var heart_rate = new RGraph.Line('all_ride_data', heart_rate_numbers);
+            heart_rate.Set('ymax', heart_rate_numbers_max);
+            heart_rate.Set('ymin', heart_rate_numbers_min);
+            heart_rate.Set('background.grid', false);
+            heart_rate.Set('chart.linewidth', 2);
+            heart_rate.Set('colors', ['<%= hr_color %>']);
+           // heart_rate.Set('key', ['Heart Rate(bpm)'])
+           // heart_rate.Set('key.position.gutter.boxed', false);
+            heart_rate.Set('hmargin', 5);
+            heart_rate.Set('gutter.right', gutterRight);
+            heart_rate.Set('gutter.left', gutterLeft);
+            heart_rate.Set('gutter.top', gutterTop);
+            //heart_rate.Set('key.color.shape',"circle");
+            //heart_rate.Set('key.background',"#FFF");
+            heart_rate.Set('ylabels', false);
+            heart_rate.Set('noaxes', true);
+            heart_rate.Set('chart.filled', true);
+            heart_rate.Set('chart.fillstyle', ['rgba(255,86,0,0.5)']);
+            heart_rate.Draw();
+
+            RGraph.DrawAxes(heart_rate, {
+                                        'axis.x': 995,
+                                        'axis.title': "Heart Rate (bpm)",
+                                        'axis.color': '<%= hr_color %>',
+                                        'axis.text.color': '<%= hr_color %>',
+                                        'axis.max': heart_rate_numbers_max,
+                                        'axis.min': heart_rate_numbers_min,
+                                        'axis.align': 'right'
+                                       });
+
+        }
+
+        function drawElevation(){
+            var altitude = new RGraph.Line('all_ride_data', altitude_numbers);
+            altitude.Set('tooltips', ["22","2345","Blah"]);
+            altitude.Set('tooltips.event', 'onmousemove');
+            altitude.Set('tooltips.effect', 'none');
+            altitude.Set('ymax', altitude_numbers_max);
+            altitude.Set('ymin', altitude_numbers_min);
+            altitude.Set('chart.linewidth', 4);
+            altitude.Set('background.grid', false);
+            altitude.Set('colors', ['<%= alt_color %>']);
+            //altitude.Set('key', ['Elevation(ft)'])
+            //altitude.Set('key.position.gutter.boxed', false);
+            //altitude.Set('key.position.x', 450);
+            //altitude.Set('key.color.shape',"circle");
+            //altitude.Set('key.background',"#FFF");
+            altitude.Set('hmargin', 5);
+            altitude.Set('gutter.right', gutterRight);
+            altitude.Set('gutter.left', gutterLeft);
+            altitude.Set('gutter.top', gutterTop);
+            altitude.Set('ylabels', false);
+            altitude.Set('noaxes', true);
+            altitude.Set('chart.filled', true);
+            altitude.Set('chart.fillstyle', ['rgba(127,255,0,0.7)']);
+            altitude.Draw();
+
+            RGraph.DrawAxes(altitude, {
+                                        'axis.x': 110,
+                                        'axis.title': "Altitude (feet)",
+                                        'axis.color': '<%= alt_color %>',
+                                        'axis.text.color': '<%= alt_color %>',
+                                        'axis.max': altitude_numbers_max,
+                                        'axis.min': altitude_numbers_min
+                                       });
+        }
+
+        function drawCadence(){
+            var cadence = new RGraph.Line('all_ride_data', cadence_numbers);
+            cadence.Set('ymax', cadence_numbers_max);
+            cadence.Set('ymin', cadence_numbers_min);
+            cadence.Set('background.grid', false);
+            cadence.Set('chart.linewidth', 2);
+            cadence.Set('ylabels', false);
+            cadence.Set('noaxes', true);
+            cadence.Set('colors', ['<%= cadence_color %>']);
+           // cadence.Set('key', ['Cadence(rpm)'])
+           // cadence.Set('key.position.gutter.boxed', false);
+           // cadence.Set('key.position.x', 275);
+            //cadence.Set('key.color.shape',"circle");
+           // cadence.Set('key.background',"#FFF");
+            cadence.Set('hmargin', 5);
+            cadence.Set('gutter.right', gutterRight);
+            cadence.Set('gutter.left', gutterLeft);
+            cadence.Set('gutter.top', gutterTop);
+            cadence.Set('chart.filled', true);
+            cadence.Set('chart.fillstyle', ['rgba(15,129,255,0.5)']);
+            cadence.Draw();
+
+            RGraph.DrawAxes(cadence, {
+                                        'axis.x': 40,
+                                        'axis.title': "Cadence (rpm)",
+                                        'axis.color': '<%= cadence_color %>',
+                                        'axis.text.color': '<%= cadence_color %>',
+                                        'axis.max': cadence_numbers_max,
+                                        'axis.min': cadence_numbers_min
+                                       });
+
+        }
+
+        function drawEverything ()
+        {
+            resetGraph();
+            drawElevation();
+            drawCadence();
+            drawHR();
+            drawPower();
+
+        }
