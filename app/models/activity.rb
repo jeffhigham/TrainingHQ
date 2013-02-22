@@ -88,14 +88,36 @@ class Activity < ActiveRecord::Base
     return distance_meters
   end
 
-  def power_numbers
-    power_numbers_list = []
-    self.laps.each do |lap|
-      lap.trackpoints.each do |trackpoint|
-        power_numbers_list << trackpoint.watts
+  def max_values_by_percent(list,base_percent=0.0001)
+    loop_count = 0
+    max_loop_value = 0
+    list_count = list.count
+    loop_rollover = (list_count * base_percent).to_i
+    return_list = []
+    logger.info "\n\nloop_rollover = #{loop_rollover}"
+    logger.info "list_count = #{list_count}"
+    logger.info "base_percent = #{base_percent}\n\n"
+    return list if loop_rollover <= 1 #too small to thin out dataset
+    list.each do |item|
+      max_loop_value = item unless item <= max_loop_value
+      loop_count += 1
+      if loop_count == loop_rollover
+        return_list << max_loop_value
+        loop_count = 0
+        max_loop_value = 0
       end
     end
-    power_numbers_list
+    return_list
+  end
+
+  def power_numbers
+    power_numbers = []
+    self.laps.each do |lap|
+      lap.trackpoints.each do |trackpoint|
+        power_numbers << trackpoint.watts
+      end
+    end
+    max_values_by_percent power_numbers
   end
 
   def heart_rate_numbers
@@ -105,7 +127,7 @@ class Activity < ActiveRecord::Base
         heart_rate_list << trackpoint.heart_rate
       end
     end
-    heart_rate_list
+    max_values_by_percent heart_rate_list
   end
 
   def cadence_numbers
@@ -115,7 +137,7 @@ class Activity < ActiveRecord::Base
         cadence_list << trackpoint.cadence
       end
     end
-    cadence_list
+    max_values_by_percent cadence_list
   end
 
   def altitude_numbers
@@ -125,7 +147,7 @@ class Activity < ActiveRecord::Base
         altitude_list << trackpoint.altitude_feet
       end
     end
-    altitude_list
+    max_values_by_percent altitude_list
   end
 
   def map_data

@@ -1,3 +1,6 @@
 
-    <canvas id="all_ride_data" width="1050px" height="450px" style="background:#000;">[No canvas support]</canvas><br/>
     <script src="<%= graph_data_path(@activity) %>.js"></script>
+    <div id="power_numbers"></div>
+    <input type="range" min="0" max="10" value="0" step="0.025" onchange="redrawPower(this.value)"/>
+    <canvas id="all_ride_data" width="1050px" height="450px" style="background:#000;">[No canvas support]</canvas><br/>
+    

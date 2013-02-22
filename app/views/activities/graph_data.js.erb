@@ -10,6 +10,7 @@
 %>
 
 var power_numbers = <%= power_numbers %>;
+var orig_power_numbers = power_numbers;
 
 var heart_rate_numbers = <%= heart_rate_numbers %> ;
 
@@ -39,6 +40,8 @@ var altitude_numbers_min=<%= altitude_numbers.min %>;
 
         function resetGraph(){
             RGraph.Reset(document.getElementById('all_ride_data'));
+            power_numbers=orig_power_numbers;
+
         }
 
         function drawLabels(){
@@ -46,8 +49,8 @@ var altitude_numbers_min=<%= altitude_numbers.min %>;
         }
 
 
-        function drawPower(){
-            var power = new RGraph.Line('all_ride_data', power_numbers);
+        function drawPower(numbers){
+            var power = new RGraph.Line('all_ride_data', numbers);
             power.Set('ymax', power_numbers_max);
             power.Set('ymin', power_numbers_min);
             power.Set('hmargin', 5);
@@ -58,10 +61,6 @@ var altitude_numbers_min=<%= altitude_numbers.min %>;
             power.Set('gutter.top', gutterTop);
             power.Set('labels', ['0', '<%= @activity.total_time_formatted %>']);
             power.Set('colors', [ '<%= power_color %>']);
-            //power.Set('key', ['Power(w)']);
-           // power.Set('key.position.gutter.boxed', false);
-            //power.Set('key.color.shape',"circle");
-            //power.Set('key.background',"#FFF");
             power.Set('noaxes', true);
             power.Set('ylabels', false);
             power.Set('chart.text.color', "#999");
@@ -90,17 +89,13 @@ var altitude_numbers_min=<%= altitude_numbers.min %>;
             heart_rate.Set('background.grid', false);
             heart_rate.Set('chart.linewidth', 2);
             heart_rate.Set('colors', ['<%= hr_color %>']);
-           // heart_rate.Set('key', ['Heart Rate(bpm)'])
-           // heart_rate.Set('key.position.gutter.boxed', false);
             heart_rate.Set('hmargin', 5);
             heart_rate.Set('gutter.right', gutterRight);
             heart_rate.Set('gutter.left', gutterLeft);
             heart_rate.Set('gutter.top', gutterTop);
-            //heart_rate.Set('key.color.shape',"circle");
-            //heart_rate.Set('key.background',"#FFF");
             heart_rate.Set('ylabels', false);
             heart_rate.Set('noaxes', true);
-            heart_rate.Set('chart.filled', true);
+            heart_rate.Set('chart.filled', false);
             heart_rate.Set('chart.fillstyle', ['rgba(255,86,0,0.5)']);
             heart_rate.Draw();
 
@@ -118,7 +113,6 @@ var altitude_numbers_min=<%= altitude_numbers.min %>;
 
         function drawElevation(){
             var altitude = new RGraph.Line('all_ride_data', altitude_numbers);
-            altitude.Set('tooltips', ["22","2345","Blah"]);
             altitude.Set('tooltips.event', 'onmousemove');
             altitude.Set('tooltips.effect', 'none');
             altitude.Set('ymax', altitude_numbers_max);
@@ -126,11 +120,6 @@ var altitude_numbers_min=<%= altitude_numbers.min %>;
             altitude.Set('chart.linewidth', 4);
             altitude.Set('background.grid', false);
             altitude.Set('colors', ['<%= alt_color %>']);
-            //altitude.Set('key', ['Elevation(ft)'])
-            //altitude.Set('key.position.gutter.boxed', false);
-            //altitude.Set('key.position.x', 450);
-            //altitude.Set('key.color.shape',"circle");
-            //altitude.Set('key.background',"#FFF");
             altitude.Set('hmargin', 5);
             altitude.Set('gutter.right', gutterRight);
             altitude.Set('gutter.left', gutterLeft);
@@ -160,16 +149,11 @@ var altitude_numbers_min=<%= altitude_numbers.min %>;
             cadence.Set('ylabels', false);
             cadence.Set('noaxes', true);
             cadence.Set('colors', ['<%= cadence_color %>']);
-           // cadence.Set('key', ['Cadence(rpm)'])
-           // cadence.Set('key.position.gutter.boxed', false);
-           // cadence.Set('key.position.x', 275);
-            //cadence.Set('key.color.shape',"circle");
-           // cadence.Set('key.background',"#FFF");
             cadence.Set('hmargin', 5);
             cadence.Set('gutter.right', gutterRight);
             cadence.Set('gutter.left', gutterLeft);
             cadence.Set('gutter.top', gutterTop);
-            cadence.Set('chart.filled', true);
+            cadence.Set('chart.filled', false);
             cadence.Set('chart.fillstyle', ['rgba(15,129,255,0.5)']);
             cadence.Draw();
 
@@ -184,12 +168,49 @@ var altitude_numbers_min=<%= altitude_numbers.min %>;
 
         }
 
+        function maxValuesByPercent(list,base_percent) {
+            var loop_count = 0;
+            var max_loop_value = 0;
+            var list_count = list.length;
+            var loop_rollover = Math.round( list_count * (base_percent/1000) );
+            var return_list = new Array();
+            //window.alert("List Count: "+ list_count +"\n Base%: "+base_percent+"\nLoop Rollover: "+ loop_rollover);
+            //window.alert(loop_rollover)
+
+            if(loop_rollover <= 1){ 
+                return list; 
+            }
+
+            for (var i = 0; i < list.length; i++) {
+                loop_count++;
+                if(max_loop_value < list[i]){
+                    max_loop_value = list[i];
+                }
+                if(loop_count == loop_rollover){
+                    return_list.push(max_loop_value);
+                    loop_count = 0;
+                    max_loop_value = 0;
+                }  
+            }
+
+            //window.alert(return_list.length);
+            $('#power_numbers').html("<pre>Max Points: "+ orig_power_numbers.length +"\nCurrent Points:"+return_list.length+"</pre>");
+            return return_list;
+            
+        }
+
         function drawEverything ()
         {
-            resetGraph();
-            drawElevation();
-            drawCadence();
-            drawHR();
-            drawPower();
-
+            $('#power_numbers').html("<pre>Max Points: "+ orig_power_numbers.length +"</pre>");
+            //resetGraph();
+            //drawElevation();
+            //drawCadence();
+            //drawHR();
+            redrawPower(0);
         }
+
+        function redrawPower(percent){
+           resetGraph();
+           drawPower( maxValuesByPercent(power_numbers,percent) );
+        }
+
