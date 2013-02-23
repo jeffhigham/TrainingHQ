@@ -107,16 +107,16 @@ th:only-child{
 
 input[type='range'] {
     -webkit-appearance: none !important;
-    background:#999;
-    height:7px;
-    width: 500px;
+    background:#333;
+    height:5px;
+    width: 1050px;
     display: block;
 }
 input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none !important;
-    background:#FFF;
-    height:10px;
-    width:10px;
+    background:#0f8bff;
+    height:16px;
+    width:24px;
     display:block;
 }
 
