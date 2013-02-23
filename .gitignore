@@ -20,3 +20,4 @@
 *.gz
 *.sql
 /public/system/*
+/sourcedata
