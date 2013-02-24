@@ -120,3 +120,18 @@ input[type='range']::-webkit-slider-thumb {
     display:block;
 }
 
+.graph_checkbox {
+    width: 90%;
+    display: block;
+}
+
+.graph_checkbox input {
+    display: inline;
+    font-size: 24px;
+}
+
+#cadence_check { color: #0F8BFF; }
+#altitude_check { color: #7FFF00; }
+#power_check { color: #FF9900; }
+#hr_check { color: #FF5600; }
+
