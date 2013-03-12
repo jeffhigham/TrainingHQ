@@ -113,6 +113,10 @@
             'chart.title.yaxis.color':      null,
             'chart.title.xaxis.pos':        null,
             'chart.title.yaxis.pos':        null,
+            'chart.title.x':                null,
+            'chart.title.y':                null,
+            'chart.title.halign':           null,
+            'chart.title.valign':           null,
             'chart.labels':                 [],
             'chart.labels.ingraph':         null,
             'chart.labels.above':           false,
@@ -321,6 +325,8 @@
         }
 
         this.properties[name.toLowerCase()] = value;
+
+        return this;
     }
 
 
@@ -593,7 +599,7 @@
 
         context.beginPath();
         context.strokeStyle = this.Get('chart.axis.color');
-        context.lineWidth   = this.properties['chart.axis.linewidth'] + 0.001;
+        context.lineWidth   = (this.properties['chart.axis.linewidth'] || 1) + 0.001;
 
         // Draw the Y axis
         if (this.properties['chart.noyaxis'] == false) {
@@ -1196,7 +1202,8 @@
                           color,
                           tooltip,
                           this.coords[i],
-                          data_point
+                          data_point,
+                          j
                          );
         }
     }
@@ -1205,7 +1212,7 @@
     /**
     * Draws a single scatter mark
     */
-    RGraph.Scatter.prototype.DrawMark = function (index, x, y, xMax, yMax, color, tooltip, coords, data)
+    RGraph.Scatter.prototype.DrawMark = function (data_set_index, x, y, xMax, yMax, color, tooltip, coords, data, data_index)
     {
         var tickmarks = this.properties['chart.tickmarks'];
         var tickSize  = this.properties['chart.ticksize'];
@@ -1213,12 +1220,12 @@
         var x         = ((x - xMin) / (xMax - xMin)) * (this.canvas.width - this.gutterLeft - this.gutterRight);
         var originalX = x;
         var originalY = y;
-        
+
         /**
         * This allows chart.tickmarks to be an array
         */
         if (tickmarks && typeof(tickmarks) == 'object') {
-            tickmarks = tickmarks[index];
+            tickmarks = tickmarks[data_set_index];
         }
 
 
@@ -1226,7 +1233,7 @@
         * This allows chart.ticksize to be an array
         */
         if (typeof(tickSize) == 'object') {
-            var tickSize     = tickSize[index];
+            var tickSize     = tickSize[data_set_index];
             var halfTickSize = tickSize / 2;
         } else {
             var halfTickSize = tickSize / 2;
@@ -1300,17 +1307,12 @@
         // Color
         this.context.strokeStyle = color;
 
+
+
         /**
         * Boxplots
         */
-        if (   this.Get('chart.boxplot')
-            && typeof(y0) == 'number'
-            && typeof(y1) == 'number'
-            && typeof(y2) == 'number'
-            && typeof(y3) == 'number'
-            && typeof(y4) == 'number'
-           ) {
-
+        if (this.Get('chart.boxplot')) {
 
             // boxWidth is now a scale value, so convert it to a pixel vlue
             boxWidth = (boxWidth / this.Get('chart.xmax')) * (this.canvas.width -this.gutterLeft - this.gutterRight);
@@ -1360,8 +1362,8 @@
         /**
         * Draw the tickmark, but not for boxplots
         */
-        if (this.properties['chart.line.visible'] && y && !y0 && !y1 && !y2 && !y3 && !y4) {
-            
+        if (this.properties['chart.line.visible'] && typeof(y) == 'number' && !y0 && !y1 && !y2 && !y3 && !y4) {
+
             if (tickmarks == 'circle') {
                 this.context.arc(x, yCoord, halfTickSize, 0, 6.28, 0);
                 this.context.fillStyle = color;
@@ -1414,13 +1416,13 @@
             * Custom tickmark style
             */
             } else if (typeof(tickmarks) == 'function') {
-// [TODO] Add index to the args passed to the aargs passed
+
                 var graphWidth  = this.canvas.width - this.gutterLeft - this.gutterRight
                 var graphheight = this.canvas.height - this.gutterTop - this.gutterBottom;
                 var xVal = ((x - this.gutterLeft) / graphWidth) * xMax;
                 var yVal = ((graphheight - (yCoord - this.gutterTop)) / graphheight) * yMax;
 
-                tickmarks(this, data, x, yCoord, xVal, yVal, xMax, yMax, color)
+                tickmarks(this, data, x, yCoord, xVal, yVal, xMax, yMax, color, data_set_index, data_index)
 
             /**
             * No tickmarks

@@ -135,3 +135,10 @@ input[type='range']::-webkit-slider-thumb {
 #power_check { color: #FF9900; }
 #hr_check { color: #FF5600; }
 
+.chart_tooltips_css {
+        color: black ! important;
+        background-color: white ! important;
+        border: 2px solid black ! important;
+        padding: 3px;
+    }
+

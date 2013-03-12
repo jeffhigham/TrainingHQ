@@ -54,22 +54,23 @@ module Guppy
     def build_lap(lap_node)
       lap = Guppy::Lap.new
       lap.distance = lap_node.xpath('xmlns:DistanceMeters', namespaces).inner_text.to_f
-      lap.avg_speed = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:AvgSpeed', namespaces).inner_text.to_f
-      lap.max_speed = lap_node.xpath('xmlns:MaximumSpeed', namespaces).inner_text.to_f
+      #lap.avg_speed = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:AvgSpeed', namespaces).inner_text.to_f
+      #lap.max_speed = lap_node.xpath('xmlns:MaximumSpeed', namespaces).inner_text.to_f
       lap.total_time = lap_node.xpath('xmlns:TotalTimeSeconds', namespaces).inner_text.to_f
       lap.calories = lap_node.xpath('xmlns:Calories', namespaces).inner_text.to_f
-      lap.avg_heart_rate = lap_node.xpath('xmlns:AverageHeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
-      lap.max_heart_rate = lap_node.xpath('xmlns:MaximumHeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
-      lap.avg_watts = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:AvgWatts', namespaces).inner_text.to_i
-      lap.max_watts = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:MaxWatts', namespaces).inner_text.to_i
-      lap.avg_cadence = lap_node.xpath('xmlns:Cadence', namespaces).inner_text.to_i
-      lap.max_cadence = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:MaxBikeCadence', namespaces).inner_text.to_i
+      #lap.avg_heart_rate = lap_node.xpath('xmlns:AverageHeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
+      #lap.max_heart_rate = lap_node.xpath('xmlns:MaximumHeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
+      #lap.avg_watts = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:AvgWatts', namespaces).inner_text.to_i
+      #lap.max_watts = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:MaxWatts', namespaces).inner_text.to_i
+      #lap.avg_cadence = lap_node.xpath('xmlns:Cadence', namespaces).inner_text.to_i
+      #lap.max_cadence = lap_node.xpath('xmlns:Extensions/ns3:LX/ns3:MaxBikeCadence', namespaces).inner_text.to_i
       lap.intensity = lap_node.xpath('xmlns:Intensity', namespaces).inner_text.to_s.downcase
 
       lap_node.xpath('xmlns:Track/xmlns:Trackpoint', namespaces).each do |track_point_node|
         lap.track_points << build_track_point(track_point_node)
       end
-      lap.calculate_and_cache_attributes
+      
+      lap.calculate_and_cache_attributes  
       lap
     end
 
@@ -86,7 +87,6 @@ module Guppy
       track_point.watts = track_point_node.xpath('xmlns:Extensions/ns3:TPX/ns3:Watts', namespaces ).inner_text.to_i
       track_point.speed = track_point_node.xpath('xmlns:Extensions/ns3:TPX/ns3:Speed', namespaces ).inner_text.to_f
 
-      #trackpoint.something = self.some_work(some_data)
       track_point
 
     end

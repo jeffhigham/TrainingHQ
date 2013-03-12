@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130207204237) do
+ActiveRecord::Schema.define(:version => 20130306141637) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",                                               :default => 0
@@ -39,6 +39,22 @@ ActiveRecord::Schema.define(:version => 20130207204237) do
     t.integer  "ride_time"
     t.integer  "total_trackpoints"
     t.integer  "distance"
+    t.integer  "max_watts",                                             :default => 0
+    t.integer  "min_watts",                                             :default => 0
+    t.integer  "avg_watts",                                             :default => 0
+    t.integer  "max_heart_rate",                                        :default => 0
+    t.integer  "min_heart_rate",                                        :default => 0
+    t.integer  "avg_heart_rate",                                        :default => 0
+    t.integer  "max_cadence",                                           :default => 0
+    t.integer  "min_cadence",                                           :default => 0
+    t.integer  "avg_cadence",                                           :default => 0
+    t.integer  "max_temp",                                              :default => 0
+    t.integer  "min_temp",                                              :default => 0
+    t.integer  "avg_temp",                                              :default => 0
+    t.integer  "max_speed",                                             :default => 0
+    t.integer  "min_speed",                                             :default => 0
+    t.integer  "avg_speed",                                             :default => 0
+    t.integer  "calories",                                              :default => 0
   end
 
   create_table "hr_zones", :force => true do |t|
@@ -87,6 +103,12 @@ ActiveRecord::Schema.define(:version => 20130207204237) do
     t.datetime "created_at",                                                              :null => false
     t.datetime "updated_at",                                                              :null => false
     t.integer  "total_trackpoints",                                :default => 0
+    t.integer  "min_heart_rate",                                   :default => 0
+    t.integer  "min_cadence",                                      :default => 0
+    t.integer  "max_temp",                                         :default => 0
+    t.integer  "min_temp",                                         :default => 0
+    t.integer  "avg_temp",                                         :default => 0
+    t.integer  "min_speed",                                        :default => 0
   end
 
   create_table "power_zones", :force => true do |t|

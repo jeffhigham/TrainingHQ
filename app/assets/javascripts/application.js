@@ -15,3 +15,4 @@
 //= require jquery_ujs
 //= require_tree ./gmaps4rails
 //= require_tree ./RGraph/libraries
+//= require_tree ./THQ

@@ -1,11 +1,14 @@
 
     <script src="<%= graph_data_path(@activity) %>.js"></script>
     <div class="graph_checkbox">
-    	<input type="checkbox" id="cadence_check" onchange="drawScaled()">Cadence</input>
-    	<input type="checkbox" id="altitude_check" onchange="drawScaled()">Altitude</input>
-    	<input type="checkbox" id="power_check" onchange="drawScaled()">Power</input>
-    	<input type="checkbox" id="hr_check" onchange="drawScaled()">Heart Rate</input>
+    	<input type="checkbox" id="cadence_check" onchange="drawScaled(false,'all_ride_data')">Cadence</input>
+    	<input type="checkbox" id="altitude_check" onchange="drawScaled(false,'all_ride_data')">Altitude</input>
+    	<input type="checkbox" id="power_check" onchange="drawScaled(false,'all_ride_data')">Power</input>
+    	<input type="checkbox" id="hr_check" onchange="drawScaled(false,'all_ride_data')">Heart Rate</input>
+    	<select name="graph_dataset" id="graph_dataset_option" onchange="handleSelect()">
+				<option value="time" selected>Time (h:m:s)</option>
+				<option value="distance">Distance (mi)</option>
+			</select>
 		</div><br/>
-    <input id="graph_scale_slider" type="range" min="0" max="10" value="1" step="0.05" onchange="drawScaled()"/>
+    <input id="graph_scale_slider" type="range" min="0" max="10" value="5" step="0.05" onchange="drawScaled(false,'all_ride_data')"/>
     <canvas id="all_ride_data" width="1050px" height="450px" style="background:#000;">[No canvas support]</canvas><br/>
-    

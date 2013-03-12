@@ -1,17 +1,18 @@
 //Dynamic content from the activity controller.
-var power_numbers = <%= @activity.power_numbers %>;
-var heart_rate_numbers = <%= @activity.heart_rate_numbers %> ;
-var cadence_numbers = <%= @activity.cadence_numbers %>;
-var altitude_numbers = <%= @activity.altitude_numbers  %>;
+var power_numbers_time = <%= @raw_numbers[:power_numbers_time] %>;
+var heart_rate_numbers_time = <%= @raw_numbers[:heart_rate_numbers_time] %> ;
+var cadence_numbers_time = <%= @raw_numbers[:cadence_numbers_time] %>;
+var altitude_numbers_time = <%= @raw_numbers[:altitude_numbers_time]  %>;
 
-// Supporting functions for 
-Array.max = function(array){
-    return Math.max.apply( Math, array);
-}
+var power_numbers_distance = <%= @raw_numbers[:power_numbers_distance] %>;
+var heart_rate_numbers_distance = <%= @raw_numbers[:heart_rate_numbers_distance] %> ;
+var cadence_numbers_distance = <%= @raw_numbers[:cadence_numbers_distance] %>;
+var altitude_numbers_distance = <%= @raw_numbers[:altitude_numbers_distance]  %>;
 
-Array.min = function(array){
-    return Math.min.apply( Math, array);
-}
+var power_numbers = power_numbers_time;
+var heart_rate_numbers = heart_rate_numbers_time;
+var cadence_numbers = cadence_numbers_time;
+var altitude_numbers = altitude_numbers_time;
 
 // Global variables.
 var power_numbers_max = Array.max(power_numbers);
@@ -22,17 +23,9 @@ var cadence_numbers_max = Array.max(cadence_numbers);
 var cadence_numbers_min = Array.min(cadence_numbers);
 var altitude_numbers_max= Array.max(altitude_numbers);
 var altitude_numbers_min= Array.min(altitude_numbers);
-var gutterLeft = 120;
-var gutterRight = 120;
-var gutterTop   = 25;
-var power_color = "#FF9900";
-var hr_color = "#ff5600";
-var alt_color = "#7fff00";
-var cadence_color = "#0f8bff";
-var element_id = 'all_ride_data';
 
 power_params = {
-        'element_id': element_id,
+        'element_id': 'all_ride_data',
         'ymax': power_numbers_max,
         'ymin': power_numbers_min,
         'linewidth': 2,
@@ -47,7 +40,7 @@ power_params = {
     };
 
     heart_rate_params = {
-        'element_id': element_id,
+        'element_id': 'all_ride_data',
         'ymax': heart_rate_numbers_max,
         'ymin': heart_rate_numbers_min,
         'linewidth': 2,
@@ -62,7 +55,7 @@ power_params = {
     };
 
     altitude_params = {
-        'element_id': element_id,
+        'element_id': 'all_ride_data',
         'ymax': altitude_numbers_max,
         'ymin': altitude_numbers_min,
         'linewidth': 2,
@@ -77,7 +70,7 @@ power_params = {
     };
 
     cadence_params = {
-        'element_id': element_id,
+        'element_id': 'all_ride_data',
         'ymax': cadence_numbers_max,
         'ymin': cadence_numbers_min,
         'linewidth': 2,
@@ -98,91 +91,10 @@ window.onload = function() {
     $('#altitude_check').prop('checked',true);
     $('#power_check').prop('checked',true);
     $('#hr_check').prop('checked',true);
-    drawScaled(2)
+    drawScaled(5,'all_ride_data');
 }
 
-function resetGraph(element_id){
-    RGraph.Reset(document.getElementById(element_id));
-}
-
-
-function drawLinePlot(params){
-
-    var obj = new RGraph.Line(params['element_id'], params['graph_data']);
-    obj.Set('ymax', params['ymax']);
-    obj.Set('ymin', params['ymin']);
-    obj.Set('hmargin', 5);
-    obj.Set('background.grid', false);
-    obj.Set('linewidth', params['linewidth']);          
-    obj.Set('gutter.right', gutterRight);
-    obj.Set('gutter.left', gutterLeft);
-    obj.Set('gutter.top', gutterTop);
-    obj.Set('colors', params['colors']);
-    obj.Set('noaxes', true);
-    obj.Set('ylabels', false);
-    obj.Set('filled', params['filled']);
-    obj.Set('fillstyle', params['fillstyle']);
-    obj.Draw();
-
-    RGraph.DrawAxes(obj, {
-                                'axis.x': params['axis_x'],
-                                'axis.title': params['axis_title'],
-                                'axis.color': params['axis_color'],
-                                'axis.text.color': params['axis_text_color'],
-                                'axis.max': params['ymax'],
-                                'axis.min': params['ymin'],
-                                'axis.align': params['axis_align']
-                               });
-}
-
-// Returns a max value in a range of values.
-function maxValuesScaledBy(list,scale_factor) {
-    var loop_count = 0;
-    var max_loop_value = 0;
-    var list_count = list.length;
-    var loop_rollover = Math.round( list_count * (scale_factor/1000) );
-    var return_list = new Array();
-
-    if(loop_rollover <= 1){ return list; }
-
-    for (var i = 0; i < list.length; i++) {
-        loop_count++;
-        if(max_loop_value < list[i]){
-            max_loop_value = list[i];
-        }
-        if(loop_count == loop_rollover){
-            return_list.push(max_loop_value);
-            loop_count = 0;
-            max_loop_value = 0;
-        }  
-    }
-    return return_list;  
-}
-
-// Returns an average value for a range of values.
-function aveValuesScaledBy(list,scale_factor) {
-    var loop_count = 0;
-    var loop_value_sum = 0;
-    var list_count = list.length;
-    var loop_rollover = Math.round( list_count * (scale_factor/1000) );
-    var return_list = new Array();
-
-    if(loop_rollover <= 1){ return list; }
-
-    for (var i = 0; i < list.length; i++) {
-        loop_count++;
-        loop_value_sum += list[i];
-        if(loop_count == loop_rollover){
-            return_list.push(loop_value_sum/loop_count);
-            loop_count = 0;
-            loop_value_sum = 0;
-        }  
-    }
-    return return_list;  
-}
-
-
-function drawScaled(scale_factor_passed)
+function drawScaled(scale_factor_passed, element_id)
 {
     resetGraph(element_id);
     var scale_factor = 0;
@@ -198,22 +110,35 @@ function drawScaled(scale_factor_passed)
     heart_rate_params['graph_data'] = maxValuesScaledBy(heart_rate_numbers,scale_factor);
     power_params['graph_data']      = maxValuesScaledBy(power_numbers,scale_factor);
 
-    if ( $('#altitude_check').is(':checked') ){
+    if ( $('#altitude_check').is(':checked') && altitude_numbers_max > 0 ){
         drawLinePlot(altitude_params);
     }
-    if ( $('#cadence_check').is(':checked') ){
+    if ( $('#cadence_check').is(':checked') && cadence_numbers_max > 0 ){
         drawLinePlot(cadence_params);
     }
-    if ( $('#hr_check').is(':checked') ){
+    if ( $('#hr_check').is(':checked') && heart_rate_numbers_max > 0 ){
         drawLinePlot(heart_rate_params);
     }
-    if ( $('#power_check').is(':checked') ){
+    if ( $('#power_check').is(':checked') && power_numbers_max > 0 ){
         drawLinePlot(power_params);
-
-        //slide in an ave for power.
-        //power_params['filled'] = false;
-        //power_params['graph_data'] = aveValuesScaledBy(power_numbers,scale_factor);
-        //drawLinePlot(power_params);
     }
 
+}
+
+function handleSelect(){
+
+    if( $('select#graph_dataset_option').val() == "time"){
+        power_numbers = power_numbers_time;
+        heart_rate_numbers = heart_rate_numbers_time;
+        cadence_numbers = cadence_numbers_time;
+        altitude_numbers = altitude_numbers_time;
+    }
+    else {
+        power_numbers = power_numbers_distance;
+        heart_rate_numbers = heart_rate_numbers_distance;
+        cadence_numbers = cadence_numbers_distance;
+        altitude_numbers = altitude_numbers_distance;
+    }
+
+    drawScaled(false,'all_ride_data');
 }

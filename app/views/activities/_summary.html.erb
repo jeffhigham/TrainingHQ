@@ -25,13 +25,13 @@
 <tr>    
     <td>Distance (miles):</td><td><%= @activity.total_distance_formatted %></td>
     <td>Heart Rate (bpm):</td><td><%= @activity.avg_heart_rate %></td>
-    <td>Heart Rate (bpm):</td><td><%= @activity.heart_rate_numbers.max.to_i %></td>
+    <td>Heart Rate (bpm):</td><td><%= @raw_numbers[:heart_rate_numbers_time].max.to_i %></td>
     <td>Bike Score:</td><td>NA</td>
 </tr>
 <tr>
     <td>Work (kJ):</td><td><%= @activity.kjoules %></td>
     <td>Cadence (rpm):</td><td><%= @activity.avg_cadence %></td>
-    <td>Cadence (rpm):</td><td><%= @activity.cadence_numbers.max.to_i %></td>
+    <td>Cadence (rpm):</td><td><%= @raw_numbers[:cadence_numbers_time].max.to_i %></td>
     <td>Daniels EqP (watts):</td><td>NA</td>
 </tr>
 <tr>

@@ -105,9 +105,7 @@
                 // ==============================================
                 // Finally, redraw the chart
                 // ==============================================
-    
-    
-    
+
                 var tags = document.getElementsByTagName('canvas');
                 for (var i=0; i<tags.length; ++i) {
                     if (tags[i].__object__ && tags[i].__object__.isRGraph) {
@@ -418,8 +416,8 @@
                 // Crosshairs
                 // ================================================================================================ //
     
-    
-                if (e.target && e.target.__object__.Get('chart.crosshairs')) {
+
+                if (e.target && e.target.__object__ && e.target.__object__.Get('chart.crosshairs')) {
                     RGraph.DrawCrosshairs(e, e.target.__object__);
                 }
             
@@ -438,7 +436,7 @@
                 // ================================================================================================ //
     
     
-                if (e.target.__object__.Get('chart.annotatable') && RGraph.Annotating_canvas_onmousemove) {
+                if (e.target.__object__ && e.target.__object__.Get('chart.annotatable') && RGraph.Annotating_canvas_onmousemove) {
                     RGraph.Annotating_canvas_onmousemove(e);
                 }
     
@@ -486,7 +484,7 @@
                 /**
                 * Annotating
                 */
-                if (e.target.__object__.Get('chart.annotatable') && RGraph.Annotating_canvas_onmousedown) {
+                if (e.target.__object__ && e.target.__object__.Get('chart.annotatable') && RGraph.Annotating_canvas_onmousedown) {
                     RGraph.Annotating_canvas_onmousedown(e);
                     return;
                 }
@@ -494,7 +492,7 @@
                 var obj = RGraph.ObjectRegistry.getObjectByXY(e);
     
                 if (obj) {
-    
+
                     var id    = obj.id;
     
                     /*************************************************************
@@ -824,7 +822,7 @@
         // =========================================================================
 
 
-        if (e.target.__object__.Get('chart.annotatable')) {
+        if (e.target.__object__ && e.target.__object__.Get('chart.annotatable')) {
             e.target.style.cursor = 'crosshair';
         }
     }
@@ -882,37 +880,112 @@
     */
     RGraph.DrawCrosshairs = function (e, obj)
     {
-        var e       = RGraph.FixEventObject(e);
-        var width   = obj.canvas.width;
-        var height  = obj.canvas.height;
-        var mouseXY = RGraph.getMouseXY(e);
-        var x = mouseXY[0];
-        var y = mouseXY[1];
+        var e            = RGraph.FixEventObject(e);
+        var width        = obj.canvas.width;
+        var height       = obj.canvas.height;
+        var mouseXY      = RGraph.getMouseXY(e);
+        var x            = mouseXY[0];
+        var y            = mouseXY[1];
+        var gutterLeft   = obj.gutterLeft;
+        var gutterRight  = obj.gutterRight;
+        var gutterTop    = obj.gutterTop;
+        var gutterBottom = obj.gutterBottom;
+        var prop         = obj.properties;
 
         RGraph.RedrawCanvas(obj.canvas);
 
-        if (   x >= obj.gutterLeft
-            && y >= obj.gutterTop
-            && x <= (width - obj.gutterRight)
-            && y <= (height - obj.gutterBottom)
+        if (   x >= gutterLeft
+            && y >= gutterTop
+            && x <= (width - gutterRight)
+            && y <= (height - gutterBottom)
            ) {
 
-            var linewidth = obj.Get('chart.crosshairs.linewidth') ? obj.Get('chart.crosshairs.linewidth') : 1;
+            var linewidth = prop['chart.crosshairs.linewidth'] ? prop['chart.crosshairs.linewidth'] : 1;
             obj.context.lineWidth = linewidth ? linewidth : 1;
 
             obj.context.beginPath();
-            obj.context.strokeStyle = obj.Get('chart.crosshairs.color');
+            obj.context.strokeStyle = prop['chart.crosshairs.color'];
+
+
+
+
+
+            /**
+            * The chart.crosshairs.snap option
+            */
+            if (prop['chart.crosshairs.snap']) {
+            
+                // Linear search for the closest point
+                var point = null;
+                var dist  = null;
+                var len   = null;
+                
+                if (obj.type == 'line') {
+            
+                    for (var i=0; i<obj.coords.length; ++i) {
+                    
+                        var len = RGraph.getHypLength(obj.coords[i][0], obj.coords[i][1], x, y);
+            
+                        // Check the mouse X coordinate
+                        if (typeof(dist) != 'number' || len < dist) {
+                            var point = i;
+                            var dist = len;
+                        }
+                    }
+                
+                    x = obj.coords[point][0];
+                    y = obj.coords[point][1];
+                    
+                    // Get the dataset
+                    for (var dataset=0; dataset<obj.coords2.length; ++dataset) {
+                        for (var point=0; point<obj.coords2[dataset].length; ++point) {
+                            if (obj.coords2[dataset][point][0] == x && obj.coords2[dataset][point][1] == y) {
+                                obj.canvas.__crosshairs_snap_dataset__ = dataset;
+                                obj.canvas.__crosshairs_snap_point__   = point;
+                            }
+                        }
+                    }
+            
+                } else {
+            
+                    for (var i=0; i<obj.coords.length; ++i) {
+                        for (var j=0; j<obj.coords[i].length; ++j) {
+                            
+                            // Check the mouse X coordinate
+                            var len = RGraph.getHypLength(obj.coords[i][j][0], obj.coords[i][j][1], x, y);
+            
+                            if (typeof(dist) != 'number' || len < dist) {
+            
+                                var dataset = i;
+                                var point   = j;
+                                var dist   = len;
+                            }
+                        }
+            
+                    }
+                    obj.canvas.__crosshairs_snap_dataset__ = dataset;
+                    obj.canvas.__crosshairs_snap_point__   = point;
+            
+                    x = obj.coords[dataset][point][0];
+                    y = obj.coords[dataset][point][1];
+                }
+            }
+
+
+
+
+
 
             // Draw a top vertical line
-            if (obj.Get('chart.crosshairs.vline')) {
-                obj.context.moveTo(Math.round(x), Math.round(obj.gutterTop));
-                obj.context.lineTo(Math.round(x), Math.round(height - obj.gutterBottom));
+            if (prop['chart.crosshairs.vline']) {
+                obj.context.moveTo(Math.round(x), Math.round(gutterTop));
+                obj.context.lineTo(Math.round(x), Math.round(height - gutterBottom));
             }
 
             // Draw a horizontal line
-            if (obj.Get('chart.crosshairs.hline')) {
-                obj.context.moveTo(Math.round(obj.gutterLeft), Math.round(y));
-                obj.context.lineTo(Math.round(width - obj.gutterRight), Math.round(y));
+            if (prop['chart.crosshairs.hline']) {
+                obj.context.moveTo(Math.round(gutterLeft), Math.round(y));
+                obj.context.lineTo(Math.round(width - gutterRight), Math.round(y));
             }
 
             obj.context.stroke();
@@ -921,64 +994,62 @@
             /**
             * Need to show the coords?
             */
-            if (obj.Get('chart.crosshairs.coords')) {
-                if (obj.type == 'scatter') {
+            if (obj.type == 'scatter' && prop['chart.crosshairs.coords']) {
 
-                    var xCoord = (((x - obj.Get('chart.gutter.left')) / (obj.canvas.width - obj.gutterLeft - obj.gutterRight)) * (obj.Get('chart.xmax') - obj.Get('chart.xmin'))) + obj.Get('chart.xmin');
-                        xCoord = xCoord.toFixed(obj.Get('chart.scale.decimals'));
-                    var yCoord = obj.max - (((y - obj.Get('chart.gutter.top')) / (obj.canvas.height - obj.gutterTop - obj.gutterBottom)) * obj.max);
+                var xCoord = (((x - gutterLeft) / (width - gutterLeft - gutterRight)) * (prop['chart.xmax'] - prop['chart.xmin'])) + prop['chart.xmin'];
+                    xCoord = xCoord.toFixed(prop['chart.scale.decimals']);
+                var yCoord = obj.max - (((y - prop['chart.gutter.top']) / (height - gutterTop - gutterBottom)) * obj.max);
 
-                    if (obj.type == 'scatter' && obj.Get('chart.xaxispos') == 'center') {
-                        yCoord = (yCoord - (obj.max / 2)) * 2;
-                    }
-
-                    yCoord = yCoord.toFixed(obj.Get('chart.scale.decimals'));
-
-                    var div      = RGraph.Registry.Get('chart.coordinates.coords.div');
-                    var mouseXY  = RGraph.getMouseXY(e);
-                    var canvasXY = RGraph.getCanvasXY(obj.canvas);
-                    
-                    if (!div) {
-                        var div = document.createElement('DIV');
-                        div.__object__     = obj;
-                        div.style.position = 'absolute';
-                        div.style.backgroundColor = 'white';
-                        div.style.border = '1px solid black';
-                        div.style.fontFamily = 'Arial, Verdana, sans-serif';
-                        div.style.fontSize = '10pt'
-                        div.style.padding = '2px';
-                        div.style.opacity = 1;
-                        div.style.WebkitBorderRadius = '3px';
-                        div.style.borderRadius = '3px';
-                        div.style.MozBorderRadius = '3px';
-                        document.body.appendChild(div);
-                        
-                        RGraph.Registry.Set('chart.coordinates.coords.div', div);
-                    }
-                    
-                    // Convert the X/Y pixel coords to correspond to the scale
-                    div.style.opacity = 1;
-                    div.style.display = 'inline';
-
-                    if (!obj.Get('chart.crosshairs.coords.fixed')) {
-                        div.style.left = Math.max(2, (e.pageX - div.offsetWidth - 3)) + 'px';
-                        div.style.top = Math.max(2, (e.pageY - div.offsetHeight - 3))  + 'px';
-                    } else {
-                        div.style.left = canvasXY[0] + obj.gutterLeft + 3 + 'px';
-                        div.style.top  = canvasXY[1] + obj.gutterTop + 3 + 'px';
-                    }
-
-                    div.innerHTML = '<span style="color: #666">' + obj.Get('chart.crosshairs.coords.labels.x') + ':</span> ' + xCoord + '<br><span style="color: #666">' + obj.Get('chart.crosshairs.coords.labels.y') + ':</span> ' + yCoord;
-                    
-                    obj.canvas.addEventListener('mouseout', RGraph.HideCrosshairCoords, false);
-
-                    obj.canvas.__crosshairs_labels__ = div;
-                    obj.canvas.__crosshairs_x__ = xCoord;
-                    obj.canvas.__crosshairs_y__ = yCoord;
-
-                } else {
-                    alert('[RGRAPH] Showing crosshair coordinates is only supported on the Scatter chart');
+                if (obj.type == 'scatter' && obj.properties['chart.xaxispos'] == 'center') {
+                    yCoord = (yCoord - (obj.max / 2)) * 2;
                 }
+
+                yCoord = yCoord.toFixed(prop['chart.scale.decimals']);
+
+                var div      = RGraph.Registry.Get('chart.coordinates.coords.div');
+                var mouseXY  = RGraph.getMouseXY(e);
+                var canvasXY = RGraph.getCanvasXY(obj.canvas);
+                
+                if (!div) {
+                    var div = document.createElement('DIV');
+                    div.__object__     = obj;
+                    div.style.position = 'absolute';
+                    div.style.backgroundColor = 'white';
+                    div.style.border = '1px solid black';
+                    div.style.fontFamily = 'Arial, Verdana, sans-serif';
+                    div.style.fontSize = '10pt'
+                    div.style.padding = '2px';
+                    div.style.opacity = 1;
+                    div.style.WebkitBorderRadius = '3px';
+                    div.style.borderRadius = '3px';
+                    div.style.MozBorderRadius = '3px';
+                    document.body.appendChild(div);
+                    
+                    RGraph.Registry.Set('chart.coordinates.coords.div', div);
+                }
+                
+                // Convert the X/Y pixel coords to correspond to the scale
+                div.style.opacity = 1;
+                div.style.display = 'inline';
+
+                if (!prop['chart.crosshairs.coords.fixed']) {
+                    div.style.left = Math.max(2, (e.pageX - div.offsetWidth - 3)) + 'px';
+                    div.style.top = Math.max(2, (e.pageY - div.offsetHeight - 3))  + 'px';
+                } else {
+                    div.style.left = canvasXY[0] + gutterLeft + 3 + 'px';
+                    div.style.top  = canvasXY[1] + gutterTop + 3 + 'px';
+                }
+
+                div.innerHTML = '<span style="color: #666">' + prop['chart.crosshairs.coords.labels.x'] + ':</span> ' + xCoord + '<br><span style="color: #666">' + prop['chart.crosshairs.coords.labels.y'] + ':</span> ' + yCoord;
+
+                obj.canvas.addEventListener('mouseout', RGraph.HideCrosshairCoords, false);
+
+                obj.canvas.__crosshairs_labels__ = div;
+                obj.canvas.__crosshairs_x__ = xCoord;
+                obj.canvas.__crosshairs_y__ = yCoord;
+
+            } else if (prop['chart.crosshairs.coords']) {
+                alert('[RGRAPH] Showing crosshair coordinates is only supported on the Scatter chart');
             }
 
             /**
