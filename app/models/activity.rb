@@ -23,6 +23,10 @@ class Activity < ActiveRecord::Base
   end
 
   #def max_watts
+  #   self.laps.inject(0) { |sum,lap| sum + lap.track_points.count } 
+  #end
+
+  #def max_watts
   #	max_watts = 0
   #	self.laps.each do |lap|
   #		max_watts = lap.max_watts unless lap.max_watts < max_watts

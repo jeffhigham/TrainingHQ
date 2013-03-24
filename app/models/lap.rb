@@ -3,8 +3,8 @@ class Lap < ActiveRecord::Base
                   :max_watts, :min_watts, :avg_watts,
                   :max_cadence, :min_cadence, :avg_cadence,
                   :max_speed, :min_speed, :avg_speed,
-                  :max_temp, :min_temp, :avg_temp 
-                  :start_time, :total_time, :ride_time
+                  :max_temp, :min_temp, :avg_temp, 
+                  :start_time, :total_time, :ride_time,
                   :calories, :distance, :intensity,
                   :elevation_gain, :elevation_loss, :kjoules,
                   :total_trackpoints
