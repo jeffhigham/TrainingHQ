@@ -31,10 +31,18 @@ module Guppy
     end
 
     def to_hash
-     @@attributes.each_with_object({}) { 
-        |a,h| h[a] = instance_variable_get "@#{a}" 
+     @@attributes.each_with_object({}) { |a,h| 
+        h[a] = instance_variable_get "@#{a}" 
       }
     end
+
+    # Given the large number of trackpoints in an activity we want to minimize
+    # iterating over these a much as possible. This is an atempt to calculate
+    # the useful data needed in a single loop through the trackpoints in the
+    # current lap.
+    #
+    # This should be called before doing anything else with the object.
+    #
 
     def calculate_and_cache_attributes
 
@@ -80,7 +88,7 @@ module Guppy
         @min_altitude = track_point.altitude if track_point.altitude < @min_altigude
         total_altitude += track_point.altitude
 
-        # track_point.temp has not been implemented yet.
+        # track_point.temp has not been implemented yet. Initialized to 0
         #@max_temp = track_point.temp if track_point.temp > @max_temp
         #@min_temp = track_point.temp if track_point.temp < @min_temp
 
@@ -114,6 +122,7 @@ module Guppy
       @avg_cadence = total_cadence / @total_trackpoints
       @avg_speed = total_speed / @total_trackpoints
       @avg_altitude = total_altitude / @total_trackpoints
+      @start_time = trackpoints.first.time
 
     end
   
