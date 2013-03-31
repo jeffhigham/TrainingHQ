@@ -23,76 +23,32 @@ class Activity < ActiveRecord::Base
     return distance_meters_to_feet(self.elevation_gain)
   end
 
-  #def max_watts
-  #   self.laps.inject(0) { |sum,lap| sum + lap.track_points.count } 
-  #end
-
-  #def max_watts
-  #	max_watts = 0
-  #	self.laps.each do |lap|
-  #		max_watts = lap.max_watts unless lap.max_watts < max_watts
-  #	end
-  #	return max_watts
-  #end
-
-  #def min_watts
-  #	min_watts = 10000 # something way too high.
-  #	self.laps.each do |lap|
-  #		min_watts = lap.min_watts unless lap.min_watts > min_watts
-  #	end
-  #	return min_watts
-  #end
-
-  #def avg_watts
-  #	bunch_of_watts = []
-  #	self.laps.each do |lap|
-  #		bunch_of_watts << lap.avg_watts
-  #	end
-  #	return (bunch_of_watts.sum/bunch_of_watts.count)
-  #end
-
-  #def avg_heart_rate
-  #  bunch_of_hr = []
-  #  self.laps.each do |lap|
-  #    bunch_of_hr << lap.avg_heart_rate
-  #  end
-  #  return (bunch_of_hr.sum/bunch_of_hr.count)
-  #end
-
-  #def avg_cadence
-  #  bunch_of_cadence = []
-  #  self.laps.each do |lap|
-  #    bunch_of_cadence << lap.avg_cadence
-  #  end
-  #  return (bunch_of_cadence.sum/bunch_of_cadence.count)
-  # end
-
   def total_time_formatted
-    time_in_seconds = 0
-    self.laps.each do |lap|
-      time_in_seconds += lap.total_time
-    end
-    return time_formatted(time_in_seconds)
+    time_formatted(self.total_time.to_i)  # fix total_time data type!! string -> int
   end
 
   def ride_time_formatted
-    time_in_seconds = 0
-    self.laps.each do |lap|
-      time_in_seconds += lap.ride_time
-    end
-    return time_formatted(time_in_seconds)
+    time_formatted(self.ride_time)
   end
 
-  def total_distance_formatted
-    return ride_distance_formatted(distance_meters_to_feet(self.distance_meters)).round(2)
+  def distance_miles
+    distance_meters_to_miles(self.distance)
   end
 
-  def distance_meters
-    distance_meters = 0
-    self.laps.each do |lap|
-      distance_meters += lap.distance
-    end
-    return distance_meters
+  def distance_feet
+    distance_meters_to_feet(self.distance)
+  end
+
+  def elevation_feet
+    distance_meters_to_feet(self.elevation_gain)
+  end
+
+  def max_speed_mph
+    speed_kmph_to_mph(self.max_speed)
+  end
+
+  def avg_speed_mph
+    speed_kmph_to_mph(self.avg_speed)
   end
 
   def raw_numbers
