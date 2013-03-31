@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130306141637) do
+ActiveRecord::Schema.define(:version => 20130331025133) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",                                               :default => 0
@@ -55,6 +55,12 @@ ActiveRecord::Schema.define(:version => 20130306141637) do
     t.integer  "min_speed",                                             :default => 0
     t.integer  "avg_speed",                                             :default => 0
     t.integer  "calories",                                              :default => 0
+    t.integer  "max_altitude",                                          :default => 0
+    t.integer  "min_altitude",                                          :default => 0
+    t.integer  "avg_altitude",                                          :default => 0
+    t.string   "start_time"
+    t.string   "total_time"
+    t.string   "intensity"
   end
 
   create_table "hr_zones", :force => true do |t|
@@ -109,6 +115,10 @@ ActiveRecord::Schema.define(:version => 20130306141637) do
     t.integer  "min_temp",                                         :default => 0
     t.integer  "avg_temp",                                         :default => 0
     t.integer  "min_speed",                                        :default => 0
+    t.integer  "max_altitude",                                     :default => 0
+    t.integer  "min_altitude",                                     :default => 0
+    t.integer  "avg_altitude",                                     :default => 0
+    t.integer  "min_watts",                                        :default => 0
   end
 
   create_table "power_zones", :force => true do |t|

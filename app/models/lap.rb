@@ -7,7 +7,7 @@ class Lap < ActiveRecord::Base
                   :start_time, :total_time, :ride_time,
                   :calories, :distance, :intensity,
                   :elevation_gain, :elevation_loss, :kjoules,
-                  :total_trackpoints
+                  :total_trackpoints, :max_altitude, :min_altitude, :avg_altitude
 
   belongs_to :activity
   has_many :trackpoints, dependent: :destroy

@@ -5,7 +5,8 @@ class Activity < ActiveRecord::Base
                   :elevation_gain, :elevation_loss, :kjoules, :total_laps, :total_trackpoints, 
                   :ride_time, :distance, :max_watts, :min_watts, :avg_watts, :max_heart_rate,
                   :min_heart_rate, :avg_heart_rate, :max_cadence, :min_cadence, :avg_cadence,
-                  :max_temp, :min_temp, :avg_temp, :max_speed, :min_speed, :avg_speed, :calories
+                  :max_temp, :min_temp, :avg_temp, :max_speed, :min_speed, :avg_speed, :calories,
+                  :max_altitude, :min_altitude, :avg_altitude, :start_time, :total_time, :intensity
                   
   has_attached_file :datafile
   has_many :laps, dependent: :destroy

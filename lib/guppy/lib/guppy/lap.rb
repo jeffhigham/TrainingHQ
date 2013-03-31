@@ -7,7 +7,7 @@ module Guppy
                       :max_speed, :min_speed, :avg_speed,
                       :max_temp, :min_temp, :avg_temp,
                       :max_altitude, :min_altitude, :avg_altitude, 
-                      :start_time, :total_time, :ride_time
+                      :start_time, :total_time, :ride_time,
                       :calories, :distance, :intensity,
                       :elevation_gain, :elevation_loss, :kjoules,
                       :total_trackpoints ]
@@ -64,8 +64,8 @@ module Guppy
         @min_watts = track_point.watts if @min_watts == 0
         @min_heart_rate = track_point.heart_rate if @min_heart_rate == 0
         @min_cadence = track_point.cadence if @min_cadence == 0
-        @min_speed = track_point.speed if @min_speed == 0
-        @min_altitude = track_point.altitude if @min_altitude == 0
+        @min_speed = track_point.speed.round(2) if @min_speed == 0
+        @min_altitude = track_point.altitude.round(2) if @min_altitude == 0
 
         # Max/min watts, hr, cadence, speed, altitude, temp
         @max_watts = track_point.watts if track_point.watts > @max_watts
@@ -80,12 +80,12 @@ module Guppy
         @min_cadence = track_point.cadence if track_point.cadence < @min_cadence
         total_cadence += track_point.cadence
 
-        @max_speed = track_point.speed if track_point.speed > @max_speed
-        @min_speed = track_point.speed if track_point.speed < @min_speed
+        @max_speed = track_point.speed.round(2) if track_point.speed > @max_speed
+        @min_speed = track_point.speed.round(2) if track_point.speed < @min_speed
         total_speed  += track_point.speed
 
-        @max_altitude = track_point.altitude if track_point.altitude > @max_altitude
-        @min_altitude = track_point.altitude if track_point.altitude < @min_altigude
+        @max_altitude = track_point.altitude.round(2) if track_point.altitude > @max_altitude
+        @min_altitude = track_point.altitude.round(2) if track_point.altitude < @min_altitude
         total_altitude += track_point.altitude
 
         # track_point.temp has not been implemented yet. Initialized to 0
@@ -116,13 +116,17 @@ module Guppy
         last_altitude=track_point.altitude
         @total_trackpoints += 1
     
-      end 
-      @avg_watts = total_watts / @total_trackpoints
-      @avg_heart_rate = total_heart_rate / @total_trackpoints
-      @avg_cadence = total_cadence / @total_trackpoints
-      @avg_speed = total_speed / @total_trackpoints
-      @avg_altitude = total_altitude / @total_trackpoints
-      @start_time = trackpoints.first.time
+      end
+
+      @avg_watts      = (total_watts / @total_trackpoints).round(0)
+      @avg_heart_rate = (total_heart_rate / @total_trackpoints).round(0)
+      @avg_cadence    = (total_cadence / @total_trackpoints).round(0)
+      @avg_speed      = (total_speed / @total_trackpoints).round(2)
+      @avg_altitude   = (total_altitude / @total_trackpoints).round(2)
+      @elevation_gain = @elevation_gain.round(2)
+      @elevation_loss = @elevation_loss.round(2)
+      @kjoules        = @kjoules.round(2)
+      @start_time     = track_points.first.time
 
     end
   
