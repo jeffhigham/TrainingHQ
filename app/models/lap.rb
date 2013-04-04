@@ -69,6 +69,10 @@ class Lap < ActiveRecord::Base
     return distance_meters_to_feet(self.elevation_gain)
   end
 
+  def distance_miles
+    distance_meters_to_miles(self.distance)
+  end
+
   def distance_feet
   	return distance_meters_to_feet(self.distance)	
   end
@@ -79,6 +83,10 @@ class Lap < ActiveRecord::Base
 
   def total_time_formatted
       return time_formatted(total_time)
+  end
+
+  def ride_time_formatted
+    time_formatted(self.ride_time)
   end
 
   def total_distance_formatted

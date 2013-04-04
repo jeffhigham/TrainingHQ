@@ -1,23 +1,19 @@
 
 <table>
   <tr>
-    <th colspan=14>Intervals</th>
+    <th colspan=17>Intervals</th>
   </tr>
   <tr>
     <th>ID</th>
-    <th>Time</th>
-    <th>Distance (Miles)</th>
+    <th>Ride Time</th>
+    <th>Distance</th>
     <th>Calories</th>
-    <th>Min HR</th>
-    <th>Ave HR</th>
-    <th>Max HR</th>
-    <th>Min Cadence</th>
-    <th>Ave Cadence</th>
-    <th>Max Cadence</th>
-    <th>Min Watts</th>
-    <th>Ave Watts</th>
-    <th>Max Watts</th>
     <th>kJoules</th>
+    <th colspan="3">Speed ( min / avg / max )</th>
+    <th colspan="3">HR ( min / avg / max )</th>
+    <th colspan="3">Watts ( min / avg / max )</th>
+    <th colspan="3">Cadence ( min / avg / max )</th>
   <tr>
    <%= render(@activity.laps) %>
 </table>
+<br/>

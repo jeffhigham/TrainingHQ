@@ -1,17 +1,24 @@
 
   <tr>
     <td><%= lap.id %></td>
-    <td><%= lap.total_time_formatted %></td>
-    <td><%= lap.total_distance_formatted %> </td>
+    <td><%= lap.ride_time_formatted %></td>
+    <td><%= lap.distance_miles %> </td>
     <td><%= lap.calories %> </td>
+    <td><%= lap.kjoules %></td>
+    <td><%= lap.min_speed %></td>
+    <td><%= lap.avg_speed %></td>
+    <td><%= lap.max_speed %></td>
+    
     <td><%= lap.min_heart_rate %></td>
     <td><%= lap.avg_heart_rate %></td>
     <td><%= lap.max_heart_rate %></td>
-    <td><%= lap.min_cadence %></td>
-    <td><%= lap.avg_cadence %></td>
-    <td><%= lap.get_max_cadence %></td>
+
     <td><%= lap.min_watts %></td>
     <td><%= lap.avg_watts %></td>
-    <td><%= lap.get_max_watts %></td>
-    <td><%= lap.kjoules %></td>
+    <td><%= lap.max_watts %></td>
+
+    <td><%= lap.min_cadence %></td>
+    <td><%= lap.avg_cadence %></td>
+    <td><%= lap.max_cadence %></td>
+
   <tr>
