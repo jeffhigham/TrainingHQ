@@ -1,11 +1,14 @@
 <p id="notice"><%= notice %></p>
+<!--
 <%= image_tag @activity.user.avatar.url(:thumb) %><br/>
+//-->
 <b>Athlete: <%= @activity.user.name %> </b><br/>
 <b>Activity: <%= @activity.name %></b><br/>
 <b>Date: <%= @activity.activity_date %></b><br/>
 <b>Device Type: <%= @activity.creator_name %></b><br/>
 <b>Sport: <%= @activity.sport %></b><br/>
 <br/>
+<!--
 <nav id="activity_nav">
 	<a href="#summary">Summary</a> |
 	<a href="#map">Map</a> |
@@ -17,6 +20,7 @@
 
 <br/>
 <br/>
+//-->
 
 <div id="summary" class="activity_content">
 	<%= 
@@ -36,7 +40,7 @@ render 'map'
 %>
 
 
-
+<!--
 <script>
 
 	$(function(){
@@ -75,3 +79,5 @@ render 'map'
     contentSwitcher();
 }); 
 </script>
+
+//-->

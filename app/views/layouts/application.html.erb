@@ -1,35 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>TrainingHQ</title>
+  <title>Training HQ<%= current_user != nil ? " :: #{current_user.name}" : "" %></title>
   <%= stylesheet_link_tag    "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-<h1>TrainingHQ Rails Application</h2>
-	<br/>
-<nav id="main_nav">
-  <% if current_user %>
-    <%= link_to "User Profile", user_path(current_user) %> | 
-    <%= link_to "Activities", activities_path %> |
-    <%= link_to "Upload", new_user_activity_path(current_user) %> | 
-    <%= link_to "Log Out", logout_path %>
-  <% else %>
-    <%= link_to "Sign up", signup_path %> or
-    <%= link_to "log in", login_path %>
-  <% end %>
-</nav>
+<div class="rounded-corners" style="background:#000; padding:5px; border:2px solid #666; width:1060px">
+<header id="application_header" >
+  <div id="logo">
+  <%= 
+    if current_user != nil
+      image_tag current_user.avatar.url(:thumb)
+    else
+      image_tag "/avatars/thumb/missing.png"
+    end
+    %></div>
+  <nav id="main_nav">
+    <% if current_user %>
+      <%= link_to "Activities", activities_path %>&nbsp;|&nbsp;
+      <%= link_to "Upload", new_user_activity_path(current_user) %>&nbsp;|&nbsp; 
+      <%= link_to "User Profile", user_path(current_user) %>&nbsp;|&nbsp; 
+      <%= link_to "Log Out", logout_path, confirm: "Really log out?" %>
+    <% else %>
+      <%= link_to "Sign up", signup_path %>&nbsp;|&nbsp;
+      <%= link_to "log in", login_path %>
+    <% end %>
+  </nav>
+</header>
 
-
-
-<br/>
-<% flash.each do |key, value| %>
+<section id="main">
+  <% flash.each do |key, value| %>
     <div class="flash <%= key %>"><%= value %></div>
-<% end %>
-<%= yield %>
-<%= yield :scripts %>
+  <% end %>
+  <%= yield %>
+  <%= yield :scripts %>
+</section>
 
+<section id="debug">
 <%=  
 if Rails.env.development?
   #debug(params)
@@ -37,7 +46,7 @@ if Rails.env.development?
   #debug(current_user) 
 end
 %>
-
-
+</section>
+</div>
 </body>
 </html>

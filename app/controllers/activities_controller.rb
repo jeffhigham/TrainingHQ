@@ -26,6 +26,7 @@ class ActivitiesController < ApplicationController
   def index
     @user = current_user
     @activities = Activity.where({processed: 1, user_id: current_user.id}).order('activity_date')
+    @new_activities = Activity.where({processed: 0, user_id: current_user.id}).order('activity_date')
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @activities }

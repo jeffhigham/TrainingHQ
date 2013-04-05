@@ -1,13 +1,10 @@
-
-<%= image_tag @user.avatar.url(:thumb) %>
-
 <h2>Athlete: <%= @user.name %></h2>
 <b>Email: <%= @user.email %></b></br/>
 <b>Journal Entries: <%= @user.journal_entries.count %></b><br/>
 <br/>
 <nav style="width: 400px">
-	<b><%= link_to 'Edit Profile', edit_user_path(@user), remote: true %></b>
-	<b><%= link_to 'Power Zones', user_power_zones_path(@user), remote: true %></b>
+	<b><%= link_to 'Edit Profile', edit_user_path(@user), remote: true %></b> |
+	<b><%= link_to 'Power Zones', user_power_zones_path(@user), remote: true %></b> |
 	<b><%= link_to 'HR Zones', user_hr_zones_path(@user), remote: true %></b>
 </nav>
 
