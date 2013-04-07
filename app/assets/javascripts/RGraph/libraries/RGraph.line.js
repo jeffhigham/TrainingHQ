@@ -103,7 +103,7 @@
             'chart.text.angle':             0,
             'chart.text.color':             'black',
             'chart.text.font':              'Arial',
-            'chart.ymin':                   null,
+            'chart.ymin':                   0,
             'chart.ymax':                   null,
             'chart.title':                  '',
             'chart.title.background':       null,
@@ -163,7 +163,7 @@
             'chart.ylabels':                true,
             'chart.ylabels.count':          5,
             'chart.ylabels.inside':         false,
-            'chart.ylabels.invert':         false,
+            'chart.scale.invert':         false,
             'chart.xlabels.inside':         false,
             'chart.xlabels.inside.color':   'rgba(255,255,255,0.5)',
             'chart.noaxes':                 false,
@@ -330,15 +330,6 @@
             value = tooltips;
         }
 
-        /**
-        * Reverse the tickmarks to make them correspond to the right line
-        * 
-        * Taken out - 1/5/12
-        */
-        //if (name == 'chart.tickmarks' && typeof(value) == 'object' && value) {
-        //    value = RGraph.array_reverse(value);
-        //}
-
         
         /**
         * If (buggy) Chrome and the linewidth is 1, change it to 1.01
@@ -381,6 +372,14 @@
         */
         if (name == 'chart.spline') {
             name = 'chart.curvy';
+        }
+
+
+        /**
+        * Chnge chart.ylabels.invert to chart.scale.invert
+        */
+        if (name == 'chart.ylabels.invert') {
+            name = 'chart.scale.invert';
         }
 
 
@@ -428,6 +427,10 @@
     */
     RGraph.Line.prototype.Draw = function ()
     {
+        var ca   = this.canvas;
+        var co   = this.context;
+        var prop = this.properties;
+
         // MUST be the first thing done!
         if (typeof(this.properties['chart.background.image']) == 'string') {
             RGraph.DrawBackgroundImage(this);
@@ -457,10 +460,10 @@
         * This is new in May 2011 and facilitates indiviual gutter settings,
         * eg chart.gutter.left
         */
-        this.gutterLeft   = this.properties['chart.gutter.left'];
-        this.gutterRight  = this.properties['chart.gutter.right'];
-        this.gutterTop    = this.properties['chart.gutter.top'];
-        this.gutterBottom = this.properties['chart.gutter.bottom'];
+        this.gutterLeft   = prop['chart.gutter.left'];
+        this.gutterRight  = prop['chart.gutter.right'];
+        this.gutterTop    = prop['chart.gutter.top'];
+        this.gutterBottom = prop['chart.gutter.bottom'];
 
 
         /**
@@ -472,9 +475,9 @@
         */
         if (   this.properties['chart.shadow']
             && navigator.userAgent.match(/Chrome/)
-            && this.properties['chart.linewidth'] <= 1
-            && this.properties['chart.chromefix']
-            && this.properties['chart.shadow.blur'] > 0) {
+            && prop['chart.linewidth'] <= 1
+            && prop['chart.chromefix']
+            && prop['chart.shadow.blur'] > 0) {
                 alert('[RGRAPH WARNING] Chrome has a shadow bug, meaning you should increase the linewidth to at least 1.01');
         }
 
@@ -492,7 +495,7 @@
         */
         //this.data = RGraph.array_reverse(this.data);
 
-        if (this.properties['chart.filled'] && !this.properties['chart.filled.range'] && this.data.length > 1 && this.properties['chart.filled.accumulative']) {
+        if (prop['chart.filled'] && !prop['chart.filled.range'] && this.data.length > 1 && prop['chart.filled.accumulative']) {
 
             var accumulation = [];
         
@@ -507,18 +510,25 @@
         /**
         * Get the maximum Y scale value
         */
-        if (this.properties['chart.ymax']) {
+        if (prop['chart.ymax']) {
             
-            this.max = this.properties['chart.ymax'];
-            this.min = this.properties['chart.ymin'] ? this.properties['chart.ymin'] : 0;
+            this.max = prop['chart.ymax'];
+            this.min = prop['chart.ymin'] ? prop['chart.ymin'] : 0;
 
-            this.scale = [
-                          ( ((this.max - this.min) * (1/5)) + this.min).toFixed(this.properties['chart.scale.decimals']),
-                          ( ((this.max - this.min) * (2/5)) + this.min).toFixed(this.properties['chart.scale.decimals']),
-                          ( ((this.max - this.min) * (3/5)) + this.min).toFixed(this.properties['chart.scale.decimals']),
-                          ( ((this.max - this.min) * (4/5)) + this.min).toFixed(this.properties['chart.scale.decimals']),
-                          this.max.toFixed(this.properties['chart.scale.decimals'])
-                         ];
+            this.scale2 = RGraph.getScale2(this, {
+                                                'max':this.max,
+                                                'min':prop['chart.ymin'],
+                                                'strict':true,
+                                                'scale.thousand':prop['chart.scale.thousand'],
+                                                'scale.point':prop['chart.scale.point'],
+                                                'scale.decimals':prop['chart.scale.decimals'],
+                                                'ylabels.count':prop['chart.ylabels.count'],
+                                                'scale.round':prop['chart.scale.round'],
+                                                'units.pre': prop['chart.units.pre'],
+                                                'units.post': prop['chart.units.post']
+                                               });
+
+            this.max   = this.scale2.max ? this.scale2.max : 0;
 
             // Check for negative values
             if (!this.properties['chart.outofbounds']) {
@@ -533,7 +543,7 @@
 
         } else {
 
-            this.min = this.properties['chart.ymin'] ? this.properties['chart.ymin'] : 0;
+            this.min = prop['chart.ymin'] ? prop['chart.ymin'] : 0;
 
             // Work out the max Y value
             for (dataset=0; dataset<this.data.length; ++dataset) {
@@ -542,31 +552,25 @@
                     this.max = Math.max(this.max, this.data[dataset][datapoint] ? Math.abs(parseFloat(this.data[dataset][datapoint])) : 0);
     
                     // Check for negative values
-                    if (!this.properties['chart.outofbounds']) {
+                    if (!prop['chart.outofbounds']) {
                         this.hasnegativevalues = (this.data[dataset][datapoint] < 0) || this.hasnegativevalues;
                     }
                 }
             }
 
-            // 20th April 2009 - moved out of the above loop
-            this.scale = RGraph.getScale(Math.abs(parseFloat(this.max)), this);
-            this.max   = this.scale[4] ? this.scale[4] : 0;
+            this.scale2 = RGraph.getScale2(this, {
+                                                'max':this.max,
+                                                'min':prop['chart.ymin'],
+                                                'scale.thousand':prop['chart.scale.thousand'],
+                                                'scale.point':prop['chart.scale.point'],
+                                                'scale.decimals':prop['chart.scale.decimals'],
+                                                'ylabels.count':prop['chart.ylabels.count'],
+                                                'scale.round':prop['chart.scale.round'],
+                                                'units.pre': prop['chart.units.pre'],
+                                                'units.post': prop['chart.units.post']
+                                               });
 
-            if (this.properties['chart.ymin']) {
-                this.scale[0] = ((this.max - this.properties['chart.ymin']) * (1/5)) + this.properties['chart.ymin'];
-                this.scale[1] = ((this.max - this.properties['chart.ymin']) * (2/5)) + this.properties['chart.ymin'];
-                this.scale[2] = ((this.max - this.properties['chart.ymin']) * (3/5)) + this.properties['chart.ymin'];
-                this.scale[3] = ((this.max - this.properties['chart.ymin']) * (4/5)) + this.properties['chart.ymin'];
-                this.scale[4] = ((this.max - this.properties['chart.ymin']) * (5/5)) + this.properties['chart.ymin'];
-            }
-
-            if (typeof(this.properties['chart.scale.decimals']) == 'number') {
-                this.scale[0] = Number(this.scale[0]).toFixed(this.properties['chart.scale.decimals']);
-                this.scale[1] = Number(this.scale[1]).toFixed(this.properties['chart.scale.decimals']);
-                this.scale[2] = Number(this.scale[2]).toFixed(this.properties['chart.scale.decimals']);
-                this.scale[3] = Number(this.scale[3]).toFixed(this.properties['chart.scale.decimals']);
-                this.scale[4] = Number(this.scale[4]).toFixed(this.properties['chart.scale.decimals']);
-            }
+            this.max   = this.scale2.max ? this.scale2.max : 0;
         }
 
         /**
@@ -623,19 +627,20 @@
         /**
         * This facilitates the new Trace2 effect
         */
-        this.context.save()
-        this.context.beginPath();
-        this.context.rect(0, 0, this.canvas.width * this.properties['chart.animation.trace.clip'], this.canvas.height);
-        this.context.clip();
+
+        co.save()
+        co.beginPath();
+        co.rect(0, 0, ca.width * prop['chart.animation.trace.clip'], ca.height);
+        co.clip();
 
             for (var i=0, j=0; i<this.data.length; i++, j++) {
     
-                this.context.beginPath();
+                co.beginPath();
     
                 /**
                 * Turn on the shadow if required
                 */
-                if (!this.properties['chart.filled']) {
+                if (!prop['chart.filled']) {
                     this.SetShadow(i);
                 }
     
@@ -643,19 +648,19 @@
                 * Draw the line
                 */
     
-                if (this.properties['chart.fillstyle']) {
-                    if (typeof(this.properties['chart.fillstyle']) == 'object' && this.properties['chart.fillstyle'][j]) {
-                       var fill = this.properties['chart.fillstyle'][j];
+                if (prop['chart.fillstyle']) {
+                    if (typeof(prop['chart.fillstyle']) == 'object' && prop['chart.fillstyle'][j]) {
+                       var fill = prop['chart.fillstyle'][j];
                     
-                    } else if (typeof(this.properties['chart.fillstyle']) == 'object' && this.properties['chart.fillstyle'].toString().indexOf('Gradient') > 0) {
-                       var fill = this.properties['chart.fillstyle'];
+                    } else if (typeof(prop['chart.fillstyle']) == 'object' && prop['chart.fillstyle'].toString().indexOf('Gradient') > 0) {
+                       var fill = prop['chart.fillstyle'];
                     
-                    } else if (typeof(this.properties['chart.fillstyle']) == 'string') {
-                        var fill = this.properties['chart.fillstyle'];
+                    } else if (typeof(prop['chart.fillstyle']) == 'string') {
+                        var fill = prop['chart.fillstyle'];
         
                     }
-                } else if (this.properties['chart.filled']) {
-                    var fill = this.properties['chart.colors'][j];
+                } else if (prop['chart.filled']) {
+                    var fill = prop['chart.colors'][j];
     
                 } else {
                     var fill = null;
@@ -664,19 +669,19 @@
                 /**
                 * Figure out the tickmark to use
                 */
-                if (this.properties['chart.tickmarks'] && typeof(this.properties['chart.tickmarks']) == 'object') {
-                    var tickmarks = this.properties['chart.tickmarks'][i];
-                } else if (this.properties['chart.tickmarks'] && typeof(this.properties['chart.tickmarks']) == 'string') {
-                    var tickmarks = this.properties['chart.tickmarks'];
-                } else if (this.properties['chart.tickmarks'] && typeof(this.properties['chart.tickmarks']) == 'function') {
-                    var tickmarks = this.properties['chart.tickmarks'];
+                if (prop['chart.tickmarks'] && typeof(prop['chart.tickmarks']) == 'object') {
+                    var tickmarks = prop['chart.tickmarks'][i];
+                } else if (prop['chart.tickmarks'] && typeof(prop['chart.tickmarks']) == 'string') {
+                    var tickmarks = prop['chart.tickmarks'];
+                } else if (prop['chart.tickmarks'] && typeof(prop['chart.tickmarks']) == 'function') {
+                    var tickmarks = prop['chart.tickmarks'];
                 } else {
                     var tickmarks = null;
                 }
     
     
                 this.DrawLine(this.data[i],
-                              this.properties['chart.colors'][j],
+                              prop['chart.colors'][j],
                               fill,
                               this.GetLineWidth(j),
                                tickmarks,
@@ -688,23 +693,23 @@
         /**
         * If the line is filled re-stroke the lines
         */
-        if (this.properties['chart.filled'] && this.properties['chart.filled.accumulative'] && !this.properties['chart.curvy']) {
+        if (prop['chart.filled'] && prop['chart.filled.accumulative'] && !prop['chart.curvy']) {
     
             for (var i=0; i<this.coords2.length; ++i) {
     
-                this.context.beginPath();
-                this.context.lineWidth = this.GetLineWidth(i);
-                this.context.strokeStyle = this.properties['chart.colors'][i];
+                co.beginPath();
+                co.lineWidth = this.GetLineWidth(i);
+                co.strokeStyle = prop['chart.colors'][i];
     
                 for (var j=0; j<this.coords2[i].length; ++j) {
     
                     if (j == 0 || this.coords2[i][j][1] == null || (this.coords2[i][j - 1] && this.coords2[i][j - 1][1] == null)) {
                         this.context.moveTo(this.coords2[i][j][0], this.coords2[i][j][1]);
                     } else {
-                        if (this.properties['chart.stepped']) {
-                            this.context.lineTo(this.coords2[i][j][0], this.coords2[i][j - 1][1]);
+                        if (prop['chart.stepped']) {
+                            co.lineTo(this.coords2[i][j][0], this.coords2[i][j - 1][1]);
                         }
-                        this.context.lineTo(this.coords2[i][j][0], this.coords2[i][j][1]);
+                        co.lineTo(this.coords2[i][j][0], this.coords2[i][j][1]);
                     }
                 }
                 
@@ -713,25 +718,25 @@
             }
     
             //Redraw the tickmarks
-            if (this.properties['chart.tickmarks']) {
+            if (prop['chart.tickmarks']) {
     
-                this.context.beginPath();
+                co.beginPath();
     
-                this.context.fillStyle = 'white';
+                co.fillStyle = 'white';
                 
                 for (var i=0; i<this.coords2.length; ++i) {
     
-                    this.context.beginPath();
-                    this.context.strokeStyle = this.properties['chart.colors'][i];
+                    co.beginPath();
+                    co.strokeStyle = prop['chart.colors'][i];
                     for (var j=0; j<this.coords2[i].length; ++j) {
                         if (typeof(this.coords2[i][j]) == 'object' && typeof(this.coords2[i][j][0]) == 'number' && typeof(this.coords2[i][j][1]) == 'number') {
                             
-                            var tickmarks = typeof(this.properties['chart.tickmarks']) == 'object' ? this.properties['chart.tickmarks'][i] : this.properties['chart.tickmarks'];
+                            var tickmarks = typeof(prop['chart.tickmarks']) == 'object' ? prop['chart.tickmarks'][i] : prop['chart.tickmarks'];
     
                             this.DrawTick(  this.coords2[i],
                                             this.coords2[i][j][0],
                                             this.coords2[i][j][1],
-                                            this.context.strokeStyle,
+                                            co.strokeStyle,
                                             false,
                                             j == 0 ? 0 : this.coords2[i][j - 1][0],
                                             j == 0 ? 0 : this.coords2[i][j - 1][1],
@@ -741,14 +746,14 @@
                     }
                 }
     
-                this.context.stroke();
-                this.context.fill();
+                co.stroke();
+                co.fill();
             }
         }
-    this.context.restore();
+    co.restore();
 
     // ???
-    this.context.beginPath();
+    co.beginPath();
 
 
 
@@ -756,7 +761,7 @@
         /**
         * If the axes have been requested to be on top, do that
         */
-        if (this.properties['chart.axesontop']) {
+        if (prop['chart.axesontop']) {
             this.DrawAxes();
         }
 
@@ -771,14 +776,14 @@
         this.DrawRange();
         
         // Draw a key if necessary
-        if (this.properties['chart.key'] && this.properties['chart.key'].length && RGraph.DrawKey) {
-            RGraph.DrawKey(this, this.properties['chart.key'], this.properties['chart.colors']);
+        if (prop['chart.key'] && prop['chart.key'].length && RGraph.DrawKey) {
+            RGraph.DrawKey(this, prop['chart.key'], prop['chart.colors']);
         }
 
         /**
         * Draw " above" labels if enabled
         */
-        if (this.properties['chart.labels.above']) {
+        if (prop['chart.labels.above']) {
             this.DrawAboveLabels();
         }
 
@@ -790,47 +795,47 @@
         /**
         * Redraw the lines if a filled range is on the cards
         */
-        if (this.properties['chart.filled'] && this.properties['chart.filled.range'] && this.data.length == 2) {
+        if (prop['chart.filled'] && prop['chart.filled.range'] && this.data.length == 2) {
 
-            this.context.beginPath();
+            co.beginPath();
             var len = this.coords.length / 2;
-            this.context.lineWidth = this.properties['chart.linewidth'];
-            this.context.strokeStyle = this.properties['chart.colors'][0];
+            co.lineWidth = prop['chart.linewidth'];
+            co.strokeStyle = prop['chart.colors'][0];
 
             for (var i=0; i<len; ++i) {
                 if (i == 0) {
-                    this.context.moveTo(this.coords[i][0], this.coords[i][1]);
+                    co.moveTo(this.coords[i][0], this.coords[i][1]);
                 } else {
-                    this.context.lineTo(this.coords[i][0], this.coords[i][1]);
+                    co.lineTo(this.coords[i][0], this.coords[i][1]);
                 }
             }
             
-            this.context.stroke();
+            co.stroke();
 
 
-            this.context.beginPath();
+            co.beginPath();
             
-            if (this.properties['chart.colors'][1]) {
-                this.context.strokeStyle = this.properties['chart.colors'][1];
+            if (prop['chart.colors'][1]) {
+                co.strokeStyle = prop['chart.colors'][1];
             }
             
             for (var i=this.coords.length - 1; i>=len; --i) {
                 if (i == (this.coords.length - 1) ) {
-                    this.context.moveTo(this.coords[i][0], this.coords[i][1]);
+                    co.moveTo(this.coords[i][0], this.coords[i][1]);
                 } else {
-                    this.context.lineTo(this.coords[i][0], this.coords[i][1]);
+                    co.lineTo(this.coords[i][0], this.coords[i][1]);
                 }
             }
             
-            this.context.stroke();
-        } else if (this.properties['chart.filled'] && this.properties['chart.filled.range']) {
+            co.stroke();
+        } else if (prop['chart.filled'] && prop['chart.filled.range']) {
             alert('[LINE] You must have only two sets of data for a filled range chart');
         }
         
         /**
         * This function enables resizing
         */
-        if (this.properties['chart.resizable']) {
+        if (prop['chart.resizable']) {
             RGraph.AllowResizing(this);
         }
 
@@ -846,7 +851,10 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
+
 
     
     /**
@@ -1038,42 +1046,47 @@
     */
     RGraph.Line.prototype.DrawLabels = function ()
     {
-        this.context.strokeStyle = 'black';
-        this.context.fillStyle   = this.properties['chart.text.color'];
-        this.context.lineWidth   = 1;
+        var ca   = this.canvas;
+        var co   = this.context;
+        var prop = this.properties;
+
+        co.strokeStyle = 'black';
+        co.fillStyle   = this.properties['chart.text.color'];
+        co.lineWidth   = 1;
         
         // Turn off any shadow
         RGraph.NoShadow(this);
 
         // This needs to be here
-        var font      = this.properties['chart.text.font'];
-        var text_size = this.properties['chart.text.size'];
-        var context   = this.context;
-        var canvas    = this.canvas;
+        var font      = prop['chart.text.font'];
+        var text_size = prop['chart.text.size'];
+        var decimals  = prop['chart.scale.decimals'];
+        var context   = co;
+        var canvas    = ca;
+        var ymin      = prop['chart.ymin'];
 
         // Draw the Y axis labels
-        if (this.properties['chart.ylabels'] && this.properties['chart.ylabels.specific'] == null) {
+        if (prop['chart.ylabels'] && prop['chart.ylabels.specific'] == null) {
 
-            var units_pre  = this.properties['chart.units.pre'];
-            var units_post = this.properties['chart.units.post'];
-            var xpos       = this.properties['chart.yaxispos'] == 'left' ? this.gutterLeft - 5 : this.canvas.width - this.gutterRight + 5;
-            var align      = this.properties['chart.yaxispos'] == 'left' ? 'right' : 'left';
-            
-            var numYLabels = this.properties['chart.ylabels.count'];
+            var units_pre  = prop['chart.units.pre'];
+            var units_post = prop['chart.units.post'];
+            var xpos       = prop['chart.yaxispos'] == 'left' ? this.gutterLeft - 5 : ca.width - this.gutterRight + 5;
+            var align      = prop['chart.yaxispos'] == 'left' ? 'right' : 'left';
+            var numYLabels = this.scale2.labels.length;
             var bounding   = false;
-            var bgcolor    = this.properties['chart.ylabels.inside'] ? this.properties['chart.ylabels.inside.color'] : null;
+            var bgcolor    = prop['chart.ylabels.inside'] ? prop['chart.ylabels.inside.color'] : null;
 
             
             /**
             * If the Y labels are inside the Y axis, invert the alignment
             */
-            if (this.properties['chart.ylabels.inside'] == true && align == 'left') {
+            if (prop['chart.ylabels.inside'] == true && align == 'left') {
                 xpos -= 10;
                 align = 'right';
                 bounding = true;
                 
 
-            } else if (this.properties['chart.ylabels.inside'] == true && align == 'right') {
+            } else if (prop['chart.ylabels.inside'] == true && align == 'right') {
                 xpos += 10;
                 align = 'left';
                 bounding = true;
@@ -1085,27 +1098,57 @@
             /**
             * X axis in the center
             */
-            if (this.properties['chart.xaxispos'] == 'center') {
+            if (prop['chart.xaxispos'] == 'center') {
                 
                 var half = this.grapharea / 2;
 
                 /**
                 * Draw the top half 
                 */
-                for (var i=0; i<numYLabels; ++i) {
-                    RGraph.Text2(this, {'font': font,'size': text_size,'x': xpos,'y': this.gutterTop + ((i/numYLabels) * half),'valign': 'center','halign':align,'bounding': bounding,'boundingFill': bgcolor,'text': RGraph.number_format(this, (this.scale[4] * ((numYLabels - i) / numYLabels)).toFixed(this.properties['chart.scale.decimals']), units_pre, units_post)});
+                for (var i=0; i<this.scale2.labels.length; ++i) {
+                    RGraph.Text2(this, {'font': font,
+                                        'size': text_size,
+                                        'x': xpos,
+                                        'y': this.gutterTop + half - (((i+1)/numYLabels) * half),
+                                        'valign': 'center',
+                                        'halign':align,
+                                        'bounding': bounding,
+                                        'boundingFill': bgcolor,
+                                        'text': this.scale2.labels[i],
+                                        'tag': 'scale'
+                                       });
                 }
                 
                 /**
                 * Draw the bottom half
                 */
-                for (var i=0; i<numYLabels; ++i) {
-                    RGraph.Text2(this, {'font': font,'size': text_size,'x': xpos,'y': this.gutterTop + (((i+1)/numYLabels) * half) + half, 'valign': 'center','halign':align,'bounding': bounding,'boundingFill': bgcolor,'text': RGraph.number_format(this, (this.scale[4] * ((i+1) / numYLabels)).toFixed(this.properties['chart.scale.decimals']), units_pre, units_post)});
+                for (var i=0; i<this.scale2.labels.length; ++i) {
+                    RGraph.Text2(this, {'font': font,
+                                        'size': text_size,
+                                        'x': xpos,
+                                        'y': this.gutterTop + half + (((i+1)/numYLabels) * half),
+                                        'valign': 'center',
+                                        'halign':align,
+                                        'bounding': bounding,
+                                        'boundingFill': bgcolor,
+                                        'text': '-' + this.scale2.labels[i],
+                                        'tag': 'scale'
+                                       });
                 }
 
                 // No X axis - so draw 0
-                if (this.properties['chart.noxaxis'] == true) {
-                    RGraph.Text2(this,{'font':font,'size':text_size,'x':xpos,'y':this.gutterTop + half,'text':this.properties['chart.units.pre'] + '0' + this.properties['chart.units.post'], 'bounding':bounding,'boundingFill':bgcolor,'valign':'center','halign':align});
+                if (prop['chart.noxaxis'] == true || ymin != 0) {
+                    RGraph.Text2(this,{'font':font,
+                                       'size':text_size,
+                                       'x':xpos,
+                                       'y':this.gutterTop + half,
+                                       'text':prop['chart.units.pre'] + ymin.toFixed(decimals) + prop['chart.units.post'],
+                                       'bounding':bounding,
+                                       'boundingFill':bgcolor,
+                                       'valign':'center',
+                                       'halign':align,
+                                       'tag': 'scale'
+                                      });
                 }
 
 
@@ -1114,40 +1157,124 @@
             * X axis at the top
             */
             } else if (this.properties['chart.xaxispos'] == 'top') {
+            
+                var half = this.grapharea / 2;
 
-                if (this.properties['chart.ylabels.invert']) {
-                    for (var i=0; i<=numYLabels; ++i) {
-                        RGraph.Text2(this, {'font': font,'size': text_size,'x': xpos,'y': this.gutterTop + ((i/numYLabels) * this.grapharea),'valign': 'center','halign':align,'bounding': bounding,'boundingFill': bgcolor,'text': '-' + RGraph.number_format(this, ((this.scale[4] - this.min) * ((numYLabels - i) / numYLabels) + this.min).toFixed(this.properties['chart.scale.decimals']), units_pre, units_post)});
+                if (prop['chart.scale.invert']) {
+
+                    for (var i=0; i<this.scale2.labels.length; ++i) {
+
+                        RGraph.Text2(this, {'font': font,
+                                            'size': text_size,
+                                            'x': xpos,
+                                            'y': this.gutterTop + ((i/this.scale2.labels.length) * this.grapharea),
+                                            'valign': 'center',
+                                            'halign':align,
+                                            'bounding': bounding,
+                                            'boundingFill': bgcolor,
+                                            'text': '-' + this.scale2.labels[this.scale2.labels.length - (i+1)],
+                                            'tag': 'scale'
+                                           });
                     }
                 } else {
-                    for (var i=0; i<numYLabels; ++i) {
-                        RGraph.Text2(this, {'font': font,'size': text_size,'x': xpos,'y': this.gutterTop + (((i+1)/numYLabels) * this.grapharea),'valign': 'center','halign':align,'bounding': bounding,'boundingFill': bgcolor,'text': '-' + RGraph.number_format(this, (((this.scale[4] - this.min) * ((i+1) / numYLabels)) + this.min).toFixed(this.properties['chart.scale.decimals']), units_pre, units_post)});
+                    for (var i=0; i<this.scale2.labels.length; ++i) {
+                        RGraph.Text2(this, {'font': font,
+                                            'size': text_size,
+                                            'x': xpos,
+                                            'y': this.gutterTop + (((i+1)/numYLabels) * this.grapharea),
+                                            'valign': 'center',
+                                            'halign':align,
+                                            'bounding': bounding,
+                                            'boundingFill': bgcolor,
+                                            'text': '-' + this.scale2.labels[i],
+                                            'tag': 'scale'
+                                           });
                     }
                 }
 
                 // Draw the lower limit if chart.ymin is specified
-                if (typeof(this.properties['chart.ymin']) == 'number' && !this.properties['chart.ylabels.invert']) {
-                    RGraph.Text2(this, {'font':font,'size':text_size,'x':xpos,'y': this.gutterTop,'text': '-' + RGraph.number_format(this, this.properties['chart.ymin'].toFixed(this.properties['chart.scale.decimals']), units_pre, units_post),'valign':'center','halign': align,'bounding':bounding,'boundingFill':bgcolor});
+                if ((prop['chart.ymin'] != 0 || prop['chart.noxaxis']) || prop['chart.scale.invert']) {
+                    RGraph.Text2(this, {'font':font,
+                                        'size':text_size,
+                                        'x':xpos,
+                                        'y': prop['chart.scale.invert'] ? this.canvas.height - this.gutterBottom : this.gutterTop,
+                                        'text': (prop['chart.ymin'] != 0 ? '-' : '') + RGraph.number_format(this, this.properties['chart.ymin'].toFixed(decimals), units_pre, units_post),
+                                        'valign':'center',
+                                        'halign': align,
+                                        'bounding':bounding,
+                                        'boundingFill':bgcolor,
+                                        'tag': 'scale'});
                 }
+
+
+
+
+
 
             /**
             * X axis labels at the bottom
             */
             } else {
 
-                if (this.properties['chart.ylabels.invert']) {
-                    for (var i=0; i<=numYLabels; ++i) {
-                        RGraph.Text2(this, {'font': font,'size': text_size,'x': xpos,'y': this.gutterTop + ((i/numYLabels) * this.grapharea),'valign': 'center','halign':align,'bounding': bounding,'boundingFill': bgcolor,'text': RGraph.number_format(this, (((this.scale[4] - this.min) * (i/numYLabels)) + this.min).toFixed(this.properties['chart.scale.decimals']), units_pre, units_post)});
+                if (prop['chart.scale.invert']) {
+
+                    // Draw the minimum value
+                    RGraph.Text2(this, {'font': font,
+                                        'size': text_size,
+                                        'x': xpos,
+                                        'y': this.gutterTop,
+                                        'valign': 'center',
+                                        'halign':align,
+                                        'bounding': bounding,
+                                        'boundingFill': bgcolor,
+                                        'text': RGraph.number_format(this, this.min.toFixed(prop['chart.scale.decimals']), units_pre, units_post),
+                                        'tag': 'scale'
+                                       });
+
+                    for (var i=0; i<this.scale2.labels.length; ++i) {
+                        RGraph.Text2(this, {'font': font,
+                                            'size': text_size,
+                                            'x': xpos,
+                                            'y': this.gutterTop + (((i+1)/this.scale2.labels.length) * this.grapharea),
+                                            'valign': 'center',
+                                            'halign':align,
+                                            'bounding': bounding,
+                                            'boundingFill': bgcolor,
+                                            'text': this.scale2.labels[i],
+                                            'tag': 'scale'
+                                           });
                     }
                 } else {
-                    for (var i=0; i<numYLabels; ++i) {
-                        RGraph.Text2(this, {'font': font,'size': text_size,'x': xpos,'y': this.gutterTop + ((i/numYLabels) * this.grapharea),'valign': 'center','halign':align,'bounding': bounding,'boundingFill': bgcolor,'text': RGraph.number_format(this, (((this.scale[4] - this.min) * ((numYLabels-i)/numYLabels)) + this.min).toFixed(this.properties['chart.scale.decimals']), units_pre, units_post)});
+                    for (var i=0; i<this.scale2.labels.length; ++i) {
+                        RGraph.Text2(this, {'font': font,
+                                            'size': text_size,
+                                            'x': xpos,
+                                            'y': this.gutterTop + ((i/this.scale2.labels.length) * this.grapharea),
+                                            'valign': 'center',
+                                            'halign':align,
+                                            'bounding': bounding,
+                                            'boundingFill': bgcolor,
+                                            'text': this.scale2.labels[this.scale2.labels.length - (i + 1)],
+                                            'tag': 'scale'
+                                           });
                     }
                 }
 
                 // Draw the lower limit if chart.ymin is specified
-                if (typeof(this.properties['chart.ymin']) == 'number' && !this.properties['chart.ylabels.invert']) {
-                    RGraph.Text2(this, {'font':font,'size':text_size,'x':xpos,'y':this.properties['chart.ylabels.invert'] ? this.gutterTop : this.canvas.height - this.gutterBottom,'text':RGraph.number_format(this, this.properties['chart.ymin'].toFixed(this.properties['chart.scale.decimals']), units_pre, units_post),'valign':'center','halign':align,'bounding':bounding,'boundingFill':bgcolor});
+                if ( (prop['chart.ymin']!= 0 && !prop['chart.scale.invert'])
+                    || prop['chart.noxaxis']
+                    ) {
+                    RGraph.Text2(this, {'font':font,
+                                        'size':text_size,
+                                        'x':xpos,
+                                        'y':prop['chart.scale.invert'] ? this.gutterTop : this.canvas.height - this.gutterBottom,
+                                        'text':RGraph.number_format(this, prop['chart.ymin'].toFixed(prop['chart.scale.decimals']), units_pre, units_post),
+                                        'valign':'center',
+                                        'halign':align,
+                                        'bounding':bounding,
+                                        'boundingFill':bgcolor,
+                                        'tag': 'scale'
+                                       });
                 }
             }
 
@@ -1158,17 +1285,26 @@
 
 
             // No X axis - so draw 0 - but not if the X axis is in the center
-            if (   this.properties['chart.noxaxis'] == true
-                && this.properties['chart.ymin'] == null
-                && this.properties['chart.xaxispos'] != 'center'
-                && this.properties['chart.noendytick'] == false
+            if (   prop['chart.noxaxis'] == true
+                && prop['chart.ymin'] == null
+                && prop['chart.xaxispos'] != 'center'
+                && prop['chart.noendytick'] == false
                ) {
 
-                RGraph.Text2(this, {'font':font,'size':text_size,'x':xpos,'y':this.properties['chart.xaxispos'] == 'top' ? this.gutterTop : (this.canvas.height - this.gutterBottom),'text': this.properties['chart.units.pre'] + (0).toFixed(this.properties['chart.scale.decimals']) + this.properties['chart.units.post'],'valign':'center','halign':align,'bounding':bounding,'boundingFill':bgcolor,'tag':'scale'});
+                RGraph.Text2(this, {'font':font,
+                                    'size':text_size,
+                                    'x':xpos,
+                                    'y':this.properties['chart.xaxispos'] == 'top' ? this.gutterTop : (this.canvas.height - this.gutterBottom),'text': this.properties['chart.units.pre'] + (0).toFixed(this.properties['chart.scale.decimals']) + this.properties['chart.units.post'],
+                                    'valign':'center',
+                                    'halign':align,
+                                    'bounding':bounding,
+                                    'boundingFill':bgcolor,
+                                    'tag':'scale'
+                                   });
             }
 
         } else if (this.properties['chart.ylabels'] && typeof(this.properties['chart.ylabels.specific']) == 'object') {
-            
+
             // A few things
             var gap      = this.grapharea / this.properties['chart.ylabels.specific'].length;
             var halign   = this.properties['chart.yaxispos'] == 'left' ? 'right' : 'left';
@@ -1212,7 +1348,17 @@
                             y += this.gutterTop;
                     }
                     
-                    RGraph.Text2(this, {'font':font,'size':text_size,'x':x,'y':y,'text':String(this.properties['chart.ylabels.specific'][i]),'valign': 'center','halign':halign,'bounding':bounding,'boundingFill':bgcolor});
+                    RGraph.Text2(this, {'font':font,
+                                        'size':text_size,
+                                        'x':x,
+                                        'y':y,
+                                        'text':String(this.properties['chart.ylabels.specific'][i]),
+                                        'valign': 'center',
+                                        'halign':halign,
+                                        'bounding':bounding,
+                                        'boundingFill':bgcolor,
+                                        'tag': 'ylabels.specific'
+                                       });
                 }
                 
                 // Now reverse the labels and draw the bottom half
@@ -1223,7 +1369,17 @@
                     
                     var y = (this.grapharea / 2) + this.gutterTop + ((this.grapharea / ((reversed_labels.length - 1) * 2) ) * i);
 
-                    RGraph.Text2(this, {'font':font,'size':text_size,'x':x,'y':y,'text':i == 0 ? '' : String(reversed_labels[i]),'valign': 'center','halign':halign,'bounding':bounding,'boundingFill':bgcolor});
+                    RGraph.Text2(this, {'font':font,
+                                        'size':text_size,
+                                        'x':x,
+                                        'y':y,
+                                        'text':i == 0 ? '' : String(reversed_labels[i]),
+                                        'valign': 'center',
+                                        'halign':halign,
+                                        'bounding':bounding,
+                                        'boundingFill':bgcolor,
+                                        'tag': 'ylabels.specific'
+                                       });
                 }
             
             } else if (this.properties['chart.xaxispos'] == 'top') {
@@ -1237,13 +1393,33 @@
                     var y = (this.grapharea / (reversed_labels.length - 1)) * i;
                         y = y + this.gutterTop;
 
-                    RGraph.Text2(this, {'font':font,'size':text_size,'x':x,'y':y,'text':String(reversed_labels[i]),'valign': 'center','halign':halign,'bounding':bounding,'boundingFill':bgcolor});
+                    RGraph.Text2(this, {'font':font,
+                                        'size':text_size,
+                                        'x':x,
+                                        'y':y,
+                                        'text':String(reversed_labels[i]),
+                                        'valign': 'center',
+                                        'halign':halign,
+                                        'bounding':bounding,
+                                        'boundingFill':bgcolor,
+                                        'tag': 'ylabels.specific'
+                                       });
                 }
 
             } else {
                 for (var i=0; i<this.properties['chart.ylabels.specific'].length; ++i) {
                     var y = this.gutterTop + ((this.grapharea / (this.properties['chart.ylabels.specific'].length - 1)) * i);
-                    RGraph.Text2(this, {'font':font,'size':text_size,'x':x,'y':y,'text':String(this.properties['chart.ylabels.specific'][i]),'valign':'center','halign':halign,'bounding':bounding,'boundingFill':bgcolor});
+                    RGraph.Text2(this, {'font':font,
+                                        'size':text_size,
+                                        'x':x,
+                                        'y':y,
+                                        'text':String(this.properties['chart.ylabels.specific'][i]),
+                                        'valign':'center',
+                                        'halign':halign,
+                                        'bounding':bounding,
+                                        'boundingFill':bgcolor,
+                                        'tag': 'ylabels.specific'
+                                       });
                 }
             }
         }
@@ -1312,6 +1488,10 @@
                     if (this.properties['chart.xaxispos'] == 'top' && this.properties['chart.text.angle'] > 0) {
                         halign = 'left';
                     }
+                    
+                    if (this.properties['chart.text.angle'] != 0) {
+                        halign = 'right';
+                    }
 
                     RGraph.Text2(this, {'font':font,
                                         'size':text_size,
@@ -1321,7 +1501,10 @@
                                         'valign':valign,
                                         'halign':halign,
                                         'bounding':bordered,
-                                        'boundingFill':bgcolor});
+                                        'boundingFill':bgcolor,
+                                        'angle':angle,
+                                        'tag': 'labels'
+                                       });
                 }
             }
 
@@ -2166,7 +2349,17 @@
         for (var i=0; i<this.coords.length; ++i) {
             var coords = this.coords[i];
             
-            RGraph.Text2(this, {'font':font,'size':size,'x':coords[0],'y':coords[1] - 5 - size,'text':RGraph.number_format(this, this.data_arr[i], units_pre, units_post),'valign':'center','halign':'center','bounding':true,'boundingFill':'white'});
+            RGraph.Text2(this, {'font':font,
+                                'size':size,
+                                'x':coords[0],
+                                'y':coords[1] - 5 - size,
+                                'text':RGraph.number_format(this, this.data_arr[i], units_pre, units_post),
+                                'valign':'center',
+                                'halign':'center',
+                                'bounding':true,
+                                'boundingFill':'white',
+                                'tag': 'labels.above'
+                               });
         }
         
         context.fill();
@@ -2331,9 +2524,10 @@
         var xaxispos = this.properties['chart.xaxispos'];
 
         // Higher than max
-        if (value > this.max) {
-            value = this.max;
-        }
+        // Commented out on March 7th 2013 because the tan curve was not showing correctly
+        //if (value > this.max) {
+        //    value = this.max;
+        //}
 
         if (xaxispos == 'top') {
         
@@ -2345,7 +2539,7 @@
             y = ((value - this.min) / (this.max - this.min)) * this.grapharea;
 
             // Inverted Y labels
-            if (this.properties['chart.ylabels.invert']) {
+            if (this.properties['chart.scale.invert']) {
                 y = this.grapharea - y;
             }
 
@@ -2364,9 +2558,9 @@
             }
 
             y = ((value - this.min) / (this.max - this.min)) * this.grapharea;
-            
+
             // Inverted Y labels
-            if (this.properties['chart.ylabels.invert']) {
+            if (this.properties['chart.scale.invert']) {
                 y = this.grapharea - y;
             }
 
@@ -2441,10 +2635,11 @@
     {
         var co          = context;
         var ca          = co.canvas;
+        var prop        = this.properties;
         var xCoords     = [];
-        var gutterLeft  = this.properties['chart.gutter.left'];
-        var gutterRight = this.properties['chart.gutter.right'];
-        var hmargin     = this.properties['chart.hmargin'];
+        var gutterLeft  = prop['chart.gutter.left'];
+        var gutterRight = prop['chart.gutter.right'];
+        var hmargin     = prop['chart.hmargin'];
         var interval    = (ca.width - (gutterLeft + gutterRight) - (2 * hmargin)) / (coords.length - 1);
 
         this.context.strokeStyle = color;

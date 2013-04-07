@@ -38,6 +38,7 @@
         this.id      = id;
         this.canvas  = document.getElementById(id);
         this.context = this.canvas.getContext ? this.canvas.getContext("2d") : null;
+        this.canvas.__object__ = this;
 
 
         /**
@@ -46,12 +47,6 @@
         this.centerx = x;
         this.centery = y;
         this.radius  = r;
-
-
-        /**
-        * This puts a reference to this object on to the canvas.
-        */
-        this.canvas.__object__ = this;
 
         /**
         * This defines the type of this shape
@@ -90,7 +85,7 @@
         */
         this.properties =
         {
-            'chart.strokestyle':      'transparent',
+            'chart.strokestyle':      'rgba(0,0,0,0)',
             'chart.fillstyle':          'red',
             'chart.events.click':       null,
             'chart.events.mousemove':   null,
@@ -128,6 +123,18 @@
 
 
 
+        /*
+        * Translate half a pixel for antialiasing purposes - but only if it hasn't beeen
+        * done already
+        */
+        if (!this.canvas.__rgraph_aa_translated__) {
+            this.context.translate(0.5,0.5);
+            
+            this.canvas.__rgraph_aa_translated__ = true;
+        }
+
+
+
         /**
         * Objects are now always registered so that the chart is redrawn if need be.
         */
@@ -155,6 +162,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -232,6 +241,8 @@
         * Fire the ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
 
@@ -292,7 +303,7 @@
 
         // Set the top position
         tooltip.style.left = 0;
-        tooltip.style.top  = canvasXY[1] + obj.centery - height - 7 - radius + 'px';
+        tooltip.style.top  = canvasXY[1] + obj.centery - height - 7 + 'px';
         
         // By default any overflow is hidden
         tooltip.style.overflow = '';

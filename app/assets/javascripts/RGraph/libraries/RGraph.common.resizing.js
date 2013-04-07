@@ -63,7 +63,7 @@
             context.beginPath();
                 context.fillStyle = bgcolor;
                 context.moveTo(canvas.width - resizeHandle - resizeHandle + adjustX, canvas.height - resizeHandle);
-                context.fillRect(canvas.width - resizeHandle - resizeHandle + adjustX, canvas.height - resizeHandle + adjustY, 2 * resizeHandle, resizeHandle);
+                context.rect(canvas.width - resizeHandle - resizeHandle + adjustX, canvas.height - resizeHandle + adjustY, 2 * resizeHandle, resizeHandle);
             context.fill();
 
 
@@ -71,8 +71,8 @@
                 obj.context.strokeStyle = 'gray';
                 obj.context.fillStyle = 'rgba(0,0,0,0)';
                 obj.context.lineWidth = 1;
-                obj.context.fillRect(obj.canvas.width - resizeHandle + adjustX, obj.canvas.height - resizeHandle - 2 + adjustY, resizeHandle, resizeHandle + 2);
-                obj.context.fillRect(obj.canvas.width - resizeHandle - textWidth + adjustX, obj.canvas.height - resizeHandle + adjustY, resizeHandle + textWidth, resizeHandle + 2);
+                //obj.context.rect(obj.canvas.width - resizeHandle + adjustX, obj.canvas.height - resizeHandle - 2 + adjustY, resizeHandle, resizeHandle + 2);
+                //obj.context.rect(obj.canvas.width - resizeHandle - textWidth + adjustX, obj.canvas.height - resizeHandle + adjustY, resizeHandle + textWidth, resizeHandle + 2);
 
 
                 // Draw the arrows
@@ -85,9 +85,9 @@
                     // Horizontal line
                     obj.context.moveTo(obj.canvas.width + adjustX, Math.round(obj.canvas.height - (resizeHandle / 2) + adjustY));
                     obj.context.lineTo(obj.canvas.width - resizeHandle + adjustX, Math.round(obj.canvas.height - (resizeHandle / 2) + adjustY));
-                
-            context.fill();
+
             context.stroke();
+            context.fill();
 
 
             // Top arrow head
@@ -127,8 +127,8 @@
             context.beginPath();
                 context.fillStyle = 'white';
                 context.moveTo(canvas.width + adjustX, canvas.height - (resizeHandle / 2) + adjustY);
-                context.strokeRect(canvas.width - (resizeHandle / 2) - 2 + adjustX, canvas.height - (resizeHandle / 2) - 2 + adjustY, 4, 4);
-                context.fillRect(canvas.width - (resizeHandle / 2) - 2 + adjustX, canvas.height - (resizeHandle / 2) - 2 + adjustY, 4, 4);
+                context.rect(canvas.width - (resizeHandle / 2) - 2 + adjustX, canvas.height - (resizeHandle / 2) - 2 + adjustY, 4, 4);
+                context.rect(canvas.width - (resizeHandle / 2) - 2 + adjustX, canvas.height - (resizeHandle / 2) - 2 + adjustY, 4, 4);
             context.stroke();
             context.fill();
 

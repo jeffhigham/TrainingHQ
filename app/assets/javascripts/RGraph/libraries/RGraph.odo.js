@@ -40,6 +40,7 @@
         this.uid               = RGraph.CreateUID();
         this.canvas.uid        = this.canvas.uid ? this.canvas.uid : RGraph.CreateUID();
         this.colorsParsed      = false;
+        this.coordsText        = [];
 
 
         /**
@@ -82,6 +83,10 @@
             'chart.title.vpos':             null,
             'chart.title.font':             null,
             'chart.title.bold':             true,
+            'chart.title.x':                null,
+            'chart.title.y':                null,
+            'chart.title.halign':           null,
+            'chart.title.valign':           null,
             'chart.contextmenu':            null,
             'chart.linewidth':              1,
             'chart.shadow.inner':           false,
@@ -147,6 +152,19 @@
 
 
 
+        /*
+        * Translate half a pixel for antialiasing purposes - but only if it hasn't beeen
+        * done already
+        */
+        if (!this.canvas.__rgraph_aa_translated__) {
+            this.context.translate(0.5,0.5);
+            
+            this.canvas.__rgraph_aa_translated__ = true;
+        }
+
+
+
+
         /**
         * Register the object
         */
@@ -185,6 +203,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -354,6 +374,8 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
     /**
@@ -794,30 +816,32 @@
         if (labels) {
             for (var i=0; i<labels.length; ++i) {
 
-                RGraph.Text(context,
-                            font,
-                            size,
-                            centerx + (Math.cos(((i / labels.length) * TWOPI) - HALFPI) * (this.radius - (this.Get('chart.label.area') / 2) ) ), // Sin A = Opp / Hyp
-                            centery + (Math.sin(((i / labels.length) * TWOPI) - HALFPI) * (this.radius - (this.Get('chart.label.area') / 2) ) ), // Cos A = Adj / Hyp
-                            String(labels[i]),
-                            'center',
-                            'center');
+                RGraph.Text2(this, {'font':font,
+                                    'size':size,
+                                    'x':centerx + (Math.cos(((i / labels.length) * TWOPI) - HALFPI) * (this.radius - (this.Get('chart.label.area') / 2) ) ), // Sin A = Opp / Hyp
+                                    'y':centery + (Math.sin(((i / labels.length) * TWOPI) - HALFPI) * (this.radius - (this.Get('chart.label.area') / 2) ) ), // Cos A = Adj / Hyp
+                                    'text': String(labels[i]),
+                                    'valign':'center',
+                                    'halign':'center',
+                                    'tag': 'labels'
+                                   });
             }
 
         /**
         * If not, use the maximum value
         */
         } else {
-            RGraph.Text(context, font, size, centerx + (0.588 * r ), centery - (0.809 * r ), RGraph.number_format(this, (((end - start) * (1/10)) + start).toFixed(decimals), units_pre, units_post), 'center', 'center', false, 36);
-            RGraph.Text(context, font, size, centerx + (0.951 * r ), centery - (0.309 * r), RGraph.number_format(this, (((end - start) * (2/10)) + start).toFixed(decimals), units_pre, units_post), 'center', 'center', false, 72);
-            RGraph.Text(context, font, size, centerx + (0.949 * r), centery + (0.287 * r), RGraph.number_format(this, (((end - start) * (3/10)) + start).toFixed(decimals), units_pre, units_post), 'center', 'center', false, 108);
-            RGraph.Text(context, font, size, centerx + (0.588 * r ), centery + (0.809 * r ), RGraph.number_format(this, (((end - start) * (4/10)) + start).toFixed(decimals), units_pre, units_post), 'center', 'center', false, 144);
-            RGraph.Text(context, font, size, centerx, centery + r, RGraph.number_format(this, (((end - start) * (5/10)) + start).toFixed(decimals),units_pre, units_post), 'center', 'center', false, 180);
-            RGraph.Text(context, font, size, centerx - (0.588 * r ), centery + (0.809 * r ), RGraph.number_format(this, (((end - start) * (6/10)) + start).toFixed(decimals), units_pre, units_post), 'center', 'center', false, 216);
-            RGraph.Text(context, font, size, centerx - (0.949 * r), centery + (0.300 * r), RGraph.number_format(this, (((end - start) * (7/10)) + start).toFixed(decimals), units_pre, units_post), 'center', 'center', false, 252);
-            RGraph.Text(context, font, size, centerx - (0.951 * r), centery - (0.309 * r), RGraph.number_format(this, (((end - start) * (8/10)) + start).toFixed(decimals), units_pre, units_post), 'center', 'center', false, 288);
-            RGraph.Text(context, font, size, centerx - (0.588 * r ), centery - (0.809 * r ), RGraph.number_format(this, (((end - start) * (9/10)) + start).toFixed(decimals), units_pre, units_post), 'center', 'center', false, 324);
-            RGraph.Text(context, font, size, centerx, centery - r, this.Get('chart.zerostart') ? RGraph.number_format(this, this.start.toFixed(decimals), units_pre, units_post) : RGraph.number_format(this, (((end - start) * (10/10)) + start).toFixed(decimals), units_pre, units_post), 'center', 'center', false, 360);
+            RGraph.Text2(this, {'font':font,'size':size,'x':centerx + (0.588 * r ),'y':centery - (0.809 * r ),'text':RGraph.number_format(this, (((end - start) * (1/10)) + start).toFixed(decimals), units_pre, units_post),'halign':'center','valign':'center','angle':36,'tag': 'scale'});
+            RGraph.Text2(this, {'font':font,'size':size,'x':centerx + (0.951 * r ),'y':centery - (0.309 * r),'text':RGraph.number_format(this, (((end - start) * (2/10)) + start).toFixed(decimals), units_pre, units_post),'halign':'center','valign':'center','angle':72,'tag': 'scale'});
+            RGraph.Text2(this, {'font':font,'size':size,'x':centerx + (0.949 * r),'y':centery + (0.31 * r),'text':RGraph.number_format(this, (((end - start) * (3/10)) + start).toFixed(decimals), units_pre, units_post),'halign':'center','valign':'center','angle':108,'tag': 'scale'});
+            RGraph.Text2(this, {'font':font,'size':size,'x':centerx + (0.588 * r ),'y':centery + (0.809 * r ),'text':RGraph.number_format(this, (((end - start) * (4/10)) + start).toFixed(decimals), units_pre, units_post),'halign':'center','valign':'center','angle':144,'tag': 'scale'});
+            RGraph.Text2(this, {'font':font,'size':size,'x':centerx,'y':centery + r,'text':RGraph.number_format(this, (((end - start) * (5/10)) + start).toFixed(decimals),units_pre, units_post),'halign':'center','valign':'center','angle':180,'tag': 'scale'});
+
+            RGraph.Text2(this, {'font':font,'size':size,'x':centerx - (0.588 * r ),'y':centery + (0.809 * r ),'text':RGraph.number_format(this, (((end - start) * (6/10)) + start).toFixed(decimals), units_pre, units_post),'halign':'center','valign':'center','angle':216,'tag': 'scale'});
+            RGraph.Text2(this, {'font':font,'size':size,'x':centerx - (0.949 * r),'y':centery + (0.300 * r),'text':RGraph.number_format(this, (((end - start) * (7/10)) + start).toFixed(decimals), units_pre, units_post),'halign':'center','valign':'center','angle':252,'tag': 'scale'});
+            RGraph.Text2(this, {'font':font,'size':size,'x':centerx - (0.951 * r),'y':centery - (0.309 * r),'text':RGraph.number_format(this, (((end - start) * (8/10)) + start).toFixed(decimals), units_pre, units_post),'halign':'center','valign':'center','angle':288,'tag': 'scale'});
+            RGraph.Text2(this, {'font':font,'size':size,'x':centerx - (0.588 * r ),'y':centery - (0.809 * r ),'text':RGraph.number_format(this, (((end - start) * (9/10)) + start).toFixed(decimals), units_pre, units_post),'halign':'center','valign':'center','angle':324,'tag': 'scale'});            
+            RGraph.Text2(this, {'font':font,'size':size,'x':centerx,'y':centery - r,'text': this.properties['chart.zerostart'] ? RGraph.number_format(this, this.start.toFixed(decimals), units_pre, units_post) : RGraph.number_format(this, (((end - start) * (10/10)) + start).toFixed(decimals), units_pre, units_post),'halign':'center','valign':'center','tag': 'scale'});
         }
         
         this.context.fill();
@@ -827,7 +851,17 @@
         */
         if (this.Get('chart.value.text')) {
             context.strokeStyle = 'black';
-            RGraph.Text(context, font, size + 2, centerx, centery + size + 2 + 10, String(this.Get('chart.value.units.pre') + this.value.toFixed(this.Get('chart.value.text.decimals')) + this.Get('chart.value.units.post')), 'center', 'center', true,  null, 'white');
+            RGraph.Text2(this, {'font':font,
+                                'size':size+2,
+                                'x':centerx,
+                                'y':centery + size + 15,
+                                'text':String(this.Get('chart.value.units.pre') + this.value.toFixed(this.Get('chart.value.text.decimals')) + this.Get('chart.value.units.post')),
+                                'halign':'center',
+                                'valign':'center',
+                                'bounding':true,
+                                'boundingFill':'white',
+                                'tag': 'value.text'
+                               });
         }
     }
 

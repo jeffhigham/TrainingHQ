@@ -45,7 +45,7 @@
         RGraph.OldBrowserCompat(this.context);
 
         this.properties = {
-            'chart.colors':                 ['red', '#ddd', '#0f0', 'blue', 'pink', 'yellow', 'black', 'cyan'],
+            'chart.colors':                 ['Gradient(red:#fcc)', 'Gradient(#ddd:#eee)', 'Gradient(#0f0:#cfc)', 'Gradient(blue:#ccf)', 'Gradient(#FB7BA3:#FCC7EE)', 'Gradient(yellow:#ffc)', 'Gradient(#000:#ccc)', 'Gradient(#EE9D80:#FEE5C8)', 'Gradient(cyan:#ccf)','Gradient(#9E7BF6:#C7B6D2)','Gradient(#78CAEA:#C5FBFD)','Gradient(#E284E9:#FDC4FF)','Gradient(#7F84EF:#FCC4FD)'],
             'chart.strokestyle':            '#999',
             'chart.linewidth':              1,
             'chart.labels':                 [],
@@ -62,6 +62,10 @@
             'chart.title.vpos':             0.5,
             'chart.title.bold':             true,
             'chart.title.font':             null,
+            'chart.title.x':                null,
+            'chart.title.y':                null,
+            'chart.title.halign':           null,
+            'chart.title.valign':           null,
             'chart.shadow':                 false,
             'chart.shadow.color':           'rgba(0,0,0,0.5)',
             'chart.shadow.offsetx':         3,
@@ -102,7 +106,6 @@
             'chart.key.colors':             null,
             'chart.annotatable':            false,
             'chart.annotate.color':         'black',
-            'chart.align':                  'center',
             'chart.zoom.factor':            1.5,
             'chart.zoom.fade.in':           true,
             'chart.zoom.fade.out':          true,
@@ -140,8 +143,20 @@
             // the code above but just saves doing another loop through the data
             this['$' + i] = {};
         }
-        
-        
+
+
+        /**
+        * Translate half a pixel for antialiasing purposes - but only if it hasn't beeen
+        * done already
+        */
+        if (!this.canvas.__rgraph_aa_translated__) {
+            this.context.translate(0.5,0.5);
+
+            this.canvas.__rgraph_aa_translated__ = true;
+        }
+
+
+
         /**
         * Now all charts are always registered
         */
@@ -168,6 +183,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -216,11 +233,12 @@
 
 
         
-        this.radius   = this.getRadius();// MUST be first
-        this.centerx  = (this.graph.width / 2) + this.gutterLeft
-        this.centery  = (this.graph.height / 2) + this.gutterTop
-        this.subTotal = this.properties['chart.origin'];
-        this.angles   = [];
+        this.radius     = this.getRadius();// MUST be first
+        this.centerx    = (this.graph.width / 2) + this.gutterLeft
+        this.centery    = (this.graph.height / 2) + this.gutterTop
+        this.subTotal   = this.properties['chart.origin'];
+        this.angles     = [];
+        this.coordsText = [];
 
         /**
         * Allow specification of a custom radius & center X/Y
@@ -246,20 +264,6 @@
         }
 
 
-
-        /**
-        * Alignment (Pie is center aligned by default) Only if centerx is not defined - donut defines the centerx
-        *
-        if (this.Get('chart.align') == 'left') {
-            this.centerx = this.radius + this.gutterLeft;
-        
-        } else if (this.Get('chart.align') == 'right') {
-            this.centerx = this.canvas.width - this.radius - this.gutterRight;
-        
-        } else {
-            this.centerx = this.canvas.width / 2;
-        }
-        */
 
         /**
         * This sets the label colors. Doing it here saves lots of if() conditions in the draw method
@@ -478,6 +482,8 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
 
@@ -488,6 +494,9 @@
     */
     RGraph.Pie.prototype.DrawSegment = function (radians, color, last, index)
     {
+        // IE7/8/ExCanvas fix (when there's only one segment the Pie chart doesn't display
+        if (ISOLD && radians == TWOPI) radians -= 0.0001;
+
         var context  = this.context;
         var canvas   = this.canvas;
         var subTotal = this.subTotal;
@@ -511,6 +520,7 @@
             * Exploded segments
             */
             if ( (typeof(this.properties['chart.exploded']) == 'object' && this.properties['chart.exploded'][index] > 0) || typeof(this.properties['chart.exploded']) == 'number') {
+                
                 var explosion = typeof(this.properties['chart.exploded']) == 'number' ? this.properties['chart.exploded'] : this.properties['chart.exploded'][index];
                 var x         = 0;
                 var y         = 0;
@@ -593,7 +603,7 @@
         context.beginPath();
 
         /**
-        * Draw the key (ie. the labels)
+        * Draw the labels
         */
         if (labels && labels.length) {
 
@@ -645,7 +655,8 @@
                 /**
                 * Alignment
                 */
-                vAlignment = y < cy ? 'bottom' : 'top';
+                //vAlignment = y < cy ? 'center' : 'center';
+                vAlignment = 'center';
                 hAlignment = x < cx ? 'right' : 'left';
 
                 context.fillStyle = this.properties['chart.text.color'];
@@ -653,7 +664,16 @@
                     this.context.fillStyle = this.properties['chart.labels.colors'][i];
                 }
 
-                RGraph.Text(context,font,text_size,x,y,labels[i],vAlignment,hAlignment);
+
+                RGraph.Text2(this, {'font':font,
+                                    'size':text_size,
+                                    'x':x,
+                                    'y':y,
+                                    'text':labels[i],
+                                    'valign':vAlignment,
+                                    'halign':hAlignment,
+                                    'tag': 'labels'
+                                   });
             }
             
             context.fill();
@@ -864,14 +884,27 @@
     */
     RGraph.Pie.prototype.Explode = function (index, size)
     {
-
         var obj = this;
         
         //this.Set('chart.exploded', []);
         if (!this.properties['chart.exploded']) {
             this.properties['chart.exploded'] = [];
         }
-        this.properties['chart.exploded'][index] = 0;
+        
+        // If chart.exploded is a number - convert it to an array
+        if (typeof(this.properties['chart.exploded']) == 'number') {
+
+            var original_explode = this.properties['chart.exploded'];
+            var exploded = this.properties['chart.exploded'];
+
+            this.properties['chart.exploded'] = [];
+            
+            for (var i=0; i<this.data.length; ++i) {
+                this.properties['chart.exploded'][i] = exploded;
+            }
+        }
+        
+        this.properties['chart.exploded'][index] = typeof(original_explode) == 'number' ? original_explode : 0;
 
         for (var o=0; o<size; ++o) {
 
@@ -881,7 +914,7 @@
                     obj.properties['chart.exploded'][index] += 1;
                     RGraph.Clear(obj.canvas);
                     RGraph.RedrawCanvas(obj.canvas);
-                }, o * (document.all ? 25 : 16.666));
+                }, o * (ISIE &&  !ISIE10 ? 25 : 16.666));
         }
     }
 
@@ -1139,17 +1172,21 @@
 
             if (text) {
                 this.context.beginPath();
-                    RGraph.Text(this.context,
-                                typeof(this.properties['chart.labels.ingraph.font']) == 'string' ? this.properties['chart.labels.ingraph.font'] : this.properties['chart.text.font'],
-                                typeof(this.properties['chart.labels.ingraph.size']) == 'number' ? this.properties['chart.labels.ingraph.size'] : this.properties['chart.text.size'] + 2,
-                                x,
-                                y,
-                                text,
-                                'center',
-                                'center',
-                                true,
-                                null,
-                                'white');
+                    
+                    var font = typeof(this.properties['chart.labels.ingraph.font']) == 'string' ? this.properties['chart.labels.ingraph.font'] : this.properties['chart.text.font'];
+                    var size = typeof(this.properties['chart.labels.ingraph.size']) == 'number' ? this.properties['chart.labels.ingraph.size'] : this.properties['chart.text.size'] + 2;
+
+                    RGraph.Text2(this, {'font':font,
+                                        'size':size,
+                                        'x':x,
+                                        'y':y,
+                                        'text':text,
+                                        'valign':'center',
+                                        'halign':'center',
+                                        'bounding':true,
+                                        'boundingFill':'white',
+                                        'tag':'labels.ingraph'
+                                       });
                 this.context.stroke();
             }
         }

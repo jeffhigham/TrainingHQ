@@ -33,6 +33,7 @@
         this.canvas.uid        = this.canvas.uid ? this.canvas.uid : RGraph.CreateUID();
         this.data              = data;
         this.colorsParsed      = false;
+        this.coordsText        = [];
 
 
         /**
@@ -76,8 +77,8 @@
             'chart.vmargin':                 2,
             'chart.title':                  '',
             'chart.title.background':       null,
-            'chart.title.hpos':             null,
-            'chart.title.vpos':             null,
+            'chart.title.x':                null,
+            'chart.title.y':                null,
             'chart.title.bold':             true,
             'chart.title.font':             null,
             'chart.title.yaxis':            '',
@@ -85,6 +86,10 @@
             'chart.title.yaxis.pos':        null,
             'chart.title.yaxis.color':      null,
             'chart.title.yaxis.position':   'right',
+            'chart.title.x':                null,
+            'chart.title.y':                null,
+            'chart.title.halign':           null,
+            'chart.title.valign':           null,
             'chart.borders':                true,
             'chart.defaultcolor':           'white',
             'chart.coords':                 [],
@@ -139,6 +144,18 @@
 
 
 
+        /*
+        * Translate half a pixel for antialiasing purposes - but only if it hasn't beeen
+        * done already
+        */
+        if (!this.canvas.__rgraph_aa_translated__) {
+            this.context.translate(0.5,0.5);
+            
+            this.canvas.__rgraph_aa_translated__ = true;
+        }
+
+
+
         /**
         * Register the object
         */
@@ -173,6 +190,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -289,6 +308,8 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
     
@@ -323,14 +344,16 @@
         * Draw the horizontal labels
         */
         for (i=0; i<labels.length; ++i) {
-            RGraph.Text(this.context,
-                        font,
-                        size,
-                        x + (i * labelSpace),
-                        y,
-                        String(labels[i]),
-                        'center',
-                        'center');
+            RGraph.Text2(this,{
+                               'font': font,
+                               'size':size,
+                               'x': x + (i * labelSpace),
+                               'y': y,
+                               'text': String(labels[i]),
+                               'halign':'center',
+                               'valign':'center',
+                               'tag': 'labels.horizontal'
+                              });
         }
 
         /**
@@ -341,14 +364,17 @@
             var ev = this.data[i];
             var x  = this.gutterLeft;
             var y  = this.gutterTop + this.halfBarHeight + (i * this.barHeight);
-
-            RGraph.Text(this.context,
-                        font,
-                        size,
-                        x - 5, y,
-                        RGraph.is_array(ev[0]) ? (ev[0][3] ? String(ev[0][3]) : '') : String(ev[3]),
-                        'center',
-                        'right');
+            
+            RGraph.Text2(this,{
+                               'font': font,
+                               'size':size,
+                               'x': x - 5,
+                               'y': y,
+                               'text': RGraph.is_array(ev[0]) ? (ev[0][3] ? String(ev[0][3]) : '') : String(ev[3]),
+                               'halign':'right',
+                               'valign':'center',
+                               'tag': 'labels.vertical'
+                              });
         }
     }
     
@@ -508,8 +534,16 @@
                                   this.barHeight - (2 * this.Get('chart.vmargin')) );
             
             context.beginPath();
-                context.fillStyle = this.Get('chart.text.color');
-                RGraph.Text(context, this.Get('chart.text.font'), this.Get('chart.text.size'), barStartX + barWidth + 5, barStartY + this.halfBarHeight, String(ev[2]) + '%', 'center');
+            context.fillStyle = this.Get('chart.text.color');
+            RGraph.Text2(this,{
+                               'font': this.Get('chart.text.font'),
+                               'size':this.Get('chart.text.size'),
+                               'x': barStartX + barWidth + 5,
+                               'y': barStartY + this.halfBarHeight,
+                               'text': String(ev[2]) + '%',
+                               'valign':'center',
+                                            'tag': 'labels.complete'
+                              });
         }
         
         /**
@@ -540,21 +574,18 @@
 
             // Set the color
             this.context.fillStyle = this.Get('chart.labels.inbar.color');
-
-            this.context.beginPath();
-                RGraph.Text(this.context,
-                            this.Get('chart.labels.inbar.font'),
-                            this.Get('chart.labels.inbar.size'),
-                            x,
-                            barStartY + this.halfBarHeight,
-                            label,
-                            'center',
-                            halign,
-                            typeof(this.Get('chart.labels.inbar.bgcolor')) == 'string' ? true : false,
-                            null,
-                            typeof(this.Get('chart.labels.inbar.bgcolor')) == 'string' ? this.Get('chart.labels.inbar.bgcolor') : null
-                           );
-            this.context.fill();
+            RGraph.Text2(this,{
+                               'font':this.Get('chart.labels.inbar.font'),
+                               'size':this.Get('chart.labels.inbar.size'),
+                               'x': x,
+                               'y': barStartY + this.halfBarHeight,
+                               'text': label,
+                               'valign':'center',
+                               'halign':halign,
+                               'bounding': typeof(this.Get('chart.labels.inbar.bgcolor')) == 'string',
+                               'boundingFill':typeof(this.Get('chart.labels.inbar.bgcolor')) == 'string' ? this.Get('chart.labels.inbar.bgcolor') : null,
+                                            'tag': 'labels.inbar'
+                              });
         }
     }
 

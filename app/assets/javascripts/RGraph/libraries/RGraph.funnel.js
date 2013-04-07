@@ -32,6 +32,7 @@
         this.isRGraph          = true;
         this.uid               = RGraph.CreateUID();
         this.canvas.uid        = this.canvas.uid ? this.canvas.uid : RGraph.CreateUID();
+        this.coordsText        = [];
 
 
         /**
@@ -50,7 +51,7 @@
         * The funnel charts properties
         */
         this.properties = {
-            'chart.strokestyle':           'transparent',
+            'chart.strokestyle':           'rgba(0,0,0,0)',
             'chart.gutter.left':           25,
             'chart.gutter.right':          25,
             'chart.gutter.top':            25,
@@ -64,6 +65,10 @@
             'chart.title.vpos':            null,
             'chart.title.bold':             true,
             'chart.title.font':             null,
+            'chart.title.x':                null,
+            'chart.title.y':                null,
+            'chart.title.halign':           null,
+            'chart.title.valign':           null,
             'chart.colors':                ['Gradient(white:red)','Gradient(white:green)','Gradient(white:gray)','Gradient(white:blue)','Gradient(white:black)','Gradient(white:gray)','Gradient(white:pink)','Gradient(white:blue)','Gradient(white:yellow)','Gradient(white:green)','Gradient(white:red)'],
             'chart.text.size':             10,
             'chart.text.boxed':            true,
@@ -167,6 +172,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -259,6 +266,8 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
 
@@ -409,17 +418,17 @@
                 
                 var label = labels[j];
 
-                RGraph.Text(context,
-                            font,
-                            size,
-                            x,
-                            this.coords[j][1],
-                            label,
-                            'center',
-                            halign,
-                            this.Get('chart.text.boxed'),
-                            null,
-                            bgcolor);
+                RGraph.Text2(this,{'font':font,
+                                   'size':size,
+                                   'x':x,
+                                   'y':this.coords[j][1],
+                                   'text':label,
+                                   'valign':'center',
+                                   'halign':halign,
+                                   'bounding': this.Get('chart.text.boxed'),
+                                   'boundingFill':bgcolor,
+                                   'tag': 'labels'
+                                  });
                 
                 if (this.Get('chart.labels.sticks')) {
                     /**
@@ -448,8 +457,18 @@
             var lastLabel = labels[j];
 
             if (lastLabel) {
-                
-                RGraph.Text(context, font, size,x,this.coords[j - 1][5],lastLabel,'center',halign,this.Get('chart.text.boxed'),null,bgcolor);
+
+                RGraph.Text2(this,{'font':font,
+                                   'size':size,
+                                   'x':x,
+                                   'y':this.coords[j - 1][5],
+                                   'text':lastLabel,
+                                   'valign':'center',
+                                   'halign':halign,
+                                   'bounding': this.Get('chart.text.boxed'),
+                                   'boundingFill':bgcolor,
+                                   'tag': 'labels'
+                                  });
 
                 if (this.Get('chart.labels.sticks')) {
                     /**
@@ -588,7 +607,7 @@
 
         // Set the top position
         tooltip.style.left = 0;
-        tooltip.style.top  = canvasXY[1] + y1 - height - 7 + 'px';
+        tooltip.style.top  = canvasXY[1] + y1 + ((y3 - y2) / 2) - height - 7 + 'px';
         
         // By default any overflow is hidden
         tooltip.style.overflow = '';

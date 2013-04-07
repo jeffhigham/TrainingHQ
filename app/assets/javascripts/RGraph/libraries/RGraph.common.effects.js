@@ -58,7 +58,7 @@
         // Draw the chart
         RGraph.Clear(obj.canvas);
         RGraph.RedrawCanvas(obj.canvas);
-        
+
         // Now fade the chart in
         for (var i=1; i<=frames; ++i) {
             setTimeout('document.getElementById("' + canvas.id + '").style.opacity = ' + (i * (1 / frames)), i * (duration / frames));
@@ -145,23 +145,23 @@
         RGraph.RedrawCanvas(obj.canvas);
 
         if (bounce) {
-            $('#' + obj.id).animate({
+            jQuery('#' + obj.id).animate({
                 opacity: 1,
                 width: '120%',
                 height: '120%',
                 left: (canvas.width * -0.1) + 'px',
                 top: (canvas.height * -0.1) + 'px'
             }, 500, function (){
-                        $('#' + obj.id).animate({width: '90%', height: '90%', top: (canvas.height * 0.05) + 'px', left: (canvas.width * 0.05) + 'px'}, 250, function ()
+                        jQuery('#' + obj.id).animate({width: '90%', height: '90%', top: (canvas.height * 0.05) + 'px', left: (canvas.width * 0.05) + 'px'}, 250, function ()
                         {
-                            $('#' + obj.id).animate({width: '101%', height: '101%', top: (canvas.height * -0.005) + 'px', left: (canvas.width * -0.005) + 'px'}, 250, function ()
+                            jQuery('#' + obj.id).animate({width: '101%', height: '101%', top: (canvas.height * -0.005) + 'px', left: (canvas.width * -0.005) + 'px'}, 250, function ()
                             {
-                                $('#' + obj.id).animate({width: '100%', height: '100%', top: 0, left: 0}, 250);
+                                jQuery('#' + obj.id).animate({width: '100%', height: '100%', top: 0, left: 0}, 250);
                             });
                         });
                      });
         } else {
-            $('#' + obj.id).animate({
+            jQuery('#' + obj.id).animate({
                 opacity: 1,
                 width: '100%',
                 height: '100%',
@@ -212,14 +212,14 @@
         canvas.style.left     = 0;
 
 
-        $('#' + obj.id).animate({
+        jQuery('#' + obj.id).animate({
             width: (canvas.width * 1.2) + 'px',
             height: (canvas.height * 1.2) + 'px',
             left: (canvas.width * -0.1) + 'px',
             top: (canvas.height * -0.1) + 'px'
         }, 250, function ()
         {
-                $('#' + obj.id).animate({
+                jQuery('#' + obj.id).animate({
                     opacity: 0,
                     width: 0,
                     height: 0,
@@ -311,7 +311,7 @@
         RGraph.Clear(obj.canvas);
         RGraph.RedrawCanvas(obj.canvas);
 
-        $('#' + obj.id).animate({
+        jQuery('#' + obj.id).animate({
             opacity: 1,
             width: targetWidth + 'px',
             height: targetHeight + 'px',
@@ -377,10 +377,10 @@
         obj.canvas.style.visibility = 'visible';
 
 
-        $('#reveal_left').animate({width: 0}, delay);
-        $('#reveal_right').animate({left: '+=' + (obj.canvas.width / 2),width: 0}, delay);
-        $('#reveal_top').animate({height: 0}, delay);
-        $('#reveal_bottom').animate({top: '+=' + (obj.canvas.height / 2),height: 0}, delay);
+        jQuery('#reveal_left').animate({width: 0}, delay);
+        jQuery('#reveal_right').animate({left: '+=' + (obj.canvas.width / 2),width: 0}, delay);
+        jQuery('#reveal_top').animate({height: 0}, delay);
+        jQuery('#reveal_bottom').animate({top: '+=' + (obj.canvas.height / 2),height: 0}, delay);
         
         // Remove the DIVs from the DOM 100ms after the animation ends
         setTimeout(
@@ -438,10 +438,10 @@
         }
 
 
-        $('#conceal_left').animate({width: '+=' + (obj.canvas.width / 2)}, delay);
-        $('#conceal_right').animate({left: '-=' + (obj.canvas.width / 2),width: (obj.canvas.width / 2)}, delay);
-        $('#conceal_top').animate({height: '+=' + (obj.canvas.height / 2)}, delay);
-        $('#conceal_bottom').animate({top: '-=' + (obj.canvas.height / 2),height: (obj.canvas.height / 2)}, delay);
+        jQuery('#conceal_left').animate({width: '+=' + (obj.canvas.width / 2)}, delay);
+        jQuery('#conceal_right').animate({left: '-=' + (obj.canvas.width / 2),width: (obj.canvas.width / 2)}, delay);
+        jQuery('#conceal_top').animate({height: '+=' + (obj.canvas.height / 2)}, delay);
+        jQuery('#conceal_bottom').animate({top: '-=' + (obj.canvas.height / 2),height: (obj.canvas.height / 2)}, delay);
         
         // Remove the DIVs from the DOM 100ms after the animation ends
         setTimeout(
@@ -496,7 +496,7 @@
                 div.style.backgroundColor = color;
             document.body.appendChild(div);
 
-            $('#blinds_' + i).animate({height: 0}, delay);
+            jQuery('#blinds_' + i).animate({height: 0}, delay);
         }
 
         setTimeout(function () {document.body.removeChild(document.getElementById('blinds_0'));}, delay);
@@ -539,7 +539,7 @@
                 div.style.backgroundColor = color;
             document.body.appendChild(div);
 
-            $('#blinds_' + i).animate({height: height + 'px'}, delay);
+            jQuery('#blinds_' + i).animate({height: height + 'px'}, delay);
         }
         
         setTimeout(function () {RGraph.Clear(obj.canvas);}, delay + 100);
@@ -589,7 +589,7 @@
                 div.style.backgroundColor = color;
             document.body.appendChild(div);
 
-            $('#blinds_' + i).animate({width: 0}, delay);
+            jQuery('#blinds_' + i).animate({width: 0}, delay);
         }
 
         setTimeout(function () {document.body.removeChild(document.getElementById('blinds_0'));}, delay + 100);
@@ -639,7 +639,7 @@
                 div.style.backgroundColor = color;
             document.body.appendChild(div);
 
-            $('#blinds_' + i).animate({width: width}, delay);
+            jQuery('#blinds_' + i).animate({width: width}, delay);
         }
 
         setTimeout(function () {RGraph.Clear(obj.canvas, color);}, delay + 100);
@@ -734,9 +734,8 @@
                 }
             }
 
-            ymax = RGraph.getScale(ymax, obj)[4];
-            
-            obj.Set('chart.ymax', ymax);
+            var scale = RGraph.getScale2(obj, {'max':ymax});
+            obj.Set('chart.ymax', scale.max);
         }
 
         function Grow ()
@@ -793,26 +792,13 @@
     */
     RGraph.Effects.UpdateCanvas = function (func)
     {
-        // Standard
-        if (typeof(window.requestAnimationFrame) == 'function') {
-            window.requestAnimationFrame(func);
-
-        // IE 10+
-        } else if (typeof(window.msRequestAnimationFrame) == 'function') {
-            window.msRequestAnimationFrame(func);
-
-        // Chrome
-        } else if (typeof(window.webkitRequestAnimationFrame) == 'function') {
-            window.webkitRequestAnimationFrame(func);
-
-        // Firefox
-        } else if (window.mozRequestAnimationFrame) { // Seems rather slow in FF6 - so disabled
-            window.mozRequestAnimationFrame(func);
-
-        // Default fallback to setTimeout
-        } else {
-            setTimeout(func, 16.6666666);
-        }
+        window.requestAnimationFrame =    window.requestAnimationFrame
+                                       || window.webkitRequestAnimationFrame
+                                       || window.msRequestAnimationFrame
+                                       || window.amozRequestAnimationFrame
+                                       || (function (func){setTimeout(func, 16.666);});
+        
+        window.requestAnimationFrame(func);
     }
 
 
@@ -977,7 +963,7 @@
             canvas.style.top  = 0;
         }
         
-        $('#' + obj.id).animate({left:0,top:0}, delay);
+        jQuery('#' + obj.id).animate({left:0,top:0}, delay);
         
         /**
         * Callback
@@ -1008,13 +994,13 @@
         canvas.style.top  = 0;
         
         if (to == 'left') {
-            $('#' + obj.id).animate({left: (0 - canvas.width) + 'px'}, delay);
+            jQuery('#' + obj.id).animate({left: (0 - canvas.width) + 'px'}, delay);
         } else if (to == 'top') {
-            $('#' + obj.id).animate({left: 0, top: (0 - div.offsetHeight) + 'px'}, delay);
+            jQuery('#' + obj.id).animate({left: 0, top: (0 - div.offsetHeight) + 'px'}, delay);
         } else if (to == 'bottom') {
-            $('#' + obj.id).animate({top: (0 + div.offsetHeight) + 'px'}, delay);
+            jQuery('#' + obj.id).animate({top: (0 + div.offsetHeight) + 'px'}, delay);
         } else {
-            $('#' + obj.id).animate({left: (0 + canvas.width) + 'px'}, delay);
+            jQuery('#' + obj.id).animate({left: (0 + canvas.width) + 'px'}, delay);
         }
         
         /**
@@ -1103,7 +1089,7 @@
         RGraph.RedrawCanvas(obj.canvas);
 
         var center_value = obj.Get('chart.xaxispos') == 'center' ? obj.Get('chart.ymin') : ((obj.max - obj.min) / 2) + obj.min;
-        obj.Set('chart.ymax', Number(obj.scale[4]));
+        obj.Set('chart.ymax', obj.scale2.max);
 
         RGraph.Clear(obj.canvas);
 
@@ -1217,8 +1203,8 @@
         var totalFrames = 30;
         var numFrame    = totalFrames;
         RGraph.RedrawCanvas(obj.canvas);
-        var center_value = obj.scale[4] / 2;
-        obj.Set('chart.ymax', Number(obj.scale[4]));
+        var center_value = obj.scale2.max / 2;
+        obj.Set('chart.ymax', obj.scale2.max);
         RGraph.Clear(obj.canvas);
         var original_data = RGraph.array_clone(obj.original_data);
         obj.Set('chart.shadow.blur', 0);
@@ -1360,9 +1346,8 @@
                 }
             }
 
-            xmax = RGraph.getScale(xmax)[4];
-            
-            obj.Set('chart.xmax', xmax);
+            var scale2 = RGraph.getScale2(obj, {'max':xmax});
+            obj.Set('chart.xmax', scale2.max);
         }
         
         /**
@@ -1530,8 +1515,8 @@
         //obj2.Set('chart.tooltips', null);
         obj2.Set('chart.labels', []);
         obj2.Set('chart.background.grid', false);
-        obj2.Set('chart.background.barcolor1', 'transparent');
-        obj2.Set('chart.background.barcolor2', 'transparent');
+        obj2.Set('chart.background.barcolor1', 'rgba(0,0,0,0)');
+        obj2.Set('chart.background.barcolor2', 'rgba(0,0,0,0)');
         obj2.Set('chart.ylabels', false);
         obj2.Set('chart.noaxes', true);
         obj2.Set('chart.title', '');
@@ -1582,7 +1567,7 @@
         /**
         * Animate the DIV that contains the canvas
         */
-        $('#' + div.id).animate({
+        jQuery('#' + div.id).animate({
             width: obj.canvas.width + 'px'
         }, opt['duration'], function () {RGraph.Effects.Line.Trace_callback(obj)});
 
@@ -1593,7 +1578,6 @@
         */
         RGraph.Effects.Line.Trace_callback = function (obj)
         {
-
             var obj2 = obj.canvas.__rgraph_trace_obj2__;
 
             // Remove the window resize listener
@@ -1619,6 +1603,7 @@
             obj.canvas.__rgraph_line_canvas2__ = null;
             obj.canvas.__rgraph_trace_cover__.style.display = 'none';
             obj.canvas.__rgraph_trace_cover__ = null;
+            
             
             callback(obj);
         }
@@ -1732,6 +1717,7 @@
                 opt.radius = null;
             }
         }
+
 
         function RoundRobin_inner ()
         {
@@ -1994,15 +1980,15 @@
         //Reset The data to zeros
         for (var i=0; i<obj.data.length; ++i) {
             obj.data[i] /= totalFrames;
-            
         }
         
         /**
         * Fix the scale
         */
         if (obj.Get('chart.ymax') == null) {
-            var max = RGraph.getScale(obj.getMax(data))[4]
-            obj.Set('chart.ymax', max);
+            var max   = obj.getMax(data);
+            var scale2 = RGraph.getScale2(obj, {'max':max});
+            obj.Set('chart.ymax', scale2.max);
         }
         
         //obj.Set('chart.multiplier.x', 0);
@@ -2034,78 +2020,51 @@
 
 
     /**
-    * Bar chart Wave effect
+    * Bar chart Wave effect This effect defaults to 30 frames - which is
+    * approximately half a second
     * 
     * @param object obj The chart object
     */
+    RGraph.Effects.Bar.Wave2 =
     RGraph.Effects.Bar.Wave = function (obj)
     {
-        var callback = arguments[2] ? arguments[2] : null;
+        var totalframes   = (arguments[1] && arguments[1].frames) ? arguments[1].frames : 15;
+        var original_data = [];
 
-        var max = 0;
-        for (var i=0; i<obj.data.length; ++i) {
-            if (typeof(obj.data[i]) == 'number') {
-                max = Math.max(max, Math.abs(obj.data[i]))
-            } else {
-                if (obj.Get('chart.grouping') == 'stacked') {
-                    max = Math.max(max, Math.abs(RGraph.array_sum(obj.data[i])))
-                } else {
-                    max = Math.max(max, Math.abs(RGraph.array_max(obj.data[i])))
-                }
-            }
-        }
-        
-        if (obj.Get('chart.ymax') > 0) {
-            max = obj.Get('chart.ymax');
-        }
-
-        var scale = RGraph.getScale(max, obj);
-        obj.Set('chart.ymax', scale[4]);
-
-        original_bar_data = RGraph.array_clone(obj.data);
-        __rgraph_bar_wave_object__ = obj;
-    
-        // Zero all the bars
-        for (var i=0; i<obj.data.length; ++i) {
-             if (typeof(obj.data[i]) == 'number') {
-                obj.data[i] = 0;
-             } else {
-                obj.data[i] = new Array(obj.data[i].length);
-             }
-             
-             var totalFrames = 25;
-             var delay       = 25;
-             
-            setTimeout('RGraph.Effects.Bar.Wave_inner(' + i + ', ' + totalFrames + ', ' + delay + ')', i * 150);
-        }
-    
-        RGraph.Effects.Bar.Wave_inner = function  (idx, totalFrames, delay)
-        {
-            // Touch this at your peril...!
-            for (var k=0; k<=totalFrames; ++k) {
-                setTimeout('RGraph.Effects.Bar.Wave_inner_iterator(__rgraph_bar_wave_object__, '+idx+', '+(k / totalFrames)+');', delay * k);
-            }
-        }
-
-        if (callback) {
-            setTimeout(callback, (i * 150) + (totalFrames * delay), totalFrames, delay);
-        }
-    }
-    
-    
-    RGraph.Effects.Bar.Wave_inner_iterator = function (obj, idx, factor)
-    {
-        if (typeof(obj.data[idx]) == 'number') {
-            obj.data[idx] = original_bar_data[idx] * factor;
-        } else {
-            for (var i=0; i<obj.data[idx].length; ++i) {
-                obj.data[idx][i] = factor * original_bar_data[idx][i];
-            }
-        }
-        
+        obj.Draw();
+        //var scale = RGraph.getScale2(obj, {'max':obj.max});
+        obj.Set('chart.ymax', obj.scale2.max);
         RGraph.Clear(obj.canvas);
-        //obj.Draw();
-        RGraph.RedrawCanvas(obj.canvas);
+        
+        for (var i=0; i<obj.data.length; ++i) {
+        
+            (function (idx)
+            {
+                original_data[i] = obj.data[i];
+                obj.data[i] = typeof(obj.data[i]) == 'object' ? [] : 0;
+                setTimeout(function () {Iterator(idx, totalframes);}, 100 * i)
+            })(i);
+        }
+        
+        function Iterator(idx, frames)
+        {
+            if (frames-- > 0) {
+
+                // Update the data point
+                if (typeof(obj.data[idx]) == 'number') {
+                    obj.data[idx] = ((totalframes - frames) / totalframes) * original_data[idx]
+
+                } else if (typeof(obj.data[idx]) == 'object') {
+                    for (var k=0; k<original_data[idx].length; ++k) {
+                        obj.data[idx][k] = ((totalframes - frames) / totalframes) * original_data[idx][k];
+                    }
+                }
+
+                RGraph.Clear(obj.canvas);
+                RGraph.RedrawCanvas(obj.canvas);
+                RGraph.Effects.UpdateCanvas(function () {Iterator(idx, frames);});
+            }
+        }
     }
 
 
@@ -2182,80 +2141,6 @@
         RGraph.Effects.UpdateCanvas(Grow);
     }
 
-
-
-    /**
-    * Bar chart Wave2 effect - using the requestAnimationFrame function
-    * 
-    * @param object obj The chart object
-    */
-    RGraph.Effects.Bar.Wave2 = function (obj)
-    {
-        var callback = arguments[2] ? arguments[2] : null;
-    
-        var max = 0;
-        for (var i=0; i<obj.data.length; ++i) {
-            if (typeof(obj.data[i]) == 'number') {
-                max = Math.max(max, Math.abs(obj.data[i]))
-            } else {
-                if (obj.Get('chart.grouping') == 'stacked') {
-                    max = Math.max(max, Math.abs(RGraph.array_sum(obj.data[i])))
-                } else {
-                    max = Math.max(max, Math.abs(RGraph.array_max(obj.data[i])))
-                }
-            }
-        }
-        var scale = RGraph.getScale(max, obj);
-        obj.Set('chart.ymax', scale[4]);
-        
-        original_bar_data = RGraph.array_clone(obj.data);
-        __rgraph_bar_wave_object__ = obj;
-    
-        /**
-        * Zero all the bars
-        */
-        for (var i=0; i<obj.data.length; ++i) {
-             if (typeof(obj.data[i]) == 'number') {
-                obj.data[i] = 0;
-             } else {
-                obj.data[i] = new Array(obj.data[i].length);
-             }
-             
-            setTimeout('a = new RGraph.Effects.Bar.Wave2.Iterator(__rgraph_bar_wave_object__, ' + i + ', 45); a.Animate();', i * 150);
-        }
-    }
-
-    
-    /**
-    * The Iterator object that handles the individual animation frames
-    */
-    RGraph.Effects.Bar.Wave2.Iterator = function (obj, idx, frames)
-    {
-        this.obj    = obj;
-        this.idx    = idx;
-        this.frames = 15;
-        this.curFrame = 0;
-    }
-
-    RGraph.Effects.Bar.Wave2.Iterator.prototype.Animate = function ()
-    {
-        if (typeof(this.obj.data[this.idx]) == 'number') {
-            this.obj.data[this.idx] = (this.curFrame / this.frames) * original_bar_data[this.idx];
-        } else if (typeof(this.obj.data[this.idx]) == 'object') {
-            for (var j=0; j<this.obj.data[this.idx].length; ++j) {
-                this.obj.data[this.idx][j] = (this.curFrame / this.frames) * original_bar_data[this.idx][j];
-            }
-        }
-    
-        RGraph.RedrawCanvas(this.obj.canvas);
-        
-        if (this.curFrame < this.frames) {
-            
-            this.curFrame += 1;
-    
-            RGraph.Effects.UpdateCanvas(this.Animate.bind(this));
-        }
-    }
 
 
     /**
@@ -2549,7 +2434,7 @@
         /**
         * Animate the DIV that contains the canvas
         */
-        $('#' + div.id).animate({
+        jQuery('#' + div.id).animate({
             width: obj.canvas.width + 'px'
         }, opt['duration'], function () {
 
@@ -2710,8 +2595,14 @@
             if (frame < numFrames) {
                 ++frame;
                 RGraph.Effects.UpdateCanvas(Grow);
-            } else if (typeof(callback) == 'function') {
-                callback(obj);
+            } else {
+                obj.Set('chart.animation.grow.multiplier', 1);
+                RGraph.Clear(obj.canvas);
+                RGraph.RedrawCanvas(obj.canvas);
+                
+                if (typeof(callback) == 'function') {
+                    callback(obj);
+                }
             }
         }
 
@@ -2758,9 +2649,9 @@
             }
     
             if (i % 2 == 0) {
-                $('#' + id + 'scissors_' + i).animate({left: canvas.width + 'px', width: 0}, delay);
+                jQuery('#' + id + 'scissors_' + i).animate({left: canvas.width + 'px', width: 0}, delay);
             } else {
-                $('#' + id + 'scissors_' + i).animate({width: 0}, delay);
+                jQuery('#' + id + 'scissors_' + i).animate({width: 0}, delay);
             }
         }
 
@@ -2816,9 +2707,9 @@
             document.body.appendChild(div);
 
             if (i % 2 == 0) {
-                $('#' + id + '_scissors_' + i).animate({left: xy[0] + 'px', width: canvas.width + 'px'}, delay);
+                jQuery('#' + id + '_scissors_' + i).animate({left: xy[0] + 'px', width: canvas.width + 'px'}, delay);
             } else {
-                $('#' + id + '_scissors_' + i).animate({width: canvas.width + 'px'}, delay);
+                jQuery('#' + id + '_scissors_' + i).animate({width: canvas.width + 'px'}, delay);
             }
         }
         
@@ -2870,9 +2761,9 @@
             }
 
             if (i % 2 == 0) {
-                $('#' + id + '_vscissors_' + i).animate({top: xy[1] + canvas.height + 'px', height: 0}, delay);
+                jQuery('#' + id + '_vscissors_' + i).animate({top: xy[1] + canvas.height + 'px', height: 0}, delay);
             } else {
-                $('#' + id + '_vscissors_' + i).animate({height: 0}, delay);
+                jQuery('#' + id + '_vscissors_' + i).animate({height: 0}, delay);
             }
         }
 
@@ -2930,9 +2821,9 @@
             }
 
             if (i % 2 == 0) {
-                $('#' + id + '_vscissors_' + i).animate({top: xy[1] + 'px', height: canvas.height + 'px'}, delay);
+                jQuery('#' + id + '_vscissors_' + i).animate({top: xy[1] + 'px', height: canvas.height + 'px'}, delay);
             } else {
-                $('#' + id + '_vscissors_' + i).animate({height: canvas.height + 'px'}, delay);
+                jQuery('#' + id + '_vscissors_' + i).animate({height: canvas.height + 'px'}, delay);
             }
         }
         

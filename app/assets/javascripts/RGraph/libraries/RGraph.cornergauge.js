@@ -40,6 +40,7 @@
         this.currentValue      = null;
         this.uid               = RGraph.CreateUID();
         this.canvas.uid        = this.canvas.uid ? this.canvas.uid : RGraph.CreateUID();
+        this.coordsText        = [];
 
         /**
         * Range checking
@@ -64,17 +65,22 @@
 
         // Various config type stuff
         this.properties = {
-                            'chart.centerx':       null,
-                            'chart.centery':       null,
-                            'chart.radius':        null,
-                            'chart.gutter.left':   25,
-                            'chart.gutter.right':  25,
-                            'chart.gutter.top':    25,
-                            'chart.gutter.bottom': 25,
-                            'chart.strokestyle':   'black',
-                            'chart.linewidth':     2,
-                            'chart.title':         '',
-                            'chart.text.font':    'Arial',
+                            'chart.centerx':        null,
+                            'chart.centery':        null,
+                            'chart.radius':         null,
+                            'chart.gutter.left':    25,
+                            'chart.gutter.right':   25,
+                            'chart.gutter.top':     25,
+                            'chart.gutter.bottom':  25,
+                            'chart.strokestyle':    'black',
+                            'chart.linewidth':      2,
+                            'chart.title':          '',
+                            'chart.title.vpos':     0.5,
+                            'chart.title.size':     null,
+                            'chart.title.x':        null,
+                            'chart.title.y':        null,
+                            'chart.title.bold':     true,
+                            'chart.text.font':      'Arial',
                             'chart.text.color':     '#666',
                             'chart.text.size':      10,
                             'chart.background.gradient.color1': '#ddd',
@@ -105,10 +111,10 @@
                             'chart.value.text.units.post': '',
                             'chart.value.text.boxed': true,
                             'chart.value.text.font': 'Arial',
-                            'chart.value.text.size': null,
+                            'chart.value.text.size': 18,
                             'chart.value.text.bold': false,
                             'chart.value.text.decimals': 0,
-                            'chart.centerpin.stroke':  'transparent',
+                            'chart.centerpin.stroke':  'rgba(0,0,0,0)',
                             'chart.centerpin.fill':    null, // Set in the DrawCenterpin function
                             'chart.centerpin.color':    'blue',
                             'chart.needle.colors':   ['#ccc', '#D5604D', 'red', 'green', 'yellow'],
@@ -121,6 +127,18 @@
                             'chart.zoom.delay':             16.666,
                             'chart.zoom.shadow':            true,
                             'chart.zoom.background':        true
+        }
+
+
+
+        /*
+        * Translate half a pixel for antialiasing purposes - but only if it hasn't beeen
+        * done already
+        */
+        if (!this.canvas.__rgraph_aa_translated__) {
+            this.context.translate(0.5,0.5);
+            
+            this.canvas.__rgraph_aa_translated__ = true;
         }
 
 
@@ -150,6 +168,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -237,6 +257,7 @@
         this.DrawBackGround();
 
 
+
         /**
         * Draw the tickmarks
         */
@@ -281,6 +302,18 @@
         * Draw the centerpin of the needle
         */
         this.DrawCenterpin();
+
+
+        /**
+        * Draw the title
+        */
+        var size = this.properties['chart.title.size'] ? this.properties['chart.title.size'] : this.Get('chart.text.size') + 2
+        this.properties['chart.title.y'] = this.centery + 20 - this.radius - ((1.5 * size) / 2);
+        RGraph.DrawTitle(this,
+                         this.properties['chart.title'],
+                         this.guttertop,
+                         this.centerx + (this.radius / 2),
+                         size);
 
 
         /**
@@ -419,11 +452,11 @@
     {
         var grad = RGraph.RadialGradient(this, this.centerx, this.centery, 0,
                                                this.centerx, this.centery, 20,
-                                               'transparent', this.properties['chart.needle.colors'][index])
+                                               'rgba(0,0,0,0)', this.properties['chart.needle.colors'][index])
 
         this.angles.needle[index] = (((value - this.min) / (this.max - this.min)) * HALFPI) + PI + HALFPI;
         this.context.lineWidth    = 1
-        this.context.strokeStyle  = 'transparent';
+        this.context.strokeStyle  = 'rgba(0,0,0,0)';
         this.context.fillStyle    = grad;
 
 
@@ -514,16 +547,16 @@
                     num = RGraph.number_format(this, num, this.properties['chart.units.pre'], this.properties['chart.units.post']);
                 var angle = (i * 22.5) / (180 / PI);
 
-                RGraph.Text(this.context,
-                            this.properties['chart.text.font'],
-                            this.properties['chart.text.size'],
-                            this.centerx + Math.sin(angle) * (this.radius - 53),
-                            this.centery - Math.cos(angle) * (this.radius - 53),
-                            String(num),
-                            'top',
-                            'center',
-                            null,
-                            90 * (i / (numLabels - 1)));
+                RGraph.Text2(this,{'font':this.properties['chart.text.font'],
+                                  'size':this.properties['chart.text.size'],
+                                  'x':this.centerx + Math.sin(angle) * (this.radius - 53),
+                                  'y':this.centery - Math.cos(angle) * (this.radius - 53),
+                                  'text':String(num),
+                                  'valign':'top',
+                                  'halign':'center',
+                                  'angle':90 * (i / (numLabels - 1)),
+                                  'tag': 'scale'
+                                 });
             this.context.fill();
         }
     }
@@ -701,21 +734,18 @@
                 
                 value = value.toString();
             }
-
-            this.context.beginPath();
-                RGraph.Text(this.context,
-                            this.properties['chart.value.text.font'],
-                            typeof(this.properties['chart.value.text.size']) == 'number' ? this.properties['chart.value.text.size'] : this.properties['chart.text.size'],
-                            this.centerx + (Math.cos((PI / 180) * 45) * (this.radius / 3)),
-                            this.centery - (Math.sin((PI / 180) * 45) * (this.radius / 3)),
-                            RGraph.number_format(this, String(value), this.properties['chart.value.text.units.pre'], this.properties['chart.value.text.units.post']),
-                            'center',
-                            'center',
-                            this.properties['chart.value.text.boxed'] ? true : false,
-                            null,
-                            null,
-                            this.properties['chart.value.text.bold'])
-            this.context.fill();
+                RGraph.Text2(this,{'font':this.properties['chart.value.text.font'],
+                                  'size':this.properties['chart.value.text.size'],
+                                  'x':this.centerx + (Math.cos((PI / 180) * 45) * (this.radius / 3)),
+                                  'y':this.centery - (Math.sin((PI / 180) * 45) * (this.radius / 3)),
+                                  'text':RGraph.number_format(this, String(value), this.properties['chart.value.text.units.pre'], this.properties['chart.value.text.units.post']),
+                                  'valign':'center',
+                                  'halign':'center',
+                                  'bounding':true,
+                                  'boundingFill':'white',
+                                  'bold': this.properties['chart.value.text.bold'],
+                                  'tag': 'value.text'
+                                 });
         }
     }
 

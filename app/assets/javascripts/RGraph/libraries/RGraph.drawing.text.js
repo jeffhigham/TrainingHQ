@@ -26,26 +26,31 @@
 
     /**
     * The constructor. This function sets up the object. It takes the ID (the HTML attribute) of the canvas as the
-    * first argument and the data as the second. If you need to change this, you can.
+    * first argument, then th X position, the Y position and then the text to show
     * 
     * @param string id    The canvas tag ID
-    * @param number x  The X position of the rectangle
-    * @param number y  The Y position of the rectangle
-    * @param number w  The width of the rectangle
-    * @param number h  The height of the rectangle
+    * @param number x     The X position of the text
+    * @param number y     The Y position of the text
+    * @param number text  The text to show
     */
-    RGraph.Drawing.Rect = function (id, x, y, w, h)
+    RGraph.Drawing.Text = function (id, x, y, text)
     {
         this.id                = id;
         this.canvas            = document.getElementById(id);
         this.context           = this.canvas.getContext ? this.canvas.getContext("2d") : null;
         this.colorsParsed      = false;
         this.canvas.__object__ = this;
+        this.x                 = x;
+        this.y                 = y;
+        this.text              = text;
+        this.coords            = [];
+        this.coordsText        = [];
+
 
         /**
         * This defines the type of this shape
         */
-        this.type = 'drawing.rect';
+        this.type = 'drawing.text';
 
 
         /**
@@ -79,38 +84,41 @@
         */
         this.properties =
         {
-            'chart.strokestyle':      'rgba(0,0,0,0)',
-            'chart.fillstyle':        'red',
-            'chart.events.click':     null,
-            'chart.events.mousemove': null,
-            'chart.shadow':           false,
-            'chart.shadow.color':     'gray',
-            'chart.shadow.offsetx':   3,
-            'chart.shadow.offsety':   3,
-            'chart.shadow.blur':      5,
-            'chart.highlight.stroke':   'black',
-            'chart.highlight.fill':   'rgba(255,255,255,0.7)',
-            'chart.tooltips':          null,
-            'chart.tooltips.effect':   'fade',
-            'chart.tooltips.css.class':'RGraph_tooltip',
-            'chart.tooltips.event':    'onclick',
-            'chart.tooltips.highlight':true,
-            'chart.tooltips.coords.page': false,
-            'chart.tooltips.valign':   'top'
+            'chart.size':                    10,
+            'chart.font':                    'Arial',
+            'chart.bold':                    false,
+            'chart.angle':                   0,
+            'chart.colors':                  ['black'],
+            'chart.events.click':            null,
+            'chart.events.mousemove':        null,
+            'chart.highlight.stroke':        '#ccc',
+            'chart.highlight.fill':          'rgba(255,255,255,0.7)',
+            'chart.tooltips':                null,
+            'chart.tooltips.effect':         'fade',
+            'chart.tooltips.css.class':      'RGraph_tooltip',
+            'chart.tooltips.event':          'onclick',
+            'chart.tooltips.highlight':      true,
+            'chart.tooltips.coords.page':    false,
+            'chart.bounding':                false,
+            'chart.bounding.fill':           'rgba(255,255,255,0.7)',
+            'chart.bounding.stroke':         '#777',
+            'chart.bounding.shadow':         false,
+            'chart.bounding.shadow.color':   '#ccc',
+            'chart.bounding.shadow.blur':    3,
+            'chart.bounding.shadow.offsetx': 3,
+            'chart.bounding.shadow.offsety': 3,
+            'chart.marker':                  false,
+            'chart.halign':                  'left',
+            'chart.valign':                  'bottom'
         }
 
         /**
         * A simple check that the browser has canvas support
         */
         if (!this.canvas) {
-            alert('[DRAWING.RECT] No canvas support');
+            alert('[DRAWING.TEXT] No canvas support');
             return;
         }
-        
-        /**
-        * This can be used to store the coordinates of shapes on the graph
-        */
-        this.coords = [[Math.round(x), Math.round(y), w, h]];
         
         /**
         * Create the dollar object so that functions can be added to them
@@ -140,17 +148,17 @@
 
 
     /**
-    * A setter method for setting graph properties. It can be used like this: obj.Set('chart.strokestyle', '#666');
+    * A setter method for setting properties.
     * 
     * @param name  string The name of the property to set
     * @param value mixed  The value of the property
     */
-    RGraph.Drawing.Rect.prototype.Set = function (name, value)
+    RGraph.Drawing.Text.prototype.Set = function (name, value)
     {
         name = name.toLowerCase();
 
         /**
-        * This should be done first - prepend the propertyy name with "chart." if necessary
+        * This should be done first - prepend the property name with "chart." if necessary
         */
         if (name.substr(0,6) != 'chart.') {
             name = 'chart.' + name;
@@ -169,7 +177,7 @@
     * 
     * @param name  string The name of the property to get
     */
-    RGraph.Drawing.Rect.prototype.Get = function (name)
+    RGraph.Drawing.Text.prototype.Get = function (name)
     {
         /**
         * This should be done first - prepend the property name with "chart." if necessary
@@ -187,8 +195,12 @@
     /**
     * Draws the rectangle
     */
-    RGraph.Drawing.Rect.prototype.Draw = function ()
+    RGraph.Drawing.Text.prototype.Draw = function ()
     {
+        var ca   = this.canvas;
+        var co   = this.canvas;
+        var prop = this.properties;
+
         /**
         * Fire the onbeforedraw event
         */
@@ -205,24 +217,55 @@
             // Don't want to do this again
             this.colorsParsed = true;
         }
-
-
-        this.context.beginPath();
-
-            this.context.strokeStyle = this.properties['chart.strokestyle'];
-            this.context.fillStyle   = this.properties['chart.fillstyle'];
-            
-            if (this.properties['chart.shadow']) {
-                RGraph.SetShadow(this, this.properties['chart.shadow.color'], this.properties['chart.shadow.offsetx'], this.properties['chart.shadow.offsety'], this.properties['chart.shadow.blur']);
-            }
-
-            this.context.rect(this.coords[0][0], this.coords[0][1], this.coords[0][2], this.coords[0][3]);
-
-        this.context.stroke();
-        this.context.fill();
         
-        // Turn the shadow off
-        RGraph.NoShadow(this);
+        
+        /**
+        * Stop the coods array from growing
+        */
+        this.coords = [];
+        
+        
+        /**
+        * The font, its size and whether its bold or not can be set by properties,
+        * so now they have been (potentiall) set - measure the text
+        */
+                /**
+        * Measure the text and add the width/height
+        * 
+        * text, bold, font, size
+        * 
+        */
+        var dimensions = RGraph.MeasureText(this.text, prop['chart.text.bold'],prop['chart.text.font'], prop['chart.text.size']);
+
+
+
+        // ------------- DRAW TEXT HERE -------------
+        this.context.fillStyle = prop['chart.colors'][0];
+
+        var ret = RGraph.Text2(this, {'font':                     prop['chart.font'],
+                                      'size':                     prop['chart.size'],
+                                       'x':                       this.x,
+                                       'y':                       this.y,
+                                       'text':                    this.text,
+                                       'bold':                    prop['chart.bold'],
+                                       'angle':                   prop['chart.angle'],
+                                       'bounding':                prop['chart.bounding'],
+                                       'bounding.fill':           prop['chart.bounding.fill'],
+                                       'bounding.stroke':         prop['chart.bounding.stroke'],
+                                       'bounding.shadow':         prop['chart.bounding.shadow'],
+                                       'bounding.shadow.color':   prop['chart.bounding.shadow.color'],
+                                       'bounding.shadow.blur':    prop['chart.bounding.shadow.blur'],
+                                       'bounding.shadow.offsetx': prop['chart.bounding.shadow.offsetx'],
+                                       'bounding.shadow.offsety': prop['chart.bounding.shadow.offsety'],
+                                       'marker':                  prop['chart.marker'],
+                                       'halign':                  prop['chart.halign'],
+                                       'valign':                  prop['chart.valign']
+                                      });
+
+
+        // store the dimensions
+        this.coords.push({'x':ret.x, 'y':ret.y, 'width':ret.width, 'height':ret.height});
+
 
 
         /**
@@ -244,7 +287,7 @@
     /**
     * The getObjectByXY() worker method
     */
-    RGraph.Drawing.Rect.prototype.getObjectByXY = function (e)
+    RGraph.Drawing.Text.prototype.getObjectByXY = function (e)
     {
         if (this.getShape(e)) {
             return this;
@@ -257,27 +300,27 @@
     * to get the coordinates (if any) of the selected bar
     * 
     * @param object e The event object
-    * @param object   OPTIONAL You can pass in the bar object instead of the
-    *                          function using "this"
     */
-    RGraph.Drawing.Rect.prototype.getShape = function (e)
+    RGraph.Drawing.Text.prototype.getShape = function (e)
     {
+        var prop    = this.properties;
+        var coords  = this.coords;
         var mouseXY = RGraph.getMouseXY(e);
         var mouseX  = mouseXY[0];
         var mouseY  = mouseXY[1];  
 
         for (var i=0; i<this.coords.length; i++) {
 
-            var left   = this.coords[i][0];
-            var top    = this.coords[i][1];
-            var width  = this.coords[i][2];
-            var height = this.coords[i][3];
+            var left   = coords[i].x;
+            var top    = coords[i].y;
+            var width  = coords[i].width;
+            var height = coords[i].height;
 
             if (mouseX >= left && mouseX <= (left + width) && mouseY >= top && mouseY <= (top + height)) {
                 
                 return {
                         0: this, 1: left, 2: top, 3: width, 4: height, 5: 0,
-                        'object': this, 'x': left, 'y': top, 'width': width, 'height': height, 'index': 0, 'tooltip': this.properties['chart.tooltips'] ? this.properties['chart.tooltips'][0] : null
+                        'object': this, 'x': left, 'y': top, 'width': width, 'height': height, 'index': 0, 'tooltip': prop['chart.tooltips'] ? prop['chart.tooltips'][0] : null
                        };
             }
         }
@@ -295,24 +338,21 @@
     * @param int y         The Y coordinate specified for the tooltip
     * @param objec tooltip The tooltips DIV element
     */
-    RGraph.Drawing.Rect.prototype.positionTooltip = function (obj, x, y, tooltip, idx)
+    RGraph.Drawing.Text.prototype.positionTooltip = function (obj, x, y, tooltip, idx)
     {
-        var coordX     = obj.coords[0][0];
-        var coordY     = obj.coords[0][1];
-        var coordW     = obj.coords[0][2];
-        var coordH     = obj.coords[0][3];
-        var canvasXY   = RGraph.getCanvasXY(obj.canvas);
-        var width      = tooltip.offsetWidth;
-        var height     = tooltip.offsetHeight;
+        var coords   = obj.coords[0];
+        var coordX   = coords.x;
+        var coordY   = coords.y;
+        var coordW   = coords.width;
+        var coordH   = coords.height;
+        var canvasXY = RGraph.getCanvasXY(obj.canvas);
+        var width    = tooltip.offsetWidth;
+        var height   = tooltip.offsetHeight;
 
         // Set the top position
         tooltip.style.left = 0;
         
-        if (this.properties['chart.tooltips.valign'] == 'center') {
-            tooltip.style.top  = canvasXY[1] + coordY + (coordH / 2) -height + 'px';
-        } else {
-            tooltip.style.top  = canvasXY[1] + coordY - height - 7 + 'px';
-        }
+        tooltip.style.top  = canvasXY[1] + coordY + (coordH / 2) - height + 'px';
         
         // By default any overflow is hidden
         tooltip.style.overflow = '';
@@ -351,7 +391,7 @@
     * 
     * @param object shape The shape to highlight
     */
-    RGraph.Drawing.Rect.prototype.Highlight = function (shape)
+    RGraph.Drawing.Text.prototype.Highlight = function (shape)
     {
         // Add the new highlight
         RGraph.Highlight.Rect(this, shape);
@@ -362,15 +402,17 @@
     /**
     * This allows for easy specification of gradients
     */
-    RGraph.Drawing.Rect.prototype.parseColors = function ()
+    RGraph.Drawing.Text.prototype.parseColors = function ()
     {
+        var prop = this.properties;
+
         /**
         * Parse various properties for colors
         */
-        this.properties['chart.fillstyle']        = this.parseSingleColorForGradient(this.properties['chart.fillstyle']);
-        this.properties['chart.strokestyle']      = this.parseSingleColorForGradient(this.properties['chart.strokestyle']);
-        this.properties['chart.highlight.stroke'] = this.parseSingleColorForGradient(this.properties['chart.highlight.stroke']);
-        this.properties['chart.highlight.fill']   = this.parseSingleColorForGradient(this.properties['chart.highlight.fill']);
+        prop['chart.fillstyle']        = this.parseSingleColorForGradient(prop['chart.fillstyle']);
+        prop['chart.strokestyle']      = this.parseSingleColorForGradient(prop['chart.strokestyle']);
+        prop['chart.highlight.stroke'] = this.parseSingleColorForGradient(prop['chart.highlight.stroke']);
+        prop['chart.highlight.fill']   = this.parseSingleColorForGradient(prop['chart.highlight.fill']);
     }
 
 
@@ -378,10 +420,10 @@
     /**
     * This parses a single color value
     */
-    RGraph.Drawing.Rect.prototype.parseSingleColorForGradient = function (color)
+    RGraph.Drawing.Text.prototype.parseSingleColorForGradient = function (color)
     {
-        var canvas  = this.canvas;
-        var context = this.context;
+        var ca = this.canvas;
+        var co = this.context;
         
         if (!color) {
             return color;
@@ -392,7 +434,7 @@
             var parts = RegExp.$1.split(':');
 
             // Create the gradient
-            var grad = context.createLinearGradient(0,0,canvas.width,0);
+            var grad = co.createLinearGradient(0,0,ca.width,0);
 
             var diff = 1 / (parts.length - 1);
 

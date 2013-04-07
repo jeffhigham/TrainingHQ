@@ -46,12 +46,13 @@
         this.bulbTopRadius     = 0;
         this.bulbTopCenterX    = 0
         this.bulbTopCenterY    = 0;
+        this.coordsText        = [];
 
         RGraph.OldBrowserCompat(this.context);
 
 
         this.properties = {
-            'chart.colors':                 ['Gradient(red:white:red)'],
+            'chart.colors':                 ['Gradient(#c00:red:#f66:#fcc)'],
             'chart.gutter.left':            15,
             'chart.gutter.right':           15,
             'chart.gutter.top':             15,
@@ -72,7 +73,6 @@
             'chart.zoom.shadow':            true,
             'chart.zoom.background':        true,
             'chart.title':                  '',
-            'chart.title.hpos':             0.5,
             'chart.title.side':             '',
             'chart.title.side.bold':        true,
             'chart.title.side.font':        null,
@@ -87,7 +87,7 @@
             'chart.value.label':            true,
             'chart.scale.visible':          false,
             'chart.scale.decimals':         0,
-            'chart.ylabels.count':          5,
+            'chart.labels.count':          5,
             'chart.annotatable':            false,
             'chart.annotate.color':         'black',
             'chart.scale.decimals':         0,
@@ -102,13 +102,6 @@
         }
 
 
-        // The default color is now a gradient
-        var grad = this.context.createLinearGradient(15,0,this.canvas.width - this.Get('chart.gutter.right'), 0);
-        grad.addColorStop(0,'red');
-        grad.addColorStop(0.5,'#f99');
-        grad.addColorStop(1,'red');
-        
-        this.Set('chart.colors', [grad]);
 
         /**
         * A simple check that the browser has canvas support
@@ -154,12 +147,22 @@
     {
 
         /**
-        * This should be done first - prepend the propertyy name with "chart." if necessary
+        * This should be done first - prepend the property name with "chart." if necessary
         */
         if (name.substr(0,6) != 'chart.') {
             name = 'chart.' + name;
         }
+        
+        /**
+        * Change of name
+        */
+        if (name == 'chart.ylabels.count') {
+            name = 'chart.labels.count';
+        }
+        
         this.properties[name.toLowerCase()] = value;
+
+        return this;
     }
 
 
@@ -190,6 +193,10 @@
     */
     RGraph.Thermometer.prototype.Draw = function ()
     {
+        var ca   = this.canvas;
+        var co   = this.context;
+        var prop = this.properties;
+
         /**
         * Fire the custom RGraph onbeforedraw event (which should be fired before the chart is drawn)
         */
@@ -214,10 +221,26 @@
         * This is new in May 2011 and facilitates indiviual gutter settings,
         * eg chart.gutter.left
         */
-        this.gutterLeft   = this.Get('chart.gutter.left');
-        this.gutterRight  = this.Get('chart.gutter.right');
-        this.gutterTop    = this.Get('chart.gutter.top');
-        this.gutterBottom = this.Get('chart.gutter.bottom');
+        this.gutterLeft   = prop['chart.gutter.left'];
+        this.gutterRight  = prop['chart.gutter.right'];
+        this.gutterTop    = prop['chart.gutter.top'];
+        this.gutterBottom = prop['chart.gutter.bottom'];
+        
+        /**
+        * Get the scale
+        */
+        this.scale2 = RGraph.getScale2(this, {
+                                            'max':this.max,
+                                            'min':this.min,
+                                            'strict':true,
+                                            'scale.thousand':prop['chart.scale.thousand'],
+                                            'scale.point':prop['chart.scale.point'],
+                                            'scale.decimals':prop['chart.scale.decimals'],
+                                            'ylabels.count':prop['chart.labels.count'],
+                                            'scale.round':prop['chart.scale.round'],
+                                            'units.pre': prop['chart.units.pre'],
+                                            'units.post': prop['chart.units.post']
+                                           });
 
 
         /**
@@ -280,6 +303,8 @@
         * Fire the custom RGraph ondraw event (which should be fired when you have drawn the chart)
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
 
@@ -380,6 +405,7 @@
         this.coords[0] = [this.graphArea[0],this.graphArea[1] + this.graphArea[3] - barHeight,this.graphArea[2],barHeight];
     }
 
+
     
     /**
     * Draws the tickmarks of the thermometer
@@ -417,25 +443,20 @@
         * This draws draws the label that sits at the top of the chart
         */
         if (this.Get('chart.value.label')) {
-            this.context.beginPath();
-                this.context.fillStyle = this.Get('chart.text.color');
+            this.context.fillStyle = this.properties['chart.text.color'];
+            var text = this.Get('chart.scale.visible') ? RGraph.number_format(this, this.value.toFixed(this.Get('chart.scale.decimals'))) : RGraph.number_format(this, this.value.toFixed(this.Get('chart.scale.decimals')), this.Get('chart.units.pre'), this.Get('chart.units.post'));
 
-                var text = this.Get('chart.scale.visible') ? 
-                
-                RGraph.number_format(this, this.value.toFixed(this.Get('chart.scale.decimals'))) : RGraph.number_format(this, this.value.toFixed(this.Get('chart.scale.decimals')), this.Get('chart.units.pre'), this.Get('chart.units.post'));
-
-                RGraph.Text(this.context,
-                            this.Get('chart.text.font'),
-                            this.Get('chart.text.size'),
-                            this.gutterLeft + this.bulbRadius,
-                            this.coords[0][1] + 7,
-                            text,
-                            'top',
-                            'center',
-                            true,
-                            null,
-                            'white');
-            this.context.fill();
+            RGraph.Text2(this, {'font': this.properties['chart.text.font'],
+                                'size': this.properties['chart.text.size'],
+                                'x':this.gutterLeft + this.bulbRadius,
+                                'y': this.coords[0][1] + 7,
+                                'text': text,
+                                'valign':'top',
+                                'halign':'center',
+                                'bounding':true,
+                                'boundingFill':'white',
+                                'tag': 'value.label'
+                               });
         }
 
 
@@ -453,10 +474,17 @@
     */
     RGraph.Thermometer.prototype.DrawTitle = function ()
     {
-        this.context.beginPath();
-            this.context.fillStyle = this.Get('chart.text.color');
-            RGraph.Text(this.context,this.Get('chart.text.font'),this.Get('chart.text.size') + 2,this.gutterLeft + ((this.canvas.width - this.gutterLeft - this.gutterRight) / 2),this.gutterTop,String(this.Get('chart.title')),'center','center',null,null,null,true);
-        this.context.fill();
+        this.context.fillStyle = this.Get('chart.text.color');
+            RGraph.Text2(this, {'font': this.properties['chart.text.font'],
+                                'size': this.properties['chart.text.size'] + 2,
+                                'x':this.gutterLeft + ((this.canvas.width - this.gutterLeft - this.gutterRight) / 2),
+                                'y': this.gutterTop,
+                                'text': String(this.Get('chart.title')),
+                                'valign':'center',
+                                'halign':'center',
+                                'bold':true,
+                                'tag': 'title'
+                               });
     }
 
     
@@ -468,21 +496,18 @@
         var font = this.Get('chart.title.side.font') ? this.Get('chart.title.side.font') : this.Get('chart.text.font');
         var size = this.Get('chart.title.side.size') ? this.Get('chart.title.side.size') : this.Get('chart.text.size') + 2;
 
-        this.context.beginPath();
-            this.context.fillStyle = this.Get('chart.text.color');
-            RGraph.Text(this.context,
-                        font,
-                        size,
-                        this.gutterLeft * this.Get('chart.title.hpos'),
-                        this.canvas.height / 2,
-                        String(this.Get('chart.title.side')),
-                        'center',
-                        'center',
-                        null,
-                        270,
-                        null,
-                        true);
-        this.context.fill();
+        this.context.fillStyle = this.Get('chart.text.color');
+        RGraph.Text2(this, {'font': this.properties['chart.text.font'],
+                            'size': this.properties['chart.text.size'] + 2,
+                            'x':this.gutterLeft - 3,
+                            'y': ((this.canvas.height - this.gutterTop - this.gutterBottom) / 2) + this.gutterTop,
+                            'text': String(this.Get('chart.title.side')),
+                            'valign':'center',
+                            'halign':'center',
+                            'angle':270,
+                            'bold':true,
+                            'tag': 'title.side'
+                           });
     }
 
 
@@ -491,7 +516,11 @@
     */
     RGraph.Thermometer.prototype.DrawScale = function ()
     {
-        var numLabels = this.Get('chart.ylabels.count'); // The -1 is so that  the number of labels tallies with what is displayed
+        var ca   = this.canvas;
+        var co   = this.context;
+        var prop = this.properties;
+
+        var numLabels = prop['chart.labels.count']; // The -1 is so that  the number of labels tallies with what is displayed
         var step      = (this.max - this.min) / numLabels;
         
         this.context.fillStyle = this.Get('chart.text.color');
@@ -502,33 +531,31 @@
         var units_post = this.Get('chart.units.post');
         var decimals   = this.Get('chart.scale.decimals');
 
-        this.context.beginPath();
-            for (var i=1; i<=numLabels; ++i) {
+        for (var i=1; i<=numLabels; ++i) {
 
-                var x          = this.canvas.width - this.gutterRight;
-                var y          = this.canvas.height - this.gutterBottom - (2 * this.bulbRadius) - ((this.graphArea[3] / numLabels) * i);
-                var text       = RGraph.number_format(this, String((this.min + (i * step)).toFixed(decimals)), units_pre, units_post);
+            var x          = this.canvas.width - this.gutterRight;
+            var y          = this.canvas.height - this.gutterBottom - (2 * this.bulbRadius) - ((this.graphArea[3] / numLabels) * i);
+            var text       = RGraph.number_format(this, String((this.min + (i * step)).toFixed(decimals)), units_pre, units_post);
 
-                RGraph.Text(this.context,
-                            font,
-                            size,
-                            x - 6,
-                            y,
-                            text,
-                            'center');
-            }
-            
-            // Draw zero            
-            RGraph.Text(this.context,
-                        font,
-                        size,
-                        x - 6,
-                        this.canvas.height - this.gutterBottom - (2 * this.bulbRadius),
-                        RGraph.number_format(this, (this.min).toFixed(decimals),
-                        units_pre,
-                        units_post),
-                        'center');
-        this.context.fill();
+            RGraph.Text2(this, {'font':font,
+                                'size':size,
+                                'x':x-6,
+                                'y':y,
+                                'text':text,
+                                'valign':'center',
+                                'tag': 'scale'
+                               });
+        }
+        
+        // Draw zero
+        RGraph.Text2(this, {'font':font,
+                            'size':size,
+                            'x':x-6,
+                            'y':this.canvas.height - this.gutterBottom - (2 * this.bulbRadius),
+                            'text':RGraph.number_format(this, (this.min).toFixed(decimals),units_pre,units_post),
+                            'valign':'center',
+                            'tag': 'scale'
+                           });
     }
 
 
@@ -798,8 +825,8 @@
     */
     RGraph.Thermometer.prototype.parseColors = function ()
     {
-        var props  = this.properties;
-        var colors = props['chart.colors'];
+        var prop   = this.properties;
+        var colors = prop['chart.colors'];
 
         for (var i=0; i<colors.length; ++i) {
             colors[i] = this.parseSingleColorForGradient(colors[i]);
@@ -812,7 +839,7 @@
     * This parses a single color value
     */
     RGraph.Thermometer.prototype.parseSingleColorForGradient = function (color)
-    {        
+    {
         if (!color || typeof(color) != 'string') {
             return color;
         }
@@ -822,7 +849,8 @@
             var parts = RegExp.$1.split(':');
 
             // Create the gradient
-            var grad = this.context.createLinearGradient(this.properties['chart.gutter.left'],0,this.canvas.width - this.properties['chart.gutter.right'],0);
+            var grad = this.context.createLinearGradient(this.properties['chart.gutter.left'],0,
+                                                         this.canvas.width - this.properties['chart.gutter.right'],0);
 
             var diff = 1 / (parts.length - 1);
 

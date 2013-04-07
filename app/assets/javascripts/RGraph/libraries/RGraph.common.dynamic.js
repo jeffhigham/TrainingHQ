@@ -380,7 +380,7 @@
     
                         if (   shape
                             && (obj.Get('chart.tooltips') && obj.Get('chart.tooltips')[shape['index']] || shape['tooltip'])
-                            && obj.Get('chart.tooltips.event') == 'onmousemove'
+                            && (obj.Get('chart.tooltips.event') == 'onmousemove' || obj.Get('chart.tooltips.event') == 'mousemove')
                             && (RGraph.is_null(RGraph.Registry.Get('chart.tooltip')) || RGraph.Registry.Get('chart.tooltip').__index__ != shape['index'] || (typeof(shape['dataset']) == 'number' && shape['dataset'] != RGraph.Registry.Get('chart.tooltip').__shape__['dataset']) || obj.uid != RGraph.Registry.Get('chart.tooltip').__object__.uid)
                            ) {
     

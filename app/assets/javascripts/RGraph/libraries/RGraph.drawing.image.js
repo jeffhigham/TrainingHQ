@@ -39,6 +39,7 @@
         this.canvas       = document.getElementById(id);
         this.context      = this.canvas.getContext ? this.canvas.getContext("2d") : null;
         this.colorsParsed = false;
+        this.canvas.__object__ = this;
 
 
         /**
@@ -49,12 +50,6 @@
         this.src = (typeof(arguments[3]) == 'string') ? arguments[3] : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAjCAYAAAAXMhMjAAAD5klEQVRYR+2Yf0xbVRTHP++1tHQMqBXKoIBAtmyIsokmIyxujgRdRMniT5yRzGjizIIxCm5m/lhiTESasDhEh0vcjDrnP0bBuYhuJoIsSrIpG3Nbha5IEQgrsxNKKe95Xxs16hikbdKaeJKXl/T+eJ9+zz3nnnslVRjCslIl7RUX5r4YRELS4DSwAaclLsA0iPy8C2iAUmYKajyB/aGQBvg/XDjrJSrK9Z7biDHRR1dnF/6Aj4KCPEpLy0nW7QmH6c8xUYE7+VMV9sYDHO2Yxu+HnFy4b9MK6raOxh5u3welvNZ0iOFBwSIygCkJim8081T9atbe9F3YgFFRbtebZTS83I46AzNCOVkPZevMPLOjhDWrTsQW7hV7Ca82fIFO5HBZhlmhXtlaM9ueL2RN8ZnYwu0/WCzc+hVDwq3qrEyiSaJUwB3cH8ry4VrEbvXqC+nuUtn57DecOQlKAJKT4f6aLBpf8oXLFRwXMZw2ydHvLey2Ozj2pXDpNFxthU2b03lu22zs4U6ct9LS5KT9Q18wKLJyoPbJfDbXXIw9nHMik70to7zdPIYi4IquT6J++zJuu9UVG7gplmPir0hsfS8F+04n3gm4ZX0G23esYOXK3tjA/fOrbUcsAs6Bywl33JnF7tcjC4aoBYQ2UWePleZGB6f7Atx1byYvviAiI0KLSrRqDMdP2WjdNcAPvZeofiib2q2TEaJFKZVoFM6ha9m3x013dz8PP2aj+p6p+IH7bXo1B94Z4/OOHrbULqH8ZrHJRmhRc+uY9xrOnTbybc9xKjakUVQQJ8oFJJuo47JxnRenJVmHNVNH0uJxDLN9EWkXFeV+di/j8KduDrUNMj4OGTYj1Q/ms6EynUX6U2EDRgXurVYz9oZ+vJ5grQminisugcefSGPj7Urs4H48m0pT4yCftQdIELXcpEhvinhb0uDuBzJ4us7GVSaRmcOweZWTE3LFfjn3Hnm238obzSO8/65HFJsS+gRJACokm6HmkVzq6nPFQWfutedXlmOQL1+QXhFO0q9CDVy5zB75tYCOw5O0NPfhcAh5RDVsWgTX3aDn0S05lK9PJ1XSGua2GbmcBOXIvzrMq9x83vBJFXg8Vjq/dvHxR8cYHLpAwdJsKqtKWFeeTcriCYzTbfNNc9n2iOHC+uoCB/034QJyEYrfg0HvDv1PxSbWUwJa4a1IKqokY1AHFqjBAroZqsD/yd86xrVyFZVLQ/dz5mSJEVf83M/lFeoY/mU0BKfpGc7NplGkjSntpC+OhHqxMyQm6jAYZC55Z7SsgioysqroQ4+qE7+JR+RDGbGdzGGJliX0DwwHW38HIHO9QizDMu0AAAAASUVORK5CYII=';
         this.img = new Image();
         this.img.src = this.src;
-
-
-        /**
-        * This puts a reference to this object on to the canvas.
-        */
-        this.canvas.__object__ = this;
 
 
         /**
@@ -107,7 +102,7 @@
             'chart.tooltips':           null,
             'chart.tooltips.highlight': true,
             'chart.tooltips.event':     'onclick',
-            'chart.highlight.stroke':     'transparent',
+            'chart.highlight.stroke':     'rgba(0,0,0,0)',
             'chart.highlight.fill':       'rgba(255,255,255,0.7)',
             'chart.alpha':       1
         }
@@ -130,6 +125,17 @@
         * Create the dollar object so that functions can be added to them
         */
         this.$0 = {};
+
+
+        /*
+        * Translate half a pixel for antialiasing purposes - but only if it hasn't beeen
+        * done already
+        */
+        if (!this.canvas.__rgraph_aa_translated__) {
+            this.context.translate(0.5,0.5);
+            
+            this.canvas.__rgraph_aa_translated__ = true;
+        }
 
 
 
@@ -160,6 +166,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -268,6 +276,8 @@
         * Fire the ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
 

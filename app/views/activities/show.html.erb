@@ -1,83 +1,22 @@
 <p id="notice"><%= notice %></p>
-<!--
-<%= image_tag @activity.user.avatar.url(:thumb) %><br/>
-//-->
 <b>Athlete: <%= @activity.user.name %> </b><br/>
 <b>Activity: <%= @activity.name %></b><br/>
 <b>Date: <%= @activity.activity_date %></b><br/>
 <b>Device Type: <%= @activity.creator_name %></b><br/>
 <b>Sport: <%= @activity.sport %></b><br/>
 <br/>
-<!--
-<nav id="activity_nav">
-	<a href="#summary">Summary</a> |
-	<a href="#map">Map</a> |
-	<a href="#graph">Laps</a> |
-	<a>Power</a> |
-	<a>HR</a> |
-	<a>Edit</a>
-</nav>
-
-<br/>
-<br/>
-//-->
-
-<div id="summary" class="activity_content">
+<!-- <div id="summary" class="activity_content">  -->
 	<%= 
-	 render 'summary'
+	   render 'summary'
      %>
      <br/>
      <%=
-     render 'lap_data' 
+        render 'lap_data' 
 	%><br/>
 	<%= 
-	render 'graph' 
-	%>
-</div>
-<br/>
-<%= 
-render 'map'
+	   render 'graph' 
+	%><br/>
+
+<%=
+    render 'map'
 %>
-
-
-<!--
-<script>
-
-	$(function(){
- 
-    function contentSwitcher(settings){
-        var settings = {
-           contentClass : '.activity_content',
-           navigationId : '#activity_nav'
-        };
- 
-        //Hide all of the content except the first one on the nav
-        $(settings.contentClass).not(':first').hide();
-        $(settings.navigationId).find('li:first').addClass('active');
- 
-        //onClick set the active state, 
-        //hide the content panels and show the correct one
-        $(settings.navigationId).find('a').click(function(e){
-            var contentToShow = $(this).attr('href');
-            contentToShow = $(contentToShow);
- 
-            //dissable normal link behaviour
-            e.preventDefault();
- 
-            //set the proper active class for active state css
-            $(settings.navigationId).find('li').removeClass('active');
-            $(this).parent('li').addClass('active');
- 
-            //hide the old content and show the new
-            $(settings.contentClass).hide();
-            contentToShow.show();
-            //$(contentToShow).fadeTo(”slow”, 1);
-
-
-        });
-    }
-    contentSwitcher();
-}); 
-</script>
-
-//-->

@@ -1,6 +1,6 @@
 
-  <tr>
-    <td><%= lap.id %></td>
+  <tr id='<%= "lap_row_#{lap_counter}" %>'>
+    <td><%= lap_counter%></td>
     <td><%= lap.ride_time_formatted %></td>
     <td><%= lap.distance_miles %> </td>
     <td><%= lap.calories %> </td>

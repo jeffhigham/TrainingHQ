@@ -34,6 +34,7 @@
         this.uid               = RGraph.CreateUID();
         this.canvas.uid        = this.canvas.uid ? this.canvas.uid : RGraph.CreateUID();
         this.colorsParsed      = false;
+        this.coordsText        = [];
 
         /**
         * Compatibility with older browsers
@@ -59,7 +60,7 @@
             'chart.background.grid.autofit.align': false,
             'chart.background.image':       null,
             'chart.background.hbars':       null, // ???
-            'chart.linewidth':              0,
+            'chart.linewidth':              1,
             'chart.axis.linewidth':         1,
             'chart.xaxispos':               'bottom',
             'chart.numxticks':              null,
@@ -97,6 +98,10 @@
             'chart.title.xaxis.bold':       true,
             'chart.title.xaxis.size':       null,
             'chart.title.xaxis.font':       null,
+            'chart.title.x':                null,
+            'chart.title.y':                null,
+            'chart.title.halign':           null,
+            'chart.title.valign':           null,
             'chart.colors':                 ['Gradient(white:green)', 'Gradient(white:red)', 'Gradient(white:blue)'],
             'chart.shadow':                 false,
             'chart.shadow.color':           '#666',
@@ -202,6 +207,7 @@
 
         this.properties[name.toLowerCase()] = value;
 
+        return this;
     }
 
 
@@ -280,30 +286,23 @@
 
         /**
         * Work out the maximum value
-        * 
-        * Normally the last bar is a total and not taken into account when the scale is generated.
-        * However it is not necessarily shown, so if it's not being shown it should not be
-        * accounted for.
         */
         this.max     = this.getMax(this.data);
-        this.scale   = RGraph.getScale(typeof(this.Get('chart.ymax')) == 'number' ? this.Get('chart.ymax') : this.max, this);
-        this.max     = this.scale[4];
-        var decimals = this.Get('chart.scale.decimals');
-        
-        /**
-        * ymax specified
-        */
-        if (this.Get('chart.ymax') > 0) {
-            this.max = this.Get('chart.ymax');
-        }
 
-        this.scale = [
-                      (this.max * (1/5)).toFixed(decimals),
-                      (this.max * (2/5)).toFixed(decimals),
-                      (this.max * (3/5)).toFixed(decimals),
-                      (this.max * (4/5)).toFixed(decimals),
-                      typeof(this.max) == 'number' ? this.max.toFixed(decimals) : this.max
-                     ];
+        var decimals = this.properties['chart.scale.decimals'];
+        this.scale2 = RGraph.getScale2(this, {'max':typeof(this.properties['chart.ymax']) == 'number' ? this.properties['chart.ymax'] : this.max,
+                                              'min':this.properties['chart.xmin'],
+                                              'strict': typeof(this.properties['chart.ymax']) == 'number' ? true : false,
+                                              'scale.decimals':Number(decimals),
+                                              'scale.point':this.properties['chart.scale.point'],
+                                              'scale.thousand':this.properties['chart.scale.thousand'],
+                                              'scale.round':this.properties['chart.scale.round'],
+                                              'units.pre':this.properties['chart.units.pre'],
+                                              'units.post':this.properties['chart.units.post'],
+                                              'ylabels.count':this.properties['chart.labels.count']
+                                             });
+
+        this.max     = this.scale2.max;
 
 
         // Progressively Draw the chart
@@ -347,6 +346,8 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
     
@@ -471,40 +472,43 @@
                 var halfInterval = interval / 2;
                 var halfWay      = ((this.canvas.height - this.gutterTop - this.gutterBottom) / 2) + this.gutterTop;
 
-                for (var i=0; i<numYLabels; ++i) {
-                    RGraph.Text(context,
-                                font,
-                                size,
-                                this.gutterLeft - 5,
-                                this.gutterTop + (i * halfInterval),
-                                RGraph.number_format(this, this.scale[4 - i], units_pre, units_post),
-                                'center',
-                                'right');
-                }
-
-                for (var i=0; i<numYLabels; ++i) {
-                    RGraph.Text(context,
-                                font,
-                                size,
-                                this.gutterLeft - 5,
-                                halfWay + (i * halfInterval) + halfInterval,
-                                '-' + RGraph.number_format(this, this.scale[i], units_pre, units_post),
-                                'center',
-                                'right');
+                for (var i=0; i<this.scale2.labels.length; ++i) {
+                    RGraph.Text2(this, {
+                                        'font':font,
+                                        'size':size,
+                                        'x':this.gutterLeft - 5,
+                                        'y': this.gutterTop + (((this.grapharea/2) / this.scale2.labels.length) * i),
+                                        'text':this.scale2.labels[this.scale2.labels.length - i - 1],
+                                        'valign':'center',
+                                        'halign':'right',
+                                        'tag': 'scale'
+                                       });
+                    
+                    RGraph.Text2(this, {
+                                        'font':font,
+                                        'size':size,
+                                        'x':this.gutterLeft - 5,
+                                        'y': halfWay + (((this.grapharea/2) / this.scale2.labels.length) * (i + 1)),
+                                        'text':this.scale2.labels[i],
+                                        'valign':'center',
+                                        'halign':'right',
+                                        'tag': 'scale'
+                                       });
                 }
 
             } else {
 
-                for (var i=1; i<=numYLabels; ++i) {
-                    RGraph.Text(context,
-                                font,
-                                size,
-                                this.gutterLeft - 5,
-                                this.canvas.height - this.gutterBottom - (i * interval),
-                                RGraph.number_format(this, this.scale[i - 1], units_pre, units_post),
-                                'center',
-                                'right');
-    
+                for (var i=0; i<this.scale2.labels.length; ++i) {
+                    RGraph.Text2(this, {
+                                        'font':font,
+                                        'size':size,
+                                        'x':this.gutterLeft - 5,
+                                        'y': this.canvas.height - this.gutterBottom - ((this.grapharea / this.scale2.labels.length) * (i + 1)),
+                                        'text':this.scale2.labels[i],
+                                        'valign':'center',
+                                        'halign':'right',
+                                        'tag': 'scale'
+                                       });
                 }
             }
         }
@@ -530,19 +534,16 @@
             var labels = this.Get('chart.labels');
 
             for (var i=0; i<labels.length; ++i) {
-
-                // context, font, size, x, y, text[, valign[, halign[, border[, angle[, background[, bold[, indicator]]]]]]]
-                RGraph.Text(context,
-                            font,
-                            size,
-                            this.gutterLeft + (i * interval) + (interval / 2),
-                            this.canvas.height - this.gutterBottom + 5 + this.halfTextHeight,
-                            labels[i],
-                            'center',
-                            halign,
-                            null,
-                            angle);
-
+                RGraph.Text2(this, {'font':font,
+                                    'size':size,
+                                    'x':this.gutterLeft + (i * interval) + (interval / 2),
+                                    'y':this.canvas.height - this.gutterBottom + 5 + this.halfTextHeight,
+                                    'text':labels[i],
+                                    'valign':'center',
+                                    'halign':halign,
+                                    'angle':angle,
+                                    'tag': 'labels'
+                                   });
             }
         }
         
@@ -563,7 +564,7 @@
 
         this.context.lineWidth = this.properties['chart.linewidth'] + 0.001;
 
-        
+
             for (var i=0; i<this.data.length; ++i) {
                 context.beginPath();
                 context.strokeStyle = this.Get('chart.strokestyle');

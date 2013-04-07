@@ -24,31 +24,40 @@ function resetGraph(element_id){
 
 function drawLinePlot(params){
 
-    var obj = new RGraph.Line(params['element_id'], params['graph_data']);
-    obj.Set('ymax', params['ymax']);
-    obj.Set('ymin', params['ymin']);
-    obj.Set('hmargin', 5);
-    obj.Set('background.grid', false);
-    obj.Set('linewidth', params['linewidth']);          
-    obj.Set('gutter.right', gutterRight);
-    obj.Set('gutter.left', gutterLeft);
-    obj.Set('gutter.top', gutterTop);
-    obj.Set('colors', params['colors']);
-    obj.Set('noaxes', true);
-    obj.Set('ylabels', false);
-    obj.Set('filled', params['filled']);
-    obj.Set('fillstyle', params['fillstyle']);
-    obj.Draw();
+    var graph = new RGraph.Line(params['element_id'], params['graph_data']);
+    graph.Set('ymax', params['ymax']);
+    graph.Set('ymin', params['ymin']);
+    graph.Set('hmargin', 5);
+    graph.Set('chart.background.grid', true);
+    graph.Set('chart.background.grid.vlines', false);
+    graph.Set('chart.background.grid.autofit.numhlines',20);
+    graph.Set('chart.background.grid.color', '#666');
+    graph.Set('chart.background.grid.border',false);
+    graph.Set('linewidth', params['linewidth']);          
+    graph.Set('gutter.right', gutterRight);
+    graph.Set('gutter.left', gutterLeft);
+    graph.Set('gutter.top', gutterTop);
+    graph.Set('colors', params['colors']);
+    graph.Set('ylabels', false);
+    graph.Set('filled', params['filled']);
+    graph.Set('fillstyle', params['fillstyle']);
+    graph.Set('chart.crosshairs', true);
+    //graph.Set('chart.crosshairs.snap', true);
+    graph.Set('chart.labels', [1,2,3,4,5,6,7,8,9,10]);
+    graph.Set('chart.gutter.bottom', 5);
+    graph.Draw();
 
-    RGraph.DrawAxes(obj, {
-                                'axis.x': params['axis_x'],
-                                'axis.title': params['axis_title'],
-                                'axis.color': params['axis_color'],
-                                'axis.text.color': params['axis_text_color'],
-                                'axis.max': params['ymax'],
-                                'axis.min': params['ymin'],
-                                'axis.align': params['axis_align']
-                               });
+    var yaxis = new RGraph.Drawing.YAxis(params['element_id'], params['axis_x']);
+    yaxis.Set('chart.colors', params['axis_color'] );
+    yaxis.Set('chart.text.color', params['axis_text_color']);
+    yaxis.Set('chart.text.size', 8);
+    yaxis.Set('chart.max', params['ymax']);
+    yaxis.Set('chart.min', params['ymin']);
+    yaxis.Set('chart.numlabels',20);
+    yaxis.Set('chart.title', params['axis_title']);
+    yaxis.Set('chart.align', params['axis_align']);
+    yaxis.Draw();
+
 }
 
 // Returns a max value in a range of values.

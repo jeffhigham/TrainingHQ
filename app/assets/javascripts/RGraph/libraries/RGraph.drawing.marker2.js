@@ -39,6 +39,7 @@
         this.canvas       = document.getElementById(id);
         this.context      = this.canvas.getContext ? this.canvas.getContext("2d") : null;
         this.colorsParsed = false;
+        this.canvas.__object__ = this;
 
 
         /**
@@ -47,12 +48,6 @@
         this.x    = x;
         this.y    = y;
         this.text = text;
-
-
-        /**
-        * This puts a reference to this object on to the canvas.
-        */
-        this.canvas.__object__ = this;
 
 
         /**
@@ -104,7 +99,7 @@
             'chart.shadow.offsetx':     3,
             'chart.shadow.offsety':     3,
             'chart.shadow.blur':        5,
-            'chart.highlight.stroke':   'transparent',
+            'chart.highlight.stroke':   'rgba(0,0,0,0)',
             'chart.highlight.fill':     'rgba(255,255,255,0.7)',
             'chart.tooltips':           null,
             'chart.tooltips.highlight': true,
@@ -121,9 +116,10 @@
         }
         
         /**
-        * This can be used to store the coordinates of shapes on the graph
+        * These are used to store coords
         */
         this.coords = [];
+        this.coordsText = [];
 
 
         /**
@@ -171,6 +167,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -278,9 +276,16 @@
 
         this.context.beginPath();
             this.context.fillStyle = this.properties['chart.text.color'];
-                this.context.font = (this.properties['chart.text.bold'] ? 'Bold ' : '') + this.properties['chart.text.size'] + 'pt ' + this.properties['chart.text.font'];
-                this.context.textBaseline = 'bottom';
-                this.context.fillText(this.text,this.x + 3,this.y - 3 - this.properties['chart.voffset']);
+
+                RGraph.Text2(this, {'font':this.properties['chart.text.font'],
+                                    'size':this.properties['chart.text.size'],
+                                    'x':this.x + 3,
+                                    'y':this.y - 3 - this.properties['chart.voffset'],
+                                    'text':this.text,
+                                    'valign':'bottom',
+                                    'halign':'left',
+                                    'tag': 'labels'
+                                   });
         this.context.fill();
         this.context.stroke();
         
@@ -305,6 +310,8 @@
         * Fire the ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
 

@@ -37,6 +37,7 @@
         this.uid               = RGraph.CreateUID();
         this.canvas.uid        = this.canvas.uid ? this.canvas.uid : RGraph.CreateUID();
         this.colorsParsed      = false;
+        this.coordsText        = [];
 
         /**
         * Range checking
@@ -137,6 +138,19 @@
         }
 
 
+
+
+        /*
+        * Translate half a pixel for antialiasing purposes - but only if it hasn't beeen
+        * done already
+        */
+        if (!this.canvas.__rgraph_aa_translated__) {
+            this.context.translate(0.5,0.5);
+            
+            this.canvas.__rgraph_aa_translated__ = true;
+        }
+
+
         /**
         * Register the object
         */
@@ -177,6 +191,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -319,6 +335,8 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
 
@@ -503,7 +521,7 @@
         this.context.fillStyle = this.Get('chart.text.color');
         var font = this.Get('chart.text.font');
         var size = this.Get('chart.text.size');
-        var num  = this.Get('chart.labels.count');
+        var num  = this.properties['chart.labels.specific'] ? (this.properties['chart.labels.specific'].length - 1) : this.Get('chart.labels.count');
 
         this.context.beginPath();
             for (var i=0; i<=num; ++i) {
@@ -535,14 +553,16 @@
                     vAlign = 'center';
                 }
 
-                RGraph.Text(this.context,
-                            font,
-                            size,
-                            x,
-                            y,
-                            RGraph.number_format(this, (((this.max - this.min) * (i / num)) + this.min).toFixed(this.Get('chart.scale.decimals')), this.Get('chart.units.pre'), this.Get('chart.units.post')),
-                            vAlign,
-                            hAlign);
+
+                RGraph.Text2(this, {'font':font,
+                                    'size':size,
+                                    'x':x,
+                                    'y':y,
+                                    'text':this.properties['chart.labels.specific'] ? this.properties['chart.labels.specific'][i] : RGraph.number_format(this, (((this.max - this.min) * (i / num)) + this.min).toFixed(this.Get('chart.scale.decimals')), this.Get('chart.units.pre'), this.Get('chart.units.post')),
+                                    'halign':hAlign,
+                                    'valign':vAlign,
+                                    'tag': this.properties['chart.labels.specific'] ? 'labels.specific' : 'labels'
+                                   });
             }
         this.context.fill();
 
@@ -558,19 +578,17 @@
             var units_pre  = typeof(this.Get('chart.value.text.units.pre')) == 'string' ? this.Get('chart.value.text.units.pre') : this.Get('chart.units.pre');
             var units_post = typeof(this.Get('chart.value.text.units.post')) == 'string' ? this.Get('chart.value.text.units.post') : this.Get('chart.units.post');
         
-            this.context.beginPath();
-                RGraph.Text(this.context,
-                            font,
-                            size + 2,
-                            x,
-                            y,
-                            RGraph.number_format(this, this.value.toFixed(this.Get('chart.scale.decimals')), units_pre, units_post),
-                            'center',
-                            'center',
-                            true,
-                            null,
-                            'white');
-            this.context.fill();
+            RGraph.Text2(this, {'font':font,
+                                'size':size + 2,
+                                'x':x,
+                                'y':y,
+                                'text':RGraph.number_format(this, this.value.toFixed(this.Get('chart.scale.decimals')), units_pre, units_post),
+                                'halign':'center',
+                                'valign':'center',
+                                'bounding':true,
+                                'boundingFill':'white',
+                                            'tag': 'value.text'
+                               });
         }
     }
 
@@ -590,21 +608,16 @@
 
         if (this.Get('chart.title.top')) {
             this.context.fillStyle = this.Get('chart.title.top.color');
-
-            this.context.beginPath();
-                RGraph.Text(this.context,
-                            this.Get('chart.title.top.font'),
-                            this.Get('chart.title.top.size'),
-                            x,
-                            y,
-                            String(this.Get('chart.title.top')),
-                            'bottom',
-                            'center',
-                            null,
-                            null,
-                            null,
-                            this.Get('chart.title.top.bold'));
-            this.context.fill();
+            RGraph.Text2(this, {'font':this.Get('chart.title.top.font'),
+                                'size':this.Get('chart.title.top.size'),
+                                'x':x,
+                                'y':y,
+                                'text':String(this.Get('chart.title.top')),
+                                'halign':'center',
+                                'valign':'bottom',
+                                'bold':this.Get('chart.title.top.bold'),
+                                'tag': 'title.top'
+                               });
         }
     }
 
@@ -625,20 +638,16 @@
         if (this.Get('chart.title.bottom')) {
             this.context.fillStyle = this.Get('chart.title.bottom.color');
 
-            this.context.beginPath();
-                RGraph.Text(this.context,
-                            this.Get('chart.title.bottom.font'),
-                            this.Get('chart.title.bottom.size'),
-                            x,
-                            y,
-                            String(this.Get('chart.title.bottom')),
-                            'top',
-                            'center',
-                            null,
-                            null,
-                            null,
-                            this.Get('chart.title.bottom.bold'));
-            this.context.fill();
+            RGraph.Text2(this, {'font':this.Get('chart.title.bottom.font'),
+                                'size':this.Get('chart.title.bottom.size'),
+                                'x':x,
+                                'y':y,
+                                'text':String(this.Get('chart.title.bottom')),
+                                'halign':'center',
+                                'valign':'top',
+                                'bold':this.Get('chart.title.bottom.bold'),
+                                'tag': 'title.bottom'
+                               });
         }
     }
 
@@ -952,6 +961,8 @@
         this.properties['chart.red.color']        = this.parseSingleColorForGradient(this.properties['chart.red.color']);
         this.properties['chart.yellow.color']     = this.parseSingleColorForGradient(this.properties['chart.yellow.color']);
         this.properties['chart.green.color']      = this.parseSingleColorForGradient(this.properties['chart.green.color']);
+        this.properties['chart.border.inner']     = this.parseSingleColorForGradient(this.properties['chart.border.inner']);
+        this.properties['chart.border.outer']     = this.parseSingleColorForGradient(this.properties['chart.border.outer']);
         
         // Parse the chart.color.ranges value
         if (this.properties['chart.colors.ranges']) {

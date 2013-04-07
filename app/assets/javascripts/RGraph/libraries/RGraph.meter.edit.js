@@ -41,7 +41,6 @@
         this.uid               = RGraph.CreateUID();
         this.canvas.uid        = this.canvas.uid ? this.canvas.uid : RGraph.CreateUID();
         this.colorsParsed      = false;
-        this.coordsText        = [];
 
 
         /**
@@ -129,7 +128,9 @@
             'chart.needle.tail':              false,
             'chart.adjustable':               false,
             'chart.angles.start':             PI,
-            'chart.angles.end':               TWOPI
+            'chart.angles.end':               TWOPI,
+            'chart.labels.start':              0,
+            'chart.labels.end':                10
         }
 
 
@@ -138,21 +139,7 @@
             alert('[METER] No canvas support');
             return;
         }
-
-
-
-        /*
-        * Translate half a pixel for antialiasing purposes - but only if it hasn't beeen
-        * done already
-        */
-        if (!this.canvas.__rgraph_aa_translated__) {
-            this.context.translate(0.5,0.5);
-            
-            this.canvas.__rgraph_aa_translated__ = true;
-        }
-
-
-
+        
         /**
         * Register the object
         */
@@ -183,8 +170,6 @@
         }
 
         this.properties[name] = value;
-
-        return this;
     }
 
 
@@ -304,8 +289,6 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
-        
-        return this;
     }
 
 
@@ -376,9 +359,9 @@
             for (var j=0; j<colors.length; ++j) {
                 for (var i=0; i<(this.properties['chart.angles.end'] - this.properties['chart.angles.start']); i+=((this.properties['chart.angles.end'] - this.properties['chart.angles.start']) / this.Get('chart.tickmarks.big.num'))) {
                     this.context.beginPath();
-                        this.context.strokeStyle = colors[j];
-                        this.context.arc(this.centerx, this.centery, this.radius, this.properties['chart.angles.start'] +  i, this.properties['chart.angles.start'] + i + 0.001, 0);
-                        this.context.arc(this.centerx, this.centery, this.radius - 5, this.properties['chart.angles.start'] + i, this.properties['chart.angles.start'] + i + 0.0001, 0);
+                    this.context.strokeStyle = colors[j];
+                    this.context.arc(this.centerx, this.centery, this.radius, this.properties['chart.angles.start'] +  i, this.properties['chart.angles.start'] + i + 0.001, 0);
+                    this.context.arc(this.centerx, this.centery, this.radius - 5, this.properties['chart.angles.start'] + i, this.properties['chart.angles.start'] + i + 0.0001, 0);
                     this.context.stroke();
                 }
             }
@@ -564,9 +547,7 @@
         this.context.beginPath();
             this.context.strokeStyle = 'black';
             if (typeof(this.Get('chart.needle.linewidth')) == 'number') this.context.lineWidth = this.Get('chart.needle.linewidth');
-            
             var a = (((this.value - this.min) / (this.max - this.min)) * (this.properties['chart.angles.end'] - this.properties['chart.angles.start'])) + this.properties['chart.angles.start'];
-
             this.context.arc(this.centerx, this.centery, needleRadius, a, a + 0.001, false);
             this.context.lineTo(this.centerx, this.centery);
         this.context.stroke();
@@ -633,7 +614,7 @@
 
         context.beginPath();
 
-        for (var i=0; i<=10; ++i) {
+        for (var i=this.properties['chart.labels.start']; i<=this.properties['chart.labels.end']; ++i) {
         
             var angle      = ((this.properties['chart.angles.end'] - this.properties['chart.angles.start']) * (i / 10)) + this.properties['chart.angles.start'];
             var coords     = RGraph.getRadiusEndPoint(centerx, centery, angle + (((i==0||i==10)&&this.properties['chart.border']) ? (i==0 ? 0.05 : -0.05) : 0), this.radius * 0.925);
@@ -662,18 +643,17 @@
                 halign = 'center';
             }
 
-            RGraph.Text2(this, {'font':text_font,
-                                'size':text_size,
-                                'x':coords[0],
-                                'y':coords[1],
-                                'text':RGraph.number_format(this, (((this.max - this.min) * (i / 10)) + this.min).toFixed(decimals),units_pre,units_post),
-                                'halign':halign,
-                                'valign':valign,
-                                'angle':((angleRange_degrees * 0.1 * i) + angleStart_degrees) - 270,
-                                'bounding':false,
-                                'boundingFill':(i == 0 || i == 10) ? 'white': null,
-                                'tag': 'scale'
-                               });
+            RGraph.Text(context,
+                        text_font,
+                        text_size,
+                        coords[0],
+                        coords[1],
+                        RGraph.number_format(this, (((this.max - this.min) * (i / 10)) + this.min).toFixed(decimals),units_pre,units_post),
+                        valign,
+                        halign,
+                        false,
+                        ((angleRange_degrees * 0.1 * i) + angleStart_degrees) - 270,
+                        (i == 0 || i == 10) ? 'white': null);
         }
     }
 
@@ -685,17 +665,17 @@
     {
         if (this.Get('chart.value.text')) {
             this.context.beginPath();
-            RGraph.Text2(this, {'font':this.Get('chart.text.font'),
-                                'size':this.Get('chart.text.size'),
-                                'x':this.centerx,
-                                'y':this.centery - this.Get('chart.text.size') - 15,
-                                'text':this.Get('chart.value.text.units.pre') + (this.value).toFixed(this.Get('chart.value.text.decimals')) + this.Get('chart.value.text.units.post'),
-                                'halign':'center',
-                                'valign':'bottom',
-                                'bounding':true,
-                                'boundingFill':'white',
-                                'tag': 'value.text'
-                               });
+            RGraph.Text(this.context,
+                        this.Get('chart.text.font'),
+                        this.Get('chart.text.size'),
+                        this.centerx,
+                        this.centery - this.Get('chart.text.size') - 15,
+                        this.Get('chart.value.text.units.pre') + (this.value).toFixed(this.Get('chart.value.text.decimals')) + this.Get('chart.value.text.units.post'),
+                         'center',
+                         'center',
+                         true,
+                         null,
+                         'white');
 
             this.context.stroke();
             this.context.fill();

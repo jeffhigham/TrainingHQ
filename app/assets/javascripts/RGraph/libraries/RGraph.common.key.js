@@ -1,4 +1,4 @@
-/**
+    /**
     * o------------------------------------------------------------------------------o
     * | This file is part of the RGraph package - you can learn more at:             |
     * |                                                                              |
@@ -278,12 +278,7 @@ if (blob_shape == 'circle') {
             
                 context.fillStyle = 'black';
             
-                RGraph.Text(context,
-                            text_font,
-                            text_size,
-                            hpos + blob_size + 5 + 5,
-                            vpos + (5 * j) + (text_size * j),
-                            key[i]);
+                RGraph.Text2(obj, {'font':text_font,'size':text_size,'x':hpos + blob_size + 5 + 5,'y':vpos + (5 * j) + (text_size * j) + 3,'text':key[i]});
 
                 if (obj.Get('chart.key.interactive')) {
                 
@@ -456,13 +451,7 @@ if (blob_shape == 'circle') {
                                 obj.context.beginPath();
                                     obj.context.fillStyle = obj.Get('chart.text.color');
                                 
-                                    RGraph.Text(obj.context,
-                                                obj.Get('chart.text.font'),
-                                                obj.Get('chart.text.size'),
-                                                px + 5 + blob_size,
-                                                py + ph,
-                                                obj.Get('chart.key')[obj.Get('chart.key').length - i - 1]
-                                               );
+                                    RGraph.Text2(obj, {'font':obj.Get('chart.text.font'),'size':obj.Get('chart.text.size'),'x':px + 5 + blob_size,'y':py + ph + 3,'text':obj.Get('chart.key')[obj.Get('chart.key').length - i - 1]});
                                 context.fill();
         
                 
@@ -591,13 +580,8 @@ if (blob_shape == 'circle') {
                                     obj.context.beginPath();
                                         obj.context.fillStyle = obj.Get('chart.text.color');
                                     
-                                        RGraph.Text(obj.context,
-                                                    obj.Get('chart.text.font'),
-                                                    obj.Get('chart.text.size'),
-                                                    px + 5 + blob_size,
-                                                    py + ph,
-                                                    obj.Get('chart.key')[obj.Get('chart.key').length - i - 1]
-                                                   );
+                                        RGraph.Text2(obj, {'font':obj.Get('chart.text.font'),'size':obj.Get('chart.text.size'), 'x':px + 5 + blob_size,'y':py + ph + 3,'text':obj.Get('chart.key')[obj.Get('chart.key').length - i - 1]});
+
                                     context.fill();
     
                                     e.stopPropagation();
@@ -812,7 +796,7 @@ if (blob_shape == 'circle') {
 
             context.beginPath();
                 context.fillStyle = 'black';
-                RGraph.Text(context, text_font, text_size, pos, vpos + text_size - 1, key[i]);
+                RGraph.Text2(obj, {'font':text_font,'size':text_size,'x':pos,'y':vpos + text_size + 3, 'text': key[i]});
             context.fill();
             pos += context.measureText(key[i]).width;
         }

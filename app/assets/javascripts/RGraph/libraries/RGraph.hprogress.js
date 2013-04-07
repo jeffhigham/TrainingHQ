@@ -36,6 +36,7 @@
         this.uid               = RGraph.CreateUID();
         this.canvas.uid        = this.canvas.uid ? this.canvas.uid : RGraph.CreateUID();
         this.colorsParsed      = false;
+        this.coordsText        = [];
 
 
         /**
@@ -66,10 +67,12 @@
             'chart.shadow.offsety':     3,
             'chart.title':              '',
             'chart.title.background':   null,
-            'chart.title.hpos':         null,
-            'chart.title.vpos':         null,
             'chart.title.bold':         true,
             'chart.title.font':         null,
+            'chart.title.x':                null,
+            'chart.title.y':                null,
+            'chart.title.halign':           null,
+            'chart.title.valign':           null,
             'chart.text.size':          10,
             'chart.text.color':         'black',
             'chart.text.font':          'Arial',
@@ -101,6 +104,7 @@
             'chart.resize.handle.background':null,
             'chart.labels.inner':           false,
             'chart.labels.specific':       null,
+            'chart.labels.count':          10,
             'chart.adjustable':            false,
             'chart.scale.decimals':     0,
             'chart.scale.point':        '.',
@@ -204,6 +208,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -276,6 +282,7 @@
         this.Drawbar();
         this.DrawTickMarks();
         this.DrawLabels();
+        this.DrawTitle();
 
         this.context.stroke();
         this.context.fill();
@@ -322,6 +329,8 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
 
@@ -331,6 +340,25 @@
     */
     RGraph.HProgress.prototype.Drawbar = function ()
     {
+        var prop = this.properties;
+
+        /**
+        * First get the scale
+        */
+
+        this.scale2 = RGraph.getScale2(this, {
+                                            'max':this.max,
+                                            'min':this.min,
+                                            'strict':true,
+                                            'scale.thousand':prop['chart.scale.thousand'],
+                                            'scale.point':prop['chart.scale.point'],
+                                            'scale.decimals':prop['chart.scale.decimals'],
+                                            'ylabels.count':prop['chart.labels.count'],
+                                            'scale.round':prop['chart.scale.round'],
+                                            'units.pre': prop['chart.units.pre'],
+                                            'units.post': prop['chart.units.post']
+                                           });
+
         // Set a shadow if requested
         if (this.Get('chart.shadow')) {
             RGraph.SetShadow(this, this.Get('chart.shadow.color'), this.Get('chart.shadow.offsetx'), this.Get('chart.shadow.offsety'), this.Get('chart.shadow.blur'));
@@ -452,17 +480,25 @@
 
             this.context.stroke();
             this.context.fill()
+        }
 
 
-            /**
-            * Draw the "in-bar" label
-            */
-            if (this.Get('chart.label.inner')) {
-                this.context.beginPath();
-                this.context.fillStyle = 'black';
-                RGraph.Text(this.context, this.Get('chart.text.font'), this.Get('chart.text.size') + 2, this.gutterLeft + barWidth + 5, RGraph.GetHeight(this) / 2, String(this.Get('chart.units.pre') + this.value + this.Get('chart.units.post')), 'center', 'left');
-                this.context.fill();
-            }
+        /**
+        * Draw the "in-bar" label
+        */
+        if (this.Get('chart.label.inner')) {
+            this.context.fillStyle = 'black';
+            RGraph.Text2(this, {'font':this.properties['chart.text.font'],
+                               'size':this.properties['chart.text.size'] + 2,
+                               'x':this.gutterLeft + barWidth + 5,
+                               'y':this.gutterTop + (this.height / 2),
+                               'text': String(this.Get('chart.units.pre') + this.value + this.Get('chart.units.post')),
+                               'valign':'bottom',
+                               'halign':'left',
+                               'bounding':true,
+                               'boundingFill':'white',
+                                'tag': 'label.inner'
+                               });
         }
 
     }
@@ -518,48 +554,55 @@
 
         var xPoints = [];
         var yPoints = [];
+        var font = this.Get('chart.text.font');
+        var size = this.Get('chart.text.size');
 
-        for (i=0; i<this.Get('chart.numticks'); i++) {
+        for (i=0; i<this.scale2.labels.length; i++) {
 
-            var font       = this.Get('chart.text.font');
-            var size       = this.Get('chart.text.size');
 
             if (this.Get('chart.labels.position') == 'top') {
-                var x = this.width * (i/this.Get('chart.numticks')) + this.gutterLeft + (this.width / this.Get('chart.numticks'));
+                var x = this.width * (i/this.scale2.labels.length) + this.gutterLeft + (this.width / this.scale2.labels.length);
                 var y = this.gutterTop - 6;
                 var valign = 'bottom';
             } else {
-                var x = this.width * (i/this.Get('chart.numticks')) + this.gutterLeft + (this.width / this.Get('chart.numticks'));
+                var x = this.width * (i/this.scale2.labels.length) + this.gutterLeft + (this.width / this.scale2.labels.length);
                 var y = this.height + this.gutterTop + 4;
-                var valign = 'top'; // Doesn't appear to be being used for regular labels
+                var valign = 'top';
             }
 
-            RGraph.Text(this.context,font,size,x,y, RGraph.number_format(this, (((this.max - this.Get('chart.min')) / this.Get('chart.numticks')) * (i + 1) + this.Get('chart.min')).toFixed(this.Get('chart.scale.decimals')), this.Get('chart.units.pre'), this.Get('chart.units.post')), valign,'center');
+            RGraph.Text2(this, {'font':font,
+                               'size':size,
+                               'x':x,
+                               'y':y,
+                               'text': this.scale2.labels[i],
+                               'valign':valign,
+                               'halign':'center',
+                                'tag': 'scale'
+                               });
         }
         
         if (this.Get('chart.tickmarks.zerostart')) {
             if (this.Get('chart.labels.position') == 'top') {
-                RGraph.Text(this.context,font,size,this.gutterLeft,this.gutterTop - 6,this.Get('chart.units.pre') + Number(this.Get('chart.min')).toFixed(this.Get('chart.scale.decimals')) + this.Get('chart.units.post'),'bottom','center');
+                RGraph.Text2(this, {'font':font,
+                                    'size':size,
+                                    'x':this.gutterLeft,
+                                    'y':this.gutterTop - 6,
+                                    'text': this.Get('chart.units.pre') + Number(this.Get('chart.min')).toFixed(this.Get('chart.scale.decimals')) + this.Get('chart.units.post'),
+                                    'valign':'bottom',
+                                    'halign':'center',
+                                    'tag': 'scale'
+                                    });
             } else {
-                RGraph.Text(this.context,font,size,this.gutterLeft,this.canvas.height - this.gutterBottom + 5,this.Get('chart.units.pre') + Number(this.Get('chart.min')).toFixed(this.Get('chart.scale.decimals')) + this.Get('chart.units.post'),'top','center');
+                RGraph.Text2(this, {'font':font,
+                                    'size':size,
+                                    'x':this.gutterLeft,
+                                    'y':this.canvas.height - this.gutterBottom + 5,
+                                    'text': this.Get('chart.units.pre') + Number(this.Get('chart.min')).toFixed(this.Get('chart.scale.decimals')) + this.Get('chart.units.post'),
+                                    'valign':'top',
+                                    'halign':'center',
+                                    'tag': 'scale'
+                                    });
             }
-        }
-
-
-
-        // Draw the title text
-        if (this.Get('chart.title')) {
-            var vpos = this.gutterTop + this.Get('chart.text.size');
-            
-            if (this.Get('chart.labels.position') == 'top' && this.Get('chart.title.vpos') == null) {
-                this.Set('chart.title.vpos', (this.canvas.height / this.gutterTop) - (this.gutterBottom / this.gutterTop));
-            }
-
-            RGraph.DrawTitle(this,
-                             this.Get('chart.title'),
-                             vpos,
-                             0,
-                             this.Get('chart.title.size') ? this.Get('chart.title.size') : this.Get('chart.text.size') + 2);
         }
     }
 
@@ -596,6 +639,7 @@
             }
         }
     }
+
 
 
     /**
@@ -706,14 +750,15 @@
             this.context.beginPath();
                 this.context.fillStyle = this.Get('chart.text.color');
                 for (var i=0; i<labels.length; ++i) {
-                    RGraph.Text(this.context,
-                                font,
-                                size,
-                                this.gutterLeft + (step * i),
-                                this.Get('chart.labels.position') == 'top' ? this.gutterTop - 7  : this.canvas.height - this.gutterBottom + 7,
-                                labels[i],
-                                valign,
-                                'center');
+                    RGraph.Text2(this, {'font':font,
+                                        'size':size,
+                                        'x': this.gutterLeft + (step * i),
+                                        'y':this.Get('chart.labels.position') == 'top' ? this.gutterTop - 7  : this.canvas.height - this.gutterBottom + 7,
+                                        'text': labels[i],
+                                        'valign':valign,
+                                        'halign':'center',
+                                        'tag': 'labels.specific'
+                                        });
                 }
             this.context.fill();
         }
@@ -905,4 +950,45 @@
             this.context.stroke();
 
         this.context.restore();
+    }
+
+
+
+    /**
+    * Draw the titles
+    */
+    RGraph.HProgress.prototype.DrawTitle = function ()
+    {
+        // Draw the title text
+        if (this.Get('chart.title').length) {
+
+            var x    = ((this.canvas.width - this.gutterLeft - this.gutterRight) / 2) + this.gutterLeft;
+            var text = this.Get('chart.title');
+            var size = this.Get('chart.title.size') ? this.Get('chart.title.size') : this.Get('chart.text.size') + 2;
+            var font = this.properties['chart.text.font'];
+            
+            if (this.Get('chart.labels.position') == 'top') {
+                y = this.canvas.height - this.gutterBottom +5;
+                x = ((this.canvas.width - this.gutterLeft - this.gutterRight) / 2) + this.gutterLeft;
+                valign = 'top';
+            } else {
+                x = ((this.canvas.width - this.gutterLeft - this.gutterRight) / 2) + this.gutterLeft;
+                y = this.gutterTop - 5;
+                valign = 'bottom';
+            }
+
+
+            RGraph.Text2(this, {'font':font,
+                                'size':size,
+                                'x': typeof(this.properties['chart.title.x']) == 'number' ? this.properties['chart.title.x'] : x,
+                                'y': typeof(this.properties['chart.title.y']) == 'number' ? this.properties['chart.title.y'] : y,
+                                'text': text,
+                                'valign': this.properties['chart.title.valign'] ? this.properties['chart.title.valign'] : valign,
+                                'halign': this.properties['chart.title.halign'] ? this.properties['chart.title.halign'] : 'center',
+                                'bold':this.Get('chart.title.bold'),
+                                'bounding': this.properties['chart.title.background'] ? true : false,
+                                'boundingFill': this.properties['chart.title.background'],
+                                'tag': 'title'
+                                });
+        }
     }

@@ -201,17 +201,16 @@
         */
         canvas.addEventListener('click', function () {RGraph.HideContext();}, false);
 
-        window.onclick = function (e)
+        window.addEventListener('click', function ()
         {
             RGraph.HideContext();
-            
-             // Fire the onclick event again
-            if (e.target.onclick && e.button == 0) {
-                e.target.onclick(e);
-            }
-        }
+        }, false);
 
-        window.onresize = function () {RGraph.HideContext();}
+        window.addEventListener('resize', function ()
+        {
+            RGraph.HideContext();
+        }, false);
+
         
         /**
         * Add the __shape__ object to the context menu

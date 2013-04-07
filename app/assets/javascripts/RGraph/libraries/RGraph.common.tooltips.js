@@ -1,4 +1,4 @@
-    /**
+0    /**
     * o------------------------------------------------------------------------------o
     * | This file is part of the RGraph package - you can learn more at:             |
     * |                                                                              |
@@ -84,7 +84,7 @@
         var tooltipObj  = document.createElement('DIV');
         tooltipObj.className             = obj.Get('chart.tooltips.css.class');
         tooltipObj.style.display         = 'none';
-        tooltipObj.style.position        = 'absolute';
+        tooltipObj.style.position        = RGraph.isFixed(obj.canvas) ? 'fixed' : 'absolute';
         tooltipObj.style.left            = 0;
         tooltipObj.style.top             = 0;
         tooltipObj.style.backgroundColor = 'rgb(255,255,239)';
@@ -142,41 +142,15 @@
         var width  = tooltipObj.offsetWidth;
         var height = tooltipObj.offsetHeight;
 
-        //if ((y - height - 2) > 0) {
-        //    y = y - height - 2;
-        //} else {
-        //    y = y + 2;
-        //}
+
         /**
         * Set the width on the tooltip so it doesn't resize if the window is resized
         */
         tooltipObj.style.width = width + 'px';
-        //tooltipObj.style.height = 0; // Initially set the tooltip height to nothing
 
-        /**
-        * If the mouse is towards the right of the browser window and the tooltip would go outside of the window,
-        * move it left
-        *
-        if ( (x + width) > document.body.offsetWidth ) {
-            x = x - width - 7;
-            var placementLeft = true;
-            
-            if (obj.Get('chart.tooltips.effect') == 'none') {
-                x = x - 3;
-            }
 
-            tooltipObj.style.left = x + 'px';
-            tooltipObj.style.top  = y + 'px';
-
-        } else {
-            x += 5;
-
-            tooltipObj.style.left = x + 'px';
-            tooltipObj.style.top = y + 'px';
-        }*/
 
         tooltipObj.style.top  = (y - height - 2) + 'px';
-
 
         /**
         * If the function exists call the object specific tooltip positioning function
@@ -290,8 +264,9 @@
     RGraph.HideTooltip = function ()
     {
         var tooltip = RGraph.Registry.Get('chart.tooltip');
+        var uid     = arguments[0] && arguments[0].uid ? arguments[0].uid : null;
 
-        if (tooltip && tooltip.parentNode) {
+        if (tooltip && tooltip.parentNode && (!uid || uid == tooltip.__canvas__.uid)) {
             tooltip.parentNode.removeChild(tooltip);
             tooltip.style.display = 'none';                
             tooltip.style.visibility = 'hidden';
@@ -496,9 +471,13 @@
     RGraph.Highlight.Rect = function (obj, shape)
     {
         if (obj.Get('chart.tooltips.highlight')) {
+            
             var canvas  = obj.canvas;
             var context = obj.context;
-    
+        
+            // Safari seems to need this
+            obj.context.lineWidth = 1;
+
             /**
             * Draw a rectangle on the canvas to highlight the appropriate area
             */

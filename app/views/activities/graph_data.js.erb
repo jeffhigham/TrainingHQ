@@ -24,7 +24,8 @@ var cadence_numbers_min = Array.min(cadence_numbers);
 var altitude_numbers_max= Array.max(altitude_numbers);
 var altitude_numbers_min= Array.min(altitude_numbers);
 
-power_params = {
+
+var power_params = {
         'element_id': 'all_ride_data',
         'ymax': power_numbers_max,
         'ymin': power_numbers_min,
@@ -39,7 +40,7 @@ power_params = {
         'axis_text_color': power_color
     };
 
-    heart_rate_params = {
+var heart_rate_params = {
         'element_id': 'all_ride_data',
         'ymax': heart_rate_numbers_max,
         'ymin': heart_rate_numbers_min,
@@ -54,7 +55,7 @@ power_params = {
         'axis_text_color': hr_color
     };
 
-    altitude_params = {
+var altitude_params = {
         'element_id': 'all_ride_data',
         'ymax': altitude_numbers_max,
         'ymin': altitude_numbers_min,
@@ -69,7 +70,7 @@ power_params = {
         'axis_text_color': alt_color
     };
 
-    cadence_params = {
+var cadence_params = {
         'element_id': 'all_ride_data',
         'ymax': cadence_numbers_max,
         'ymin': cadence_numbers_min,
@@ -110,9 +111,20 @@ function drawScaled(scale_factor_passed, element_id)
     heart_rate_params['graph_data'] = maxValuesScaledBy(heart_rate_numbers,scale_factor);
     power_params['graph_data']      = maxValuesScaledBy(power_numbers,scale_factor);
 
+    power_params['ymax'] = Array.max(power_params['graph_data']);
+    power_params['ymin'] = Array.min(power_params['graph_data']);
+    heart_rate_params['ymax'] = Array.max(heart_rate_params['graph_data']);
+    heart_rate_params['ymin'] = Array.min(heart_rate_params['graph_data']);
+    cadence_params['ymax']  = Array.max(cadence_params['graph_data'] );
+    cadence_params['ymin']   = Array.min(cadence_params['graph_data'] );
+    altitude_params['ymax'] = Array.max(altitude_params['graph_data']);
+    altitude_params['ymin'] = Array.min(altitude_params['graph_data']);
+
+
     if ( $('#altitude_check').is(':checked') && altitude_numbers_max > 0 ){
         drawLinePlot(altitude_params);
     }
+
     if ( $('#cadence_check').is(':checked') && cadence_numbers_max > 0 ){
         drawLinePlot(cadence_params);
     }
@@ -139,6 +151,7 @@ function handleSelect(){
         cadence_numbers = cadence_numbers_distance;
         altitude_numbers = altitude_numbers_distance;
     }
+    
 
     drawScaled(false,'all_ride_data');
 }

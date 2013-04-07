@@ -74,8 +74,10 @@ nav, #main_nav {
 }
 
 a {
-	color:#3887bb; text-decoration: none
-    font-size 1.02em;
+	color:#3887bb;
+    text-decoration: none;
+    font-size: 1.02em;
+
 }
 
 a:link {

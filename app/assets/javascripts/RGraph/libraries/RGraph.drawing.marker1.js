@@ -40,6 +40,7 @@
         this.canvas  = document.getElementById(id);
         this.context = this.canvas.getContext ? this.canvas.getContext("2d") : null;
         this.colorsParsed = false;
+        this.canvas.__object__ = this;
 
 
         /**
@@ -49,12 +50,6 @@
         this.centery = y;
         this.radius  = radius;
         this.text    = text;
-
-
-        /**
-        * This puts a reference to this object on to the canvas.
-        */
-        this.canvas.__object__ = this;
 
 
         /**
@@ -107,7 +102,7 @@
             'chart.shadow.offsetx':     0,
             'chart.shadow.offsety':     0,
             'chart.shadow.blur':       15,
-            'chart.highlight.stroke':   'transparent',
+            'chart.highlight.stroke':   'rgba(0,0,0,0)',
             'chart.highlight.fill':     'rgba(255,255,255,0.7)',
             'chart.tooltips':           null,
             'chart.tooltips.highlight': true,
@@ -131,9 +126,22 @@
 
 
         /**
-        * This can be used to store the coordinates of shapes on the canvas
+        * Arrays that store the coordinates
         */
         this.coords = [];
+        this.coordsText = [];
+
+
+
+        /*
+        * Translate half a pixel for antialiasing purposes - but only if it hasn't beeen
+        * done already
+        */
+        if (!this.canvas.__rgraph_aa_translated__) {
+            this.context.translate(0.5,0.5);
+            
+            this.canvas.__rgraph_aa_translated__ = true;
+        }
 
 
 
@@ -164,6 +172,8 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
 
 
@@ -256,14 +266,15 @@
         this.context.fillStyle = this.properties['chart.text.color'];
         
         // Draw the text on the marker
-        RGraph.Text(this.context,
-                    this.properties['chart.text.font'],
-                    this.properties['chart.text.size'],
-                    this.coords[0][0] - 1,
-                    this.coords[0][1] - 1,
-                    this.text,
-                    'center',
-                    'center');
+        RGraph.Text2(this, {'font':this.properties['chart.text.font'],
+                            'size':this.properties['chart.text.size'],
+                            'x':this.coords[0][0] - 1,
+                            'y':this.coords[0][1] - 1,
+                            'text':this.text,
+                            'valign':'center',
+                            'halign':'center',
+                            'tag': 'labels'
+                           });
 
         /**
         * This installs the event listeners
@@ -275,6 +286,8 @@
         * Fire the ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
 

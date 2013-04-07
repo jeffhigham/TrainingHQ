@@ -38,6 +38,7 @@
         this.currentValue      = null;
         this.uid               = RGraph.CreateUID();
         this.canvas.uid        = this.canvas.uid ? this.canvas.uid : RGraph.CreateUID();
+        this.coordsText        = [];
 
 
         /**
@@ -110,6 +111,20 @@
 
 
 
+
+
+        /*
+        * Translate half a pixel for antialiasing purposes - but only if it hasn't beeen
+        * done already
+        */
+        if (!this.canvas.__rgraph_aa_translated__) {
+            this.context.translate(0.5,0.5);
+            
+            this.canvas.__rgraph_aa_translated__ = true;
+        }
+
+
+
         /**
         * Now need to register all chart types
         */
@@ -135,7 +150,10 @@
         }
 
         this.properties[name] = value;
+
+        return this;
     }
+
 
 
     /**
@@ -156,11 +174,17 @@
     }
 
 
+
     /**
     * The function you call to draw the bar chart
     */
     RGraph.Fuel.prototype.Draw = function ()
     {
+        var ca   = this.canvas;
+        var prop = this.properties;
+
+
+
         /**
         * Fire the onbeforedraw event
         */
@@ -179,32 +203,32 @@
         * This is new in May 2011 and facilitates indiviual gutter settings,
         * eg chart.gutter.left
         */
-        this.gutterLeft   = this.properties['chart.gutter.left'];
-        this.gutterRight  = this.properties['chart.gutter.right'];
-        this.gutterTop    = this.properties['chart.gutter.top'];
-        this.gutterBottom = this.properties['chart.gutter.bottom'];
+        this.gutterLeft   = prop['chart.gutter.left'];
+        this.gutterRight  = prop['chart.gutter.right'];
+        this.gutterTop    = prop['chart.gutter.top'];
+        this.gutterBottom = prop['chart.gutter.bottom'];
 
 
 
         /**
         * Get the center X and Y of the chart. This is the center of the needle bulb
         */
-        this.centerx = ((this.canvas.width - this.gutterLeft - this.gutterRight) / 2) + this.gutterLeft;
-        this.centery = this.canvas.height - 20 - this.gutterBottom
+        this.centerx = ((ca.width - this.gutterLeft - this.gutterRight) / 2) + this.gutterLeft;
+        this.centery = ca.height - 20 - this.gutterBottom
 
 
 
         /**
         * Work out the radius of the chart
         */
-        this.radius = this.canvas.height - this.gutterTop - this.gutterBottom - 20;
+        this.radius = ca.height - this.gutterTop - this.gutterBottom - 20;
         
         /**
         * You can now specify chart.centerx, chart.centery and chart.radius
         */
-        if (typeof(this.Get('chart.centerx')) == 'number') this.centerx = this.Get('chart.centerx');
-        if (typeof(this.Get('chart.centery')) == 'number') this.centery = this.Get('chart.centery');
-        if (typeof(this.Get('chart.radius')) == 'number')  this.radius = this.Get('chart.radius');
+        if (typeof(prop['chart.centerx']) == 'number') this.centerx = prop['chart.centerx'];
+        if (typeof(prop['chart.centery']) == 'number') this.centery = prop['chart.centery'];
+        if (typeof(prop['chart.radius']) == 'number')  this.radius  = prop['chart.radius'];
 
 
 
@@ -271,6 +295,8 @@
         * Fire the RGraph ondraw event
         */
         RGraph.FireCustomEvent(this, 'ondraw');
+        
+        return this;
     }
 
 
@@ -279,9 +305,6 @@
     */
     RGraph.Fuel.prototype.DrawChart = function ()
     {
-        var context = this.context;
-        var canvas  = this.canvas;
-        
         /**
         * Draw the "Scale"
         */
@@ -308,19 +331,39 @@
     */
     RGraph.Fuel.prototype.DrawLabels = function ()
     {
-        if (!this.properties['chart.scale.visible']) {
+        var co      = this.context;
+        var ca      = this.canvas;
+        var prop    = this.properties;
+
+        if (!prop['chart.scale.visible']) {
             var radius = (this.radius - 20);
-            this.context.fillStyle = this.Get('chart.text.color');
+            co.fillStyle = prop['chart.text.color'];
             
             // Draw the left label
             var y = this.centery - Math.sin(this.angles.start - PI) * (this.radius - 25);
             var x = this.centerx - Math.cos(this.angles.start - PI) * (this.radius - 25);
-            RGraph.Text(this.context, this.Get('chart.text.font'), this.Get('chart.text.size'), x, y, this.Get('chart.labels.empty'), 'center', 'center');
+            RGraph.Text2(this, {'font':prop['chart.text.font'],
+                                'size':prop['chart.text.size'],
+                                'x':x,
+                                'y':y,
+                                'text':prop['chart.labels.empty'],
+                                'halign': 'center',
+                                'valign':'center',
+                                'tag': 'labels'
+                               });
             
             // Draw the right label
             var y = this.centery - Math.sin(this.angles.start - PI) * (this.radius - 25);
             var x = this.centerx + Math.cos(this.angles.start - PI) * (this.radius - 25);
-            RGraph.Text(this.context, this.Get('chart.text.font'), this.Get('chart.text.size'), x, y, this.Get('chart.labels.full'), 'center', 'center');
+            RGraph.Text2(this, {'font':prop['chart.text.font'],
+                                'size':prop['chart.text.size'],
+                                'x':x,
+                                'y':y,
+                                'text':prop['chart.labels.full'],
+                                'halign': 'center',
+                                'valign':'center',
+                                'tag': 'labels'
+                               });
         }
     }
 
@@ -330,22 +373,27 @@
     */
     RGraph.Fuel.prototype.DrawNeedle = function ()
     {
+
+        var co      = this.context;
+        var ca      = this.canvas;
+        var prop    = this.properties;
+
         // Draw the actual needle
-        this.context.beginPath();
-            this.context.lineWidth = 5;
-            this.context.lineCap = 'round';
-            this.context.strokeStyle = this.Get('chart.needle.color');
+        co.beginPath();
+            co.lineWidth = 5;
+            co.lineCap = 'round';
+            co.strokeStyle = prop['chart.needle.color'];
 
             /**
             * The angle for the needle
             */
             var angle = this.angles.needle;
 
-            this.context.arc(this.centerx, this.centery, this.radius - 30, angle, angle + 0.0001, false);
-            this.context.lineTo(this.centerx, this.centery);
-        this.context.stroke();
+            co.arc(this.centerx, this.centery, this.radius - 30, angle, angle + 0.0001, false);
+            co.lineTo(this.centerx, this.centery);
+        co.stroke();
         
-        this.context.lineWidth = 1;
+        co.lineWidth = 1;
 
         // Create the gradient for the bulb
         var cx   = this.centerx + 10;
@@ -356,17 +404,17 @@
         grad.addColorStop(1, '#eee');
 
         if (navigator.userAgent.indexOf('Firefox/6.0') > 0) {
-            grad = this.context.createLinearGradient(cx + 10, cy - 10, cx - 10, cy + 10);
+            grad = co.createLinearGradient(cx + 10, cy - 10, cx - 10, cy + 10);
             grad.addColorStop(1, '#666');
             grad.addColorStop(0.5, '#ccc');
         }
 
         // Draw the bulb
-        this.context.beginPath();
-            this.context.fillStyle = grad;
-            this.context.moveTo(this.centerx, this.centery);
-            this.context.arc(this.centerx, this.centery, 20, 0, TWOPI, 0);
-        this.context.fill();
+        co.beginPath();
+            co.fillStyle = grad;
+            co.moveTo(this.centerx, this.centery);
+            co.arc(this.centerx, this.centery, 20, 0, TWOPI, 0);
+        co.fill();
     }
 
     
@@ -376,59 +424,71 @@
     RGraph.Fuel.prototype.DrawScale = function ()
     {
         var a, x, y;
+        
+        var ca   = this.canvas;
+        var co   = this.context;
+        var prop = this.properties;
 
         //First draw the fill background
-        this.context.beginPath();
-            this.context.strokeStyle = 'black';
-            this.context.fillStyle = 'white';
-            this.context.arc(this.centerx, this.centery, this.radius, this.angles.start, this.angles.end, false);
-            this.context.arc(this.centerx, this.centery, this.radius - 10, this.angles.end, this.angles.start, true);
-        this.context.closePath();
-        this.context.stroke();
-        this.context.fill();
+        co.beginPath();
+            co.strokeStyle = 'black';
+            co.fillStyle = 'white';
+            co.arc(this.centerx, this.centery, this.radius, this.angles.start, this.angles.end, false);
+            co.arc(this.centerx, this.centery, this.radius - 10, this.angles.end, this.angles.start, true);
+        co.closePath();
+        co.stroke();
+        co.fill();
 
         //First draw the fill itself
         var start = this.angles.start;
         var end   = this.angles.needle;
 
-        this.context.beginPath();
-            this.context.fillStyle = this.Get('chart.colors')[0];
-            this.context.arc(this.centerx, this.centery, this.radius, start, end, false);
-            this.context.arc(this.centerx, this.centery, this.radius - 10, end, start, true);
-        this.context.closePath();
-    //this.context.stroke();
-        this.context.fill();
+        co.beginPath();
+            co.fillStyle = prop['chart.colors'][0];
+            co.arc(this.centerx, this.centery, this.radius, start, end, false);
+            co.arc(this.centerx, this.centery, this.radius - 10, end, start, true);
+        co.closePath();
+        //co.stroke();
+        co.fill();
         
         // This draws the tickmarks
         for (a = this.angles.start; a<=this.angles.end+0.01; a+=((this.angles.end - this.angles.start) / 5)) {
-            this.context.beginPath();
-                this.context.arc(this.centerx, this.centery, this.radius - 10, a, a + 0.0001, false);
-                this.context.arc(this.centerx, this.centery, this.radius - 15, a + 0.0001, a, true);
-            this.context.stroke();
+            co.beginPath();
+                co.arc(this.centerx, this.centery, this.radius - 10, a, a + 0.0001, false);
+                co.arc(this.centerx, this.centery, this.radius - 15, a + 0.0001, a, true);
+            co.stroke();
         }
         
         /**
         * If chart.scale.visible is specified draw the textual scale
         */
-        if (this.properties['chart.scale.visible']) {
+        if (prop['chart.scale.visible']) {
 
-            this.context.fillStyle = this.properties['chart.text.color'];
+            co.fillStyle = prop['chart.text.color'];
 
             // The labels
-            var numLabels  = this.properties['chart.labels.count'];
-            var decimals   = this.properties['chart.scale.decimals'];
-            var font       = this.properties['chart.text.font'];
-            var size       = this.properties['chart.text.size'];
-            var units_post = this.properties['chart.units.post'];
-            var units_pre  = this.properties['chart.units.pre'];
+            var numLabels  = prop['chart.labels.count'];
+            var decimals   = prop['chart.scale.decimals'];
+            var font       = prop['chart.text.font'];
+            var size       = prop['chart.text.size'];
+            var units_post = prop['chart.units.post'];
+            var units_pre  = prop['chart.units.pre'];
 
             for (var i=0; i<=numLabels; ++i) {
                 a = ((this.angles.end - this.angles.start) * (i/numLabels)) + this.angles.start;
                 y = this.centery - Math.sin(a - PI) * (this.radius - 25);
                 x = this.centerx - Math.cos(a - PI) * (this.radius - 25);
-                RGraph.Text(this.context,font,size,x,y,
                 
-                RGraph.number_format(this, (this.min + ((this.max - this.min) * (i/numLabels))).toFixed(decimals),units_pre,units_post),'center','center');
+                
+                RGraph.Text2(this, {'font':font,
+                                    'size':size,
+                                    'x':x,
+                                    'y':y,
+                                    'text': RGraph.number_format(this, (this.min + ((this.max - this.min) * (i/numLabels))).toFixed(decimals),units_pre,units_post),
+                                    'halign': 'center',
+                                    'valign':'center',
+                                    'tag': 'scale'
+                                   });
             }
         }
     }
@@ -508,27 +568,39 @@
     */
     RGraph.Fuel.prototype.DrawIcon = function ()
     {
-        if (!RGraph.isOld()) {
-            
-            var img = new Image();
-            img.src = this.Get('chart.icon');
-            img.__object__ = this;
-            this.__icon__ = img;
-            
-            
-            img.onload = function (e)
-            {
-                var obj = img.__object__;
-            
-                obj.context.drawImage(img,obj.centerx - (img.width / 2), obj.centery - obj.radius + 35);
+        var ca   = this.canvas;
+        var co   = this.context;
+        var prop = this.properties;
 
-                obj.DrawNeedle();
-
-                if (obj.Get('chart.icon.redraw')) {
-                    obj.Set('chart.icon.redraw', false);
-                    RGraph.Clear(obj.canvas);
-                    RGraph.RedrawCanvas(obj.canvas);
+        if (!ISOLD) {
+            
+            if (!this.__icon__ || !this.__icon__.__loaded__) {
+                var img = new Image();
+                img.src = prop['chart.icon'];
+                img.__object__ = this;
+                this.__icon__ = img;
+            
+            
+                img.onload = function (e)
+                {
+                    img.__loaded__ = true;
+                    var obj = img.__object__;
+                    //var co  = obj.context;
+                    //var prop = obj.properties;
+                
+                    co.drawImage(img,obj.centerx - (img.width / 2), obj.centery - obj.radius + 35);
+    
+                    obj.DrawNeedle();
+    
+                    if (prop['chart.icon.redraw']) {
+                        obj.Set('chart.icon.redraw', false);
+                        RGraph.Clear(obj.canvas);
+                        RGraph.RedrawCanvas(ca);
+                    }
                 }
+            } else {
+                var img = this.__icon__;
+                co.drawImage(img,this.centerx - (img.width / 2), this.centery - this.radius + 35);
             }
         }
 
@@ -544,13 +616,15 @@
     */
     RGraph.Fuel.prototype.Adjusting_mousemove = function (e)
     {
+        var ca = this.canvas;
+
         /**
         * Handle adjusting for the Fuel gauge
         */
         if (RGraph.Registry.Get('chart.adjusting') && RGraph.Registry.Get('chart.adjusting').uid == this.uid) {
             this.value = this.getValue(e);
-            RGraph.Clear(this.canvas);
-            RGraph.RedrawCanvas(this.canvas);
+            RGraph.Clear(ca);
+            RGraph.RedrawCanvas(ca);
             RGraph.FireCustomEvent(this, 'onadjust');
         }
     }
@@ -597,7 +671,7 @@
     * This parses a single color value
     */
     RGraph.Fuel.prototype.parseSingleColorForLinearGradient = function (color)
-    {        
+    {
         if (!color || typeof(color) != 'string') {
             return color;
         }
@@ -627,7 +701,7 @@
     * This parses a single color value
     */
     RGraph.Fuel.prototype.parseSingleColorForRadialGradient = function (color)
-    {        
+    {
         if (!color || typeof(color) != 'string') {
             return color;
         }
