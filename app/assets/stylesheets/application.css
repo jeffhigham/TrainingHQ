@@ -153,17 +153,41 @@ th:only-child{
 input[type='range'] {
     -webkit-appearance: none !important;
     background:#333;
-    height:5px;
+    height:8px;
     width: 1050px;
     display: block;
 }
 input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none !important;
-    background:#0f8bff;
+    /* background:#0f8bff; */
+    background: #999;
     height:16px;
-    width:24px;
+    width:32px;
     display:block;
 }
+
+input[type=checkbox].css-checkbox {
+display:none;
+}
+
+input[type=checkbox].css-checkbox + label.css-label {
+padding-left:20px;
+height:15px; 
+display:inline-block;
+line-height:15px;
+background-repeat:no-repeat;
+background-position: 0 0;
+/*font-size:15px; */
+vertical-align:middle;
+cursor:pointer;
+}
+
+input[type=checkbox].css-checkbox:checked + label.css-label {
+background-position: 0 -15px;
+}
+
+.css-label{ background-image:url(/dark-plus.png); }
+
 
 #all_ride_data {
 
@@ -196,5 +220,12 @@ input[type='range']::-webkit-slider-thumb {
     -webkit-border-radius: 10px;
     -khtml-border-radius: 10px;
     border-radius: 10px;
+}
+
+select {
+
+    border: 0;
+    background: #333;
+    color: #FFF;
 }
 

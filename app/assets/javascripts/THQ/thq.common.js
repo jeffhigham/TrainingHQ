@@ -1,11 +1,13 @@
 // Common Config
-var gutterLeft = 120;
-var gutterRight = 120;
+var gutterLeft = 150;
+var gutterRight = 80;
 var gutterTop   = 25;
 var power_color = "#FF9900";
 var hr_color = "#ff5600";
 var alt_color = "#7fff00";
 var cadence_color = "#0f8bff";
+var speed_color = "#bc65f7";
+
 
 
 // Supporting functions for 
@@ -50,7 +52,7 @@ function drawLinePlot(params){
     var yaxis = new RGraph.Drawing.YAxis(params['element_id'], params['axis_x']);
     yaxis.Set('chart.colors', params['axis_color'] );
     yaxis.Set('chart.text.color', params['axis_text_color']);
-    yaxis.Set('chart.text.size', 8);
+    yaxis.Set('chart.text.size', 7);
     yaxis.Set('chart.max', params['ymax']);
     yaxis.Set('chart.min', params['ymin']);
     yaxis.Set('chart.numlabels',20);

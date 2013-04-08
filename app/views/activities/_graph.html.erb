@@ -1,10 +1,23 @@
 
 <script src="<%= graph_data_path(@activity) %>.js"></script>
-<div class="graph_checkbox">
-	<input type="checkbox" id="cadence_check" onchange="drawScaled(false,'all_ride_data')">Cadence</input>
-	<input type="checkbox" id="altitude_check" onchange="drawScaled(false,'all_ride_data')">Altitude</input>
-	<input type="checkbox" id="power_check" onchange="drawScaled(false,'all_ride_data')">Power</input>
-	<input type="checkbox" id="hr_check" onchange="drawScaled(false,'all_ride_data')">Heart Rate</input>
+
+<div>
+
+	<input id="speed_check" class="css-checkbox" type="checkbox" onchange="drawScaled(false,'all_ride_data')" />
+	<label for="speed_check" class="css-label" style="color:#bc65f7">Speed</label>
+
+	<input id="cadence_check" class="css-checkbox" type="checkbox" onchange="drawScaled(false,'all_ride_data')" />
+	<label for="cadence_check" class="css-label" style="color:#0f8bff">Cadence</label>
+
+	<input id="altitude_check" class="css-checkbox" type="checkbox" onchange="drawScaled(false,'all_ride_data')" />
+	<label for="altitude_check" class="css-label" style="color:#7fff00">Altitude</label>
+
+	<input id="power_check" class="css-checkbox" type="checkbox" onchange="drawScaled(false,'all_ride_data')" />
+	<label for="power_check" class="css-label" style="color:#FF9900">Power</label>
+
+	<input id="hr_check" class="css-checkbox" type="checkbox" onchange="drawScaled(false,'all_ride_data')" />
+	<label for="hr_check" class="css-label" style="color:#ff5600">Heart Rate</label>
+
 	<select name="graph_dataset" id="graph_dataset_option" onchange="handleSelect()">
 		<option value="time" selected>Time (h:m:s)</option>
 		<option value="distance">Distance (mi)</option>

@@ -1,18 +1,24 @@
 //Dynamic content from the activity controller.
-var power_numbers_time = <%= @raw_numbers[:power_numbers_time] %>;
-var heart_rate_numbers_time = <%= @raw_numbers[:heart_rate_numbers_time] %> ;
-var cadence_numbers_time = <%= @raw_numbers[:cadence_numbers_time] %>;
-var altitude_numbers_time = <%= @raw_numbers[:altitude_numbers_time]  %>;
+var power_numbers_time = <%= @javascript_data[:power_numbers_time] %>;
+var heart_rate_numbers_time = <%= @javascript_data[:heart_rate_numbers_time] %> ;
+var cadence_numbers_time = <%= @javascript_data[:cadence_numbers_time] %>;
+var altitude_numbers_time = <%= @javascript_data[:altitude_numbers_time]  %>;
+var speed_numbers_time = <%= @javascript_data[:speed_numbers_time]  %>;
 
-var power_numbers_distance = <%= @raw_numbers[:power_numbers_distance] %>;
-var heart_rate_numbers_distance = <%= @raw_numbers[:heart_rate_numbers_distance] %> ;
-var cadence_numbers_distance = <%= @raw_numbers[:cadence_numbers_distance] %>;
-var altitude_numbers_distance = <%= @raw_numbers[:altitude_numbers_distance]  %>;
+
+var power_numbers_distance = <%= @javascript_data[:power_numbers_distance] %>;
+var heart_rate_numbers_distance = <%= @javascript_data[:heart_rate_numbers_distance] %> ;
+var cadence_numbers_distance = <%= @javascript_data[:cadence_numbers_distance] %>;
+var altitude_numbers_distance = <%= @javascript_data[:altitude_numbers_distance]  %>;
+var speed_numbers_distance = <%= @javascript_data[:speed_numbers_distance]  %>;
+
 
 var power_numbers = power_numbers_time;
 var heart_rate_numbers = heart_rate_numbers_time;
 var cadence_numbers = cadence_numbers_time;
 var altitude_numbers = altitude_numbers_time;
+var speed_numbers = speed_numbers_time;
+
 
 // Global variables.
 var power_numbers_max = Array.max(power_numbers);
@@ -23,6 +29,8 @@ var cadence_numbers_max = Array.max(cadence_numbers);
 var cadence_numbers_min = Array.min(cadence_numbers);
 var altitude_numbers_max= Array.max(altitude_numbers);
 var altitude_numbers_min= Array.min(altitude_numbers);
+var speed_numbers_max= Array.max(speed_numbers);
+var speed_numbers_min= Array.min(speed_numbers);
 
 
 var power_params = {
@@ -33,7 +41,7 @@ var power_params = {
         'colors': [power_color],
         'filled': true,
         'fillstyle': 'rgba(255,153,0,0.5)',
-        'axis_x': 940,
+        'axis_x': 977,
         'axis_title': "Power (watts)",
         'axis_align': 'right',
         'axis_color': power_color,
@@ -48,7 +56,7 @@ var heart_rate_params = {
         'colors': [hr_color],
         'filled': false,
         'fillstyle': 'rgba(255,86,0,0.5)',
-        'axis_x': 995,
+        'axis_x': 1015,
         'axis_title': "Heart Rate (bpm)",
         'axis_align': 'right',
         'axis_color': hr_color,
@@ -63,7 +71,7 @@ var altitude_params = {
         'colors': [alt_color],
         'filled': true,
         'fillstyle': 'rgba(127,255,0,0.2)',
-        'axis_x': 115,
+        'axis_x': 150,
         'axis_title': "Altitude (ft)",
         'axis_align': 'left',
         'axis_color': alt_color,
@@ -78,16 +86,32 @@ var cadence_params = {
         'colors': [cadence_color],
         'filled': false,
         'fillstyle': 'rgba(15,129,255,0.5)',
-        'axis_x': 45,
+        'axis_x': 95,
         'axis_title': "Cadence (rpm)",
         'axis_align': 'left',
         'axis_color': cadence_color,
         'axis_text_color': cadence_color
     };
 
+var speed_params = {
+        'element_id': 'all_ride_data',
+        'ymax': speed_numbers_max,
+        'ymin': speed_numbers_min,
+        'linewidth': 2,
+        'colors': [speed_color],
+        'filled': false,
+        'fillstyle': 'rgba(15,129,255,0.5)',
+        'axis_x': 50,
+        'axis_title': "Speed (km/h)",
+        'axis_align': 'left',
+        'axis_color': speed_color,
+        'axis_text_color': speed_color
+    };
+
 
 
 window.onload = function() {
+    $('#speed_check').prop('checked',true);
     $('#cadence_check').prop('checked', true);
     $('#altitude_check').prop('checked',true);
     $('#power_check').prop('checked',true);
@@ -106,6 +130,7 @@ function drawScaled(scale_factor_passed, element_id)
         scale_factor = $('#graph_scale_slider').val();
     }
     
+    speed_params['graph_data']      = maxValuesScaledBy(speed_numbers,scale_factor);    
     altitude_params['graph_data']   = maxValuesScaledBy(altitude_numbers,scale_factor);
     cadence_params['graph_data']    = maxValuesScaledBy(cadence_numbers,scale_factor);
     heart_rate_params['graph_data'] = maxValuesScaledBy(heart_rate_numbers,scale_factor);
@@ -119,12 +144,13 @@ function drawScaled(scale_factor_passed, element_id)
     cadence_params['ymin']   = Array.min(cadence_params['graph_data'] );
     altitude_params['ymax'] = Array.max(altitude_params['graph_data']);
     altitude_params['ymin'] = Array.min(altitude_params['graph_data']);
+    speed_params['ymax'] = Array.max(speed_params['graph_data']);
+    speed_params['ymin'] = Array.min(speed_params['graph_data']);
 
 
     if ( $('#altitude_check').is(':checked') && altitude_numbers_max > 0 ){
         drawLinePlot(altitude_params);
     }
-
     if ( $('#cadence_check').is(':checked') && cadence_numbers_max > 0 ){
         drawLinePlot(cadence_params);
     }
@@ -133,6 +159,9 @@ function drawScaled(scale_factor_passed, element_id)
     }
     if ( $('#power_check').is(':checked') && power_numbers_max > 0 ){
         drawLinePlot(power_params);
+    }
+    if ( $('#speed_check').is(':checked') && speed_numbers_max > 0 ){
+        drawLinePlot(speed_params);
     }
 
 }
@@ -144,12 +173,14 @@ function handleSelect(){
         heart_rate_numbers = heart_rate_numbers_time;
         cadence_numbers = cadence_numbers_time;
         altitude_numbers = altitude_numbers_time;
+        speed_numbers = speed_numbers_time;
     }
     else {
         power_numbers = power_numbers_distance;
         heart_rate_numbers = heart_rate_numbers_distance;
         cadence_numbers = cadence_numbers_distance;
         altitude_numbers = altitude_numbers_distance;
+        speed_numbers = speed_numbers_distance;
     }
     
 

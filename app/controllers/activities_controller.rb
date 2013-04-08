@@ -35,7 +35,7 @@ class ActivitiesController < ApplicationController
 
   def show
     @activity = Activity.find(params[:id])
-    @raw_numbers = @activity.raw_numbers
+    @javascript_data = @activity.javascript_data
 
     respond_to do |format|
       format.html # show.html.erb
@@ -59,7 +59,7 @@ class ActivitiesController < ApplicationController
 
   def graph_data
     @activity = Activity.find(params[:id])
-    @raw_numbers = @activity.raw_numbers
+    @javascript_data = @activity.javascript_data
     respond_to do |format|
       format.js
     end
