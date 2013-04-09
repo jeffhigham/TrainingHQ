@@ -102,6 +102,7 @@ class Activity < ActiveRecord::Base
           speed_numbers_distance << trackpoint.speed.to_f
           last_trackpoint_distance = trackpoint.distance
         end
+
       end
 
       ( power_numbers_time = [0] && power_numbers_distance = [0] ) if power_numbers_time.max == 0
@@ -128,7 +129,7 @@ class Activity < ActiveRecord::Base
         :speed_numbers_distance => speed_numbers_distance,
         :distance => distance_numbers
       }
-
+      
     end
     
      {

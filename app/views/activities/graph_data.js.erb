@@ -1,22 +1,79 @@
 //Dynamic content from the activity controller.
 var power_numbers_time = <%= @javascript_data[:power_numbers_time] %>;
-var heart_rate_numbers_time = <%= @javascript_data[:heart_rate_numbers_time] %> ;
+
+var heart_rate_numbers_time = <%= @javascript_data[:heart_rate_numbers_time] %>;
+
 var cadence_numbers_time = <%= @javascript_data[:cadence_numbers_time] %>;
-var altitude_numbers_time = <%= @javascript_data[:altitude_numbers_time]  %>;
-var speed_numbers_time = <%= @javascript_data[:speed_numbers_time]  %>;
+
+var altitude_numbers_time = <%= @javascript_data[:altitude_numbers_time] %>;
+
+var speed_numbers_time = <%= @javascript_data[:speed_numbers_time] %>;
 
 
 var power_numbers_distance = <%= @javascript_data[:power_numbers_distance] %>;
+
 var heart_rate_numbers_distance = <%= @javascript_data[:heart_rate_numbers_distance] %> ;
+
 var cadence_numbers_distance = <%= @javascript_data[:cadence_numbers_distance] %>;
+
 var altitude_numbers_distance = <%= @javascript_data[:altitude_numbers_distance]  %>;
+
 var speed_numbers_distance = <%= @javascript_data[:speed_numbers_distance]  %>;
+
+// Lap numbers by time
+var lap_power_numbers_time = [];
+var lap_heart_rate_numbers_time = [];
+var lap_cadence_numbers_time = [];
+var lap_altitude_numbers_time = [];
+var lap_speed_numbers_time = [];
+
+<% @javascript_data[:lap_numbers_time].each_with_index do |lap, lap_number| %>
+
+lap_power_numbers_time[<%= lap_number %>] = <%= lap[:power_numbers_time] %>;
+
+lap_heart_rate_numbers_time[<%= lap_number %>] = <%= lap[:heart_rate_numbers_time] %>;
+
+lap_cadence_numbers_time[<%= lap_number %>] = <%= lap[:cadence_numbers_time] %>;
+
+lap_altitude_numbers_time[<%= lap_number %>] = <%= lap[:altitude_numbers_time] %>;
+
+lap_speed_numbers_time[<%= lap_number %>] = <%= lap[:speed_numbers_time] %>;
+
+<% end %>
+
+// Lap numbers by distance
+var lap_power_numbers_distance = [];
+var lap_heart_rate_numbers_distance = [];
+var lap_cadence_numbers_distance = [];
+var lap_altitude_numbers_distance = [];
+var lap_speed_numbers_distance = [];
+
+
+<% @javascript_data[:lap_numbers_distance].each_with_index do |lap, lap_number| %>
+
+lap_power_numbers_distance[<%= lap_number %>] = <%= lap[:power_numbers_distance] %>;
+
+lap_heart_rate_numbers_distance[<%= lap_number %>] = <%= lap[:heart_rate_numbers_distance] %>;
+
+lap_cadence_numbers_distance[<%= lap_number %>] = <%= lap[:cadence_numbers_distance] %>;
+
+lap_altitude_numbers_distance[<%= lap_number %>] = <%= lap[:altitude_numbers_distance] %>;
+
+lap_speed_numbers_distance[<%= lap_number %>] = <%= lap[:speed_numbers_distance] %>;
+
+<% end %>
+
+
 
 
 var power_numbers = power_numbers_time;
+
 var heart_rate_numbers = heart_rate_numbers_time;
+
 var cadence_numbers = cadence_numbers_time;
+
 var altitude_numbers = altitude_numbers_time;
+
 var speed_numbers = speed_numbers_time;
 
 
@@ -117,6 +174,7 @@ window.onload = function() {
     $('#power_check').prop('checked',true);
     $('#hr_check').prop('checked',true);
     drawScaled(5,'all_ride_data');
+    drawDyGraph();
 }
 
 function drawScaled(scale_factor_passed, element_id)
@@ -166,6 +224,29 @@ function drawScaled(scale_factor_passed, element_id)
 
 }
 
+function drawDyGraph(){
+
+    g = new Dygraph(
+          document.getElementById("demodiv"),
+          "/ny-vs-sf.txt",
+          {
+            rollPeriod: 14,
+            showRoller: true,
+            customBars: true,
+            title: 'Ride Data',
+            ylabel: 'Temperature (F)',
+            legend: 'always',
+            highlightCircleSize: 4,
+            strokeWidth: 2,
+            fillGraph: true,
+            drawXGrid: false,
+            drawYGrid: true,
+            colors: [alt_color, cadence_color],
+            labelsDivStyles: { 'textAlign': 'right' }
+          }
+        );
+}
+
 function handleSelect(){
 
     if( $('select#graph_dataset_option').val() == "time"){
@@ -183,6 +264,22 @@ function handleSelect(){
         speed_numbers = speed_numbers_distance;
     }
     
-
     drawScaled(false,'all_ride_data');
+    
 }
+
+function handleLaps(){
+
+    var lap_number = $('select#lap_dataset_option').val();
+    alert(lap_number);
+    power_numbers = lap_power_numbers_time[lap_number];
+    heart_rate_numbers = lap_heart_rate_numbers_time[lap_number];
+    cadence_numbers = lap_cadence_numbers_time[lap_number];
+    altitude_numbers = lap_altitude_numbers_time[lap_number];
+    speed_numbers = lap_speed_numbers_time[lap_number];
+    drawScaled(false,'all_ride_data');
+
+}
+
+
+
