@@ -3,6 +3,8 @@ class Trackpoint < ActiveRecord::Base
   								:longitude, :time, :watts, :speed, :joules
   belongs_to :lap
  
+ require "./lib/shared_methods.rb"
+  include SharedMethods
 
   def distance_feet
   	return (self.distance * 3.281).round(1)	
@@ -10,6 +12,10 @@ class Trackpoint < ActiveRecord::Base
 
   def altitude_feet
   	return (self.altitude * 3.281).round(1)
+  end
+
+  def distance_miles
+    distance_meters_to_miles(self.distance)
   end
   
 end

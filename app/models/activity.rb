@@ -79,6 +79,8 @@ class Activity < ActiveRecord::Base
     lap_numbers_time = []
     lap_numbers_distance = []
 
+    dygraph_data = []
+
     last_trackpoint_distance = 0;
 
     self.laps.each do |lap|
@@ -103,6 +105,9 @@ class Activity < ActiveRecord::Base
           last_trackpoint_distance = trackpoint.distance
         end
 
+        dygraph_data << [ trackpoint.distance_feet , trackpoint.watts, trackpoint.heart_rate, 
+                          trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f ] unless trackpoint.distance_miles == 0
+
       end
 
       ( power_numbers_time = [0] && power_numbers_distance = [0] ) if power_numbers_time.max == 0
@@ -110,6 +115,7 @@ class Activity < ActiveRecord::Base
       ( heart_rate_numbers_time = [0] && heart_rate_numbers_distance = [0] ) if heart_rate_numbers_time.max == 0
       ( altitude_numbers_time = [0] && altitude_numbers_distance = [0] ) if altitude_numbers_time.max == 0
       ( speed_numbers_time = [0] && speed_numbers_distance = [0] ) if speed_numbers_time.max == 0
+
 
 
       lap_numbers_time << {
@@ -129,7 +135,7 @@ class Activity < ActiveRecord::Base
         :speed_numbers_distance => speed_numbers_distance,
         :distance => distance_numbers
       }
-      
+
     end
     
      {
@@ -144,7 +150,8 @@ class Activity < ActiveRecord::Base
       :speed_numbers_time => speed_numbers_time,
       :speed_numbers_distance => speed_numbers_distance,
       :lap_numbers_time => lap_numbers_time,
-      :lap_numbers_distance => lap_numbers_distance
+      :lap_numbers_distance => lap_numbers_distance,
+      :dygraph_data => dygraph_data
     }
 
   end

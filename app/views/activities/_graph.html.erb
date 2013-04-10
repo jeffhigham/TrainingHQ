@@ -1,6 +1,7 @@
 
 <script src="<%= graph_data_path(@activity) %>.js"></script>
 
+<!--
 <div>
 
 	<input id="speed_check" class="css-checkbox" type="checkbox" onchange="drawScaled(false,'all_ride_data')" />
@@ -31,6 +32,8 @@
 	</select>
 
 </div><br/>
-<canvas id="all_ride_data" width="1050" height="400">[No canvas support]</canvas><br/>
+ <canvas id="all_ride_data" width="1050" height="400">[No canvas support]</canvas><br/> 
 <input id="graph_scale_slider" type="range" min="0" max="10" value="5" step="0.05" onchange="drawScaled(false,'all_ride_data')"/><br/>
-<div id="demodiv" style="width:1000px; height:400px; background-color:#000; color:#666"></div>
+//-->
+<div id="chart_labels"></div>
+<div id="demodiv" style="width:1050px; height:400px; background-color:#000; color:#666"></div>
