@@ -79,13 +79,18 @@ class Activity < ActiveRecord::Base
     lap_numbers_time = []
     lap_numbers_distance = []
 
+    lap_start_distances = []
+
     dygraph_data = []
 
     last_trackpoint_distance = 0;
 
     self.laps.each do |lap|
 
-      lap.trackpoints.each do |trackpoint|
+      lap.trackpoints.each_with_index do |trackpoint,index|
+
+        lap_start_distances << trackpoint.distance_feet if index == 0
+
         # Time-based numbers, record every trackpoint.
         power_numbers_time << trackpoint.watts
         heart_rate_numbers_time << trackpoint.heart_rate
@@ -153,7 +158,8 @@ class Activity < ActiveRecord::Base
       :speed_numbers_distance => speed_numbers_distance,
       :lap_numbers_time => lap_numbers_time,
       :lap_numbers_distance => lap_numbers_distance,
-      :dygraph_data => dygraph_data
+      :dygraph_data => dygraph_data,
+      :lap_start_distances => lap_start_distances
     }
 
   end
