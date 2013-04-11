@@ -17,3 +17,4 @@
 //= require_tree ./RGraph/libraries
 //= require_tree ./THQ
 //= require dygraph-combined
+//= require raphael-min

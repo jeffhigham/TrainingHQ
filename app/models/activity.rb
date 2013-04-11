@@ -103,10 +103,12 @@ class Activity < ActiveRecord::Base
           altitude_numbers_distance << trackpoint.altitude_feet
           speed_numbers_distance << trackpoint.speed.to_f
           last_trackpoint_distance = trackpoint.distance
+
+          dygraph_data << [ trackpoint.distance_feet , trackpoint.watts, trackpoint.heart_rate, 
+                          trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f ] unless trackpoint.distance_miles == 0
         end
 
-        dygraph_data << [ trackpoint.distance_feet , trackpoint.watts, trackpoint.heart_rate, 
-                          trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f ] unless trackpoint.distance_miles == 0
+        
 
       end
 

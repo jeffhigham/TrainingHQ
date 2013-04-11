@@ -1,4 +1,5 @@
 //Dynamic content from the activity controller.
+/*
 var power_numbers_time = <%= @javascript_data[:power_numbers_time] %>;
 
 var heart_rate_numbers_time = <%= @javascript_data[:heart_rate_numbers_time] %>;
@@ -20,8 +21,11 @@ var altitude_numbers_distance = <%= @javascript_data[:altitude_numbers_distance]
 
 var speed_numbers_distance = <%= @javascript_data[:speed_numbers_distance]  %>;
 
+*/
+
 var dygraph_data = <%= @javascript_data[:dygraph_data] %>;
 
+/*
 // Lap numbers by time
 var lap_power_numbers_time = [];
 var lap_heart_rate_numbers_time = [];
@@ -168,17 +172,18 @@ var speed_params = {
     };
 
 
-
+*/
 window.onload = function() {
-    $('#speed_check').prop('checked',true);
-    $('#cadence_check').prop('checked', true);
-    $('#altitude_check').prop('checked',true);
-    $('#power_check').prop('checked',true);
-    $('#hr_check').prop('checked',true);
+    //$('#speed_check').prop('checked',true);
+    //$('#cadence_check').prop('checked', true);
+    //$('#altitude_check').prop('checked',true);
+    //$('#power_check').prop('checked',true);
+    //$('#hr_check').prop('checked',true);
     //drawScaled(5,'all_ride_data');
     drawDyGraph();
 }
 
+/*
 function drawScaled(scale_factor_passed, element_id)
 {
     resetGraph(element_id);
@@ -225,21 +230,9 @@ function drawScaled(scale_factor_passed, element_id)
     }
 
 }
+*/
 
 function drawDyGraph(){
-
-/*
-    new Dygraph(document.getElementById("graphdiv2"),
-                  [
-                    [1,10,100],
-                    [2,20,80],
-                    [3,50,60],
-                    [4,70,80]
-                  ],
-                  {
-                    labels: [ "x", "A", "B" ]
-                  });
-*/
 
     g = new Dygraph(
           document.getElementById("demodiv"),
@@ -247,27 +240,65 @@ function drawDyGraph(){
           {
             rollPeriod: 14,
             showRoller: false,
-            legend: 'always',
-            highlightCircleSize: 4,
+            legend: false,
+            highlightCircleSize: 5,
             strokeWidth: 2,
             fillGraph: true,
             errorBars: false,
             drawXGrid: false,
             drawYGrid: false,
+            drawYAxis: false,
             showRangeSelector: false,
             labelsSeparateLines: false,
-            labelsDiv: "chart_labels",
+            hideOverlayOnMouseOut: true,
+            showLabelsOnHighlight: false,
             labels: ["Distance", "Watts", "HR", "Cadence", "Altitude", "Speed"],
             colors: [power_color, hr_color, cadence_color, alt_color, speed_color],
-            labelsDivStyles: { 'textAlign': 'left','color': '#999', 'background': '#000' },
-            'Altitude': {
-              axis: {
-              }
+
+            axisLabelColor: "#fff",
+            series: {
+                'Altitude': {
+                    axis: 'Y2',
+                    drawYAxis: false
+                }
+            },
+
+            axes: {
+                x: {
+                    axisLabelFormatter: function(x) {
+                        return roundNumber(x/5280,2);
+                    },
+                    axisLabelFontSize: 12,
+                    axisLabelColor: "#FFF"
+                }
+            },
+
+            highlightCallback:  function(event, x, points, row, seriesName){
+
+                var miles       = roundNumber(x/5280, 2);
+                var watts       = roundNumber(points[0]['yval'], 0);
+                var heart_rate  = roundNumber(points[1]['yval'],0);
+                var cadence     = roundNumber(points[2]['yval'],0);
+                var altitude    = roundNumber(points[3]['yval'],1);
+                var speed       = roundNumber(points[4]['yval'],1);
+
+                $('#chart_labels').html(
+                        "Miles: " + miles + "<br/>" +
+                        "Watts: " + watts + "<br/>" +
+                        "HR: " + heart_rate + "<br/>" +
+                        "Cadence: " + cadence + "<br/>" +
+                        "Altitude: " + altitude + "<br/>" +
+                        "Speed: " + speed
+                    );
+
             }
+
           }
+
         );
 }
 
+/*
 function handleSelect(){
 
     if( $('select#graph_dataset_option').val() == "time"){
@@ -301,6 +332,6 @@ function handleLaps(){
     drawScaled(false,'all_ride_data');
 
 }
-
+*/
 
 

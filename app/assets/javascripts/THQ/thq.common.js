@@ -19,6 +19,12 @@ Array.min = function(array){
     return Math.min.apply( Math, array);
 }
 
+function roundNumber(number, digits) {
+            var multiple = Math.pow(10, digits);
+            var rndedNum = Math.round(number * multiple) / multiple;
+            return rndedNum;
+}
+
 
 function resetGraph(element_id){
     RGraph.Reset(document.getElementById(element_id));
