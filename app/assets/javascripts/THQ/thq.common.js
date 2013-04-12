@@ -26,6 +26,7 @@ function roundNumber(number, digits) {
 }
 
 
+/*
 function resetGraph(element_id){
     RGraph.Reset(document.getElementById(element_id));
 }
@@ -68,12 +69,15 @@ function drawLinePlot(params){
 
 }
 
+/*
+
 // Returns a max value in a range of values.
+/*
 function maxValuesScaledBy(list,scale_factor) {
+
     var loop_count = 0;
     var max_loop_value = 0;
-    var list_count = list.length;
-    var loop_rollover = Math.round( list_count * (scale_factor/1000) );
+    var loop_rollover = Math.round( list.length * (scale_factor/1000) );
     var return_list = new Array();
 
     if(loop_rollover <= 1){ return list; }
@@ -91,7 +95,48 @@ function maxValuesScaledBy(list,scale_factor) {
     }
     return return_list;  
 }
+*/
 
+// Returns a max value in a range of values for multi-arrays.
+function maxMultiValuesScaledBy(list,scale_factor) {
+    
+    /*
+        list [
+            [0,1,2,3,4,5],
+            [6,7,8,9,10,11],
+            ...
+        ]
+    */
+    var max_values = [];
+    var max_row_values = [];
+    var loop_rollover = Math.round( list.length * (scale_factor/1000) );
+    var loop_count = 0;
+
+    if(loop_rollover <= 1){ return list; }
+
+    for (var row = 0; row < list.length; row++) {
+
+        loop_count++;
+
+        for (var col = 0; col < list[row].length; col++){
+            if( typeof(max_row_values[col]) == 'undefined' || 
+                max_row_values[col] < list[row][col] ){
+                max_row_values[col] = list[row][col];
+            }
+        }
+
+        if (loop_count == loop_rollover){
+            max_values.push(max_row_values);
+            loop_count = 0;
+            max_row_values = [];
+        }
+
+    }
+
+    return max_values;  
+}
+
+/*
 // Returns an average value for a range of values.
 function aveValuesScaledBy(list,scale_factor) {
     var loop_count = 0;
@@ -113,3 +158,4 @@ function aveValuesScaledBy(list,scale_factor) {
     }
     return return_list;  
 }
+*/

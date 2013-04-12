@@ -181,8 +181,14 @@ window.onload = function() {
     $('#3').prop('checked',true);
     $('#4').prop('checked',true);
     //drawScaled(5,'all_ride_data');
-    drawDyGraph();
+    drawDyGraph( maxMultiValuesScaledBy(dygraph_data,1) );
 }
+
+function scaleBySlider(){
+    scale_factor = $('#graph_scale_slider').val();
+    drawDyGraph( maxMultiValuesScaledBy(dygraph_data,scale_factor) );
+}
+
 
 /*
 function drawScaled(scale_factor_passed, element_id)
@@ -233,14 +239,15 @@ function drawScaled(scale_factor_passed, element_id)
 }
 */
 
-function drawDyGraph(){
+
+function drawDyGraph(list){
 
     g = new Dygraph(
           document.getElementById("demodiv"),
-          dygraph_data,
+          list,
           {
-            rollPeriod: 14,
-            showRoller: true,
+            //rollPeriod: 14,
+            //showRoller: true,
             legend: false,
             highlightCircleSize: 5,
             strokeWidth: 2,
@@ -249,7 +256,9 @@ function drawDyGraph(){
             drawXGrid: false,
             drawYGrid: false,
             drawYAxis: false,
-            showRangeSelector: false,
+            showRangeSelector: true,
+            rangeSelectorPlotFillColor: "rgba(127,255,0,0.2)",
+            rangeSelectorPlotStrokeColor: alt_color,
             labelsSeparateLines: false,
             hideOverlayOnMouseOut: true,
             showLabelsOnHighlight: false,
@@ -282,7 +291,8 @@ function drawDyGraph(){
                 var cadence     = roundNumber(points[2]['yval'],0);
                 var altitude    = roundNumber(points[3]['yval'],1);
                 var speed       = roundNumber(points[4]['yval'],1);
-
+                
+                $('#distance_label').html("Miles: " + miles);
                 $('#speed_label').html("Speed: " + speed);
                 $('#cadence_label').html("Cadence: " + cadence);
                 $('#alt_label').html("Altitude: " + altitude);
@@ -312,7 +322,7 @@ function drawDyGraph(){
         );
 }
 
-function change(el) {
+function toggleCheck(el) {
         g.setVisibility(parseInt(el.id), el.checked);
         setStatus();
       }
