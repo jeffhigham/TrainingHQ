@@ -77,10 +77,7 @@ function drawDyGraph(list){
 
             axes: {
                 x: {
-                    axisLabelFormatter: function(x) {
-                        //return roundNumber(x/5280,2);
-                        return x;
-                    },
+                    axisLabelFormatter: xAxisLabelFormatter,
                     axisLabelFontSize: 12,
                     axisLabelColor: "#FFF"
                 }
@@ -95,18 +92,32 @@ function drawDyGraph(list){
     );
 }
 
+function xAxisLabelFormatter(x){
+    var data_option = $('#graph_dataset_option').val();
+    if( data_option == "distance"){
+        return milesFormatFromFeet(x);
+    }
+    else {
+        return timeFormatFromSeconds(x);
+    }
+}
+
 // Draws canvas underlay for laps
 function drawCanvasUnderlay (canvas, area, g) {
 
     for (var i=0; i < current_lap_start.length; i++ ) {
 
         var bottom_left = g.toDomCoords(current_lap_start[i], -20);
-        var top_right = g.toDomCoords(current_lap_start[i]+10, +20);
+        var top_right = g.toDomCoords(current_lap_start[i], +20);
 
         var left = bottom_left[0];
         var right = top_right[0];
 
-        canvas.fillStyle = "rgba(251, 255, 56, 1.0)";
+        //canvas.fillStyle = "#FFF";
+        //canvas.font = "bold 16px Arial";
+        //canvas.fillText("LAP 1", 100, 100);
+
+        canvas.fillStyle = "rgba(255, 255, 0, 1.0)";
         canvas.fillRect(left, area.y, right - left, area.h);
     }
 
@@ -114,7 +125,6 @@ function drawCanvasUnderlay (canvas, area, g) {
 
 function mouseOutCanvasCallback(event, x, points, row, seriesName){
 
-    $('#distance_label').html("X Val: 0.0");
     $('#speed_label').html("Speed: 0.0" );
     $('#cadence_label').html("Cadence: 0.0" );
     $('#alt_label').html("Altitude: 0.0" );
@@ -126,8 +136,8 @@ function mouseOutCanvasCallback(event, x, points, row, seriesName){
 // Handles dynamic updates when mouse is over the graph.
 function mouseOverCanvasCallback(event, x, points, row, seriesName){
 
-    //var miles      = roundNumber(x/5280, 2);
-    var xval = x;
+    var data_option = $('#graph_dataset_option').val();
+
     var datapoints = {
             Watts: 0,
             HR: 0,
@@ -136,13 +146,16 @@ function mouseOverCanvasCallback(event, x, points, row, seriesName){
             Speed: 0
     };
 
-    var string = "";
     for (var i = 0; i < points.length; i++){
         datapoints[ points[i]['name'] ] = points[i]['yval'];
-        string += points[i]['name'] + " ";
     }
 
-    $('#distance_label').html("X Val: " + xval );
+    if ( data_option == "distance") {
+        $('#distance_label').html("Miles: " + milesFormatFromFeet(x) );
+    }
+    else {
+        $('#distance_label').html("Time: " + timeFormatFromSeconds(x) );
+    }
     $('#speed_label').html("Speed: " + roundNumber(datapoints['Speed'],1) );
     $('#cadence_label').html("Cadence: " + roundNumber(datapoints['Cadence'],0) );
     $('#alt_label').html("Altitude: " + roundNumber(datapoints['Altitude'],1) );

@@ -25,16 +25,20 @@ function roundNumber(number, digits) {
             return rndedNum;
 }
 
+function timeFormatFromSeconds(seconds){
+    var hours = parseInt( seconds / 3600 ) % 24;
+    var minutes = parseInt( seconds / 60 ) % 60;
+    var seconds = parseInt(seconds % 60, 10);
+    return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+}
+
+function milesFormatFromFeet(feet){
+    return roundNumber(feet/5280,2);
+}
+
 // Returns a max value in a range of values for multi-arrays.
 function maxMultiValuesScaledBy(list,scale_factor) {
     
-    /*
-        list [
-            [0,1,2,3,4,5],
-            [6,7,8,9,10,11],
-            ...
-        ]
-    */
     var max_values = [];
     var max_row_values = [];
     var loop_rollover = Math.round( list.length * (scale_factor/1000) );
