@@ -4,13 +4,19 @@ var lap_start_distances = <%= @javascript_data[:lap_start_distances] %>;
 
 var lap_start_times = <%= @javascript_data[:lap_start_times].to_s.html_safe %>;
 
-var data_time = <%= @javascript_data[:data_time].to_s.html_safe %>;
+var data_time = <%= @javascript_data[:data_time] %>;
 
 var data_distance = <%= @javascript_data[:data_distance] %>;
 
 var current_data = data_time;
 
 var current_lap_start = lap_start_times;
+
+lap_start_times.push(data_time[data_time.length - 1 ][0]);
+
+lap_start_distances.push(data_distance[data_distance.length - 1][0]);
+
+var laps = generateLaps();
 
 window.onload = function() {
     $('#0').prop('checked',true);
@@ -22,8 +28,57 @@ window.onload = function() {
     mouseOutCanvasCallback();
 }
 
+function generateLaps(){
+    var lap_data = [];
+    var lap_index = 0;
+
+    if( lap_start_times.length == 1){
+        lap_data[lap_index] = data_time;
+    }
+    else {
+
+        for (var i = 0; i < data_time.length; i++){
+
+            if( typeof(lap_data[lap_index]) == "undefined"){
+                lap_data[lap_index] = [];
+            }
+
+            if( data_time[i][0] >= lap_start_times[lap_index] && data_time[i][0] < lap_start_times[lap_index + 1] ){
+                lap_data[lap_index].push(data_time[i]);
+            }
+
+            else {
+                // The last lap_start_times value is the last datapoint
+                // in the activity. If this is "undefined" we are at the 
+                // last datapoint and will break out of the loop and return.
+                if( typeof(lap_start_times[lap_index + 1]) ==  "number" ){
+                  lap_index++;
+                    lap_data[lap_index] = [];
+                    lap_data[lap_index].push(data_time[i]);
+                }
+            }
+        }
+    }
+
+    return lap_data;
+}
+
 function scaleBySlider(){
     var scale_factor = $('#graph_scale_slider').val();
+    drawDyGraph( maxMultiValuesScaledBy(current_data,scale_factor) );
+}
+
+function handleLaps(){
+    var scale_factor = parseInt($('#graph_scale_slider').val());
+    var lap_selection = parseInt($('#lap_dataset_option').val());
+
+    if( lap_selection >= 0 ){
+        current_data = laps[lap_selection];
+    }
+    else {
+        // reset the lap selector to all
+    }
+
     drawDyGraph( maxMultiValuesScaledBy(current_data,scale_factor) );
 }
 
@@ -112,10 +167,6 @@ function drawCanvasUnderlay (canvas, area, g) {
 
         var left = bottom_left[0];
         var right = top_right[0];
-
-        //canvas.fillStyle = "#FFF";
-        //canvas.font = "bold 16px Arial";
-        //canvas.fillText("LAP 1", 100, 100);
 
         canvas.fillStyle = "rgba(255, 255, 0, 1.0)";
         canvas.fillRect(left, area.y, right - left, area.h);
