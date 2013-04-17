@@ -25,13 +25,13 @@
 	</select>
 
 	<select name="lap_dataset" id="lap_dataset_option" onchange="handleLaps()" style="float: right">
-			<option value="-1" selected><%= "All Laps" %></option>
+			<option value="all" selected><%= "All Laps" %></option>
 		<% @activity.laps.each_with_index do |lap, lap_number| %>
-			<option value="<%= lap_number %>" selected><%= "Lap #{lap_number} (#{lap.start_time})" %></option>
+			<option value="<%= lap_number %>"><%= "Lap #{lap_number} (#{lap.start_time})" %></option>
 		<% end %>
 	</select>
 
-	<input id="graph_scale_slider" type="range" min=".5" max="11" value="1" step="0.05" onchange="scaleBySlider()"/><br/>
+	<input id="graph_scale_slider" type="range" min=".5" max="10" value="5" step="0.05" onchange="scaleBySlider()"/><br/>
 
 </div>
 <br/>
