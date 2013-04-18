@@ -132,6 +132,11 @@ tr:hover {
     color: #FFF;
 }
 
+.row_highlight {
+    background-color: #7fff00;
+    color: #333;
+}
+
 th:first-child {
     -moz-border-radius: 6px 0 0 0;
     -webkit-border-radius: 6px 0 0 0;

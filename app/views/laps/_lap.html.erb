@@ -1,5 +1,5 @@
 
-  <tr id='<%= "lap_row_#{lap_counter}" %>'>
+  <tr id='<%= "lap_row_#{lap_counter}" %>' onClick="handleLapRowClick(parseInt(this.id[8]))">
     <td><%= lap_counter%></td>
     <td><%= lap.ride_time_formatted %></td>
     <td><%= lap.distance_miles %> </td>

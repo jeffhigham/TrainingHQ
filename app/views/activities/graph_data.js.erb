@@ -19,6 +19,8 @@ lap_start_distances.push(data_distance[data_distance.length - 1][0]);
 var laps_time = generateLaps(data_time,lap_start_times);
 var laps_distance = generateLaps(data_distance, lap_start_distances);
 
+var current_laps = laps_time;
+
 window.onload = function() {
     $('#distance_input').prop('checked',true);
     $('#0').prop('checked',true);
@@ -70,6 +72,15 @@ function scaleBySlider(){
     drawDyGraph(current_data);
 }
 
+function handleLapRowClick(lap_id){
+
+    $('#lap_dataset_option').val(lap_id);
+    handleLaps();
+    resetLapRows()
+    highlightTableRow('#lap_row_' + lap_id);
+}
+
+
 function handleLaps(){
 
     var lap_selection = $('#lap_dataset_option').val();
@@ -101,6 +112,7 @@ function selectTimeDistance(){
     if( data_option == "distance"){
         if ( lap_selection == "all"){
             current_data = data_distance;
+            current_laps = laps_distance;
         }
         else {
            current_data = laps_distance[parseInt(lap_selection)]; 
@@ -111,6 +123,7 @@ function selectTimeDistance(){
     else {
         if ( lap_selection == "all"){
             current_data = data_time;
+            current_laps = laps_time;
         }
         else {
            current_data = laps_time[parseInt(lap_selection)]; 
@@ -184,6 +197,40 @@ function drawDyGraph(list){
 
 }
 
+function highlightTableRow(id){
+    $(id).css({'background-color':'#7fff00', 'color':'#666'}).animate({'background-color':'#FFF'}, 2000);
+}
+
+function resetTableRow(id){
+    $(id).css({'background-color':'', 'color':''});
+}
+
+function findLapFromX(x){
+
+    for ( var i = 0; i < current_lap_start.length; i++ ){
+        if( x >= current_lap_start[i] && x < current_lap_start[i+1]){
+            return i;
+        }
+    }
+
+    return false;
+}
+
+function resetLapRows(){
+    for ( var i = 0; i < current_lap_start.length; i++){
+        resetTableRow('#lap_row_' + i);
+    }
+}
+
+function highlightLapRow(x){
+    resetLapRows();
+    var lap_id = findLapFromX(x);
+    if(typeof(lap_id) == 'number'){
+        highlightTableRow('#lap_row_' + lap_id);
+    }
+}
+
+
 function xAxisLabelFormatter(x){
     var data_option = $('#graph_dataset_option').val();
     if( data_option == "distance"){
@@ -218,7 +265,7 @@ function mouseOutCanvasCallback(event, x, points, row, seriesName){
     $('#alt_label').html("Altitude: 0.0" );
     $('#power_label').html("Watts: 0" );
     $('#hr_label').html("Heart Rate: 0" );
-
+    resetLapRows();
 }
 
 // Handles dynamic updates when mouse is over the graph.
@@ -249,6 +296,8 @@ function mouseOverCanvasCallback(event, x, points, row, seriesName){
     $('#alt_label').html("Altitude: " + roundNumber(datapoints['Altitude'],1) );
     $('#power_label').html("Watts: " + roundNumber(datapoints['Watts'],0) );
     $('#hr_label').html("Heart Rate: " + roundNumber(datapoints['HR'],0) );
+
+    highlightLapRow(x);
 
 }
 
