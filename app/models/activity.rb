@@ -10,6 +10,7 @@ class Activity < ActiveRecord::Base
                   
   has_attached_file :datafile
   has_many :laps, dependent: :destroy
+  has_many :object_stores, dependent: :destroy
   belongs_to :user
 
   require "./lib/shared_methods.rb"
@@ -53,45 +54,54 @@ class Activity < ActiveRecord::Base
 
   def javascript_data
 
-    lap_start_distances = []
-    lap_start_times = []
-    data_distance = []
-    data_time = []
-    last_trackpoint_distance = 0;
-    time_offset = 0;
+    if ( self.object_stores.count == 0 )
 
-    self.laps.each_with_index do |lap, lap_index|
+      lap_start_distances = []
+      lap_start_times = []
+      data_distance = []
+      data_time = []
+      last_trackpoint_distance = 0;
+      time_offset = 0;
 
-      lap.trackpoints.each_with_index do |trackpoint,trackpoint_index|
+      self.laps.each_with_index do |lap, lap_index|
 
-        if ( lap_index == 0 and trackpoint_index == 0 ) 
-          time_offset = Time.parse(trackpoint.time).to_time.to_i
-        end
+        lap.trackpoints.each_with_index do |trackpoint,trackpoint_index|
 
-        if ( trackpoint_index == 0)
-          lap_start_distances << trackpoint.distance_feet
-          lap_start_times << Time.parse(trackpoint.time).to_time.to_i - time_offset
-        end
+          if ( lap_index == 0 and trackpoint_index == 0 ) 
+            time_offset = Time.parse(trackpoint.time).to_time.to_i
+          end
 
-        data_time << [ Time.parse(trackpoint.time).to_time.to_i - time_offset, trackpoint.watts, trackpoint.heart_rate, 
-                          trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f ];
+          if ( trackpoint_index == 0)
+            lap_start_distances << trackpoint.distance_feet
+            lap_start_times << Time.parse(trackpoint.time).to_time.to_i - time_offset
+          end
 
-        if (trackpoint.distance - last_trackpoint_distance) > 0
-          
-          last_trackpoint_distance = trackpoint.distance
-          data_distance << [ trackpoint.distance_feet , trackpoint.watts, trackpoint.heart_rate, 
-                          trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f ] unless trackpoint.distance_miles == 0
+          data_time << [ Time.parse(trackpoint.time).to_time.to_i - time_offset, trackpoint.watts, trackpoint.heart_rate, 
+                            trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f ];
+
+          if (trackpoint.distance - last_trackpoint_distance) > 0
+            
+            last_trackpoint_distance = trackpoint.distance
+            data_distance << [ trackpoint.distance_feet , trackpoint.watts, trackpoint.heart_rate, 
+                            trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f ] unless trackpoint.distance_miles == 0
+          end
+
         end
 
       end
 
+      self.object_stores.create( name: "data_distance", payload: data_distance)
+      self.object_stores.create( name: "data_time", payload: data_time)
+      self.object_stores.create( name: "lap_start_times", payload: lap_start_times)
+      self.object_stores.create( name: "lap_start_distances", payload: lap_start_distances)
+
     end
-    
-     {
-      :data_distance => data_distance,
-      :data_time => data_time,
-      :lap_start_distances => lap_start_distances,
-      :lap_start_times => lap_start_times
+
+    {
+      data_distance: self.object_stores.where(name: "data_distance").first.payload,
+      data_time: self.object_stores.where(name: "data_time").first.payload,
+      lap_start_distances: self.object_stores.where(name: "lap_start_distances").first.payload,
+      lap_start_times: self.object_stores.where(name: "lap_start_times").first.payload
     }
 
   end

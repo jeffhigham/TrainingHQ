@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130331025133) do
+ActiveRecord::Schema.define(:version => 20130419165934) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",                                               :default => 0
@@ -119,6 +119,14 @@ ActiveRecord::Schema.define(:version => 20130331025133) do
     t.integer  "min_altitude",                                     :default => 0
     t.integer  "avg_altitude",                                     :default => 0
     t.integer  "min_watts",                                        :default => 0
+  end
+
+  create_table "object_stores", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.integer  "activity_id"
+    t.text     "payload"
   end
 
   create_table "power_zones", :force => true do |t|
