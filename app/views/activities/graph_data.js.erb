@@ -18,8 +18,10 @@ lap_start_distances.push(data_distance[data_distance.length - 1][0]);
 
 var laps_time = generateLaps(data_time,lap_start_times);
 var laps_distance = generateLaps(data_distance, lap_start_distances);
+var lat_long_data = generateLatLongData(data_time);
 
 var current_laps = laps_time;
+var dygraph_data = null; 
 
 window.onload = function() {
     $('#distance_input').prop('checked',true);
@@ -74,10 +76,13 @@ function scaleBySlider(){
 
 function handleLapRowClick(lap_id){
 
-    $('#lap_dataset_option').val(lap_id);
+    // lap_id = N or lap_id = NN. Assuming no more than 99 laps.
+    var lap_number = (lap_id.length == 9 ) ? parseInt(lap_id[8]) : parseInt(lap_id[8] + lap_id[9]);
+
+    $('#lap_dataset_option').val(lap_number);
     handleLaps();
-    resetLapRows()
-    highlightTableRow('#lap_row_' + lap_id);
+    resetLapRows();
+    highlightTableRow("#" + lap_id);
 }
 
 
@@ -99,7 +104,8 @@ function handleLaps(){
         }
 
         drawDyGraph(current_data);
-
+        resetLapRows();
+        highlightTableRow("#lap_row_" + lap_selection);
     }
 
 }
@@ -137,10 +143,11 @@ function drawDyGraph(list){
 
     // capture current state of graph.
     var scale_factor = $('#graph_scale_slider').val();
+    dygraph_data = maxMultiValuesScaledBy(list,scale_factor);
 
     g = new Dygraph(
           document.getElementById("chart_canvas"),
-          maxMultiValuesScaledBy(list,scale_factor),
+          dygraph_data,
           {
             //rollPeriod: 14,
             //showRoller: true,
@@ -158,10 +165,16 @@ function drawDyGraph(list){
             labelsSeparateLines: false,
             hideOverlayOnMouseOut: true,
             showLabelsOnHighlight: false,
-            labels: ["Distance", "Watts", "HR", "Cadence", "Altitude", "Speed"],
-            colors: [power_color, hr_color, cadence_color, alt_color, speed_color],
+            /*
+                Setting LNG / LAT here only because we need it in this array for consistency when updating
+                markers on the map.  These are set with false visibility because we never want to show
+                them on the graph. The colors are set to black for the same reason.  This is a hack but
+                should work for now.
+            */
+            labels: ["Distance", "Watts", "HR", "Cadence", "Altitude", "Speed", "LNG", "LAT", "GRADE"],
+            visibility: [true, true, true, true, true, false, false, false],
+            colors: [power_color, hr_color, cadence_color, alt_color, speed_color, "#000", "#000", "#000"],
             axisLabelColor: "#fff",
-            visibility: [true, true, true, true, true],
             series: {
                 'Altitude': {
                     axis: 'Y2',
@@ -265,7 +278,18 @@ function mouseOutCanvasCallback(event, x, points, row, seriesName){
     $('#alt_label').html("Altitude: 0.0" );
     $('#power_label').html("Watts: 0" );
     $('#hr_label').html("Heart Rate: 0" );
-    resetLapRows();
+
+    var lap_selection = $('#lap_dataset_option').val();
+    
+    if( lap_selection == "all"){
+      resetLapRows();  
+    }
+
+    if ( Gmaps.map.markers.length > 0 ){
+        Gmaps.map.markers[0].setMap(null);
+        Gmaps.map.markers = [];
+    }
+    
 }
 
 // Handles dynamic updates when mouse is over the graph.
@@ -291,6 +315,7 @@ function mouseOverCanvasCallback(event, x, points, row, seriesName){
     else {
         $('#distance_label').html("Time: " + timeFormatFromSeconds(x) );
     }
+
     $('#speed_label').html("Speed: " + roundNumber(datapoints['Speed'],1) );
     $('#cadence_label').html("Cadence: " + roundNumber(datapoints['Cadence'],0) );
     $('#alt_label').html("Altitude: " + roundNumber(datapoints['Altitude'],1) );
@@ -299,10 +324,52 @@ function mouseOverCanvasCallback(event, x, points, row, seriesName){
 
     highlightLapRow(x);
 
+    var lng = dygraph_data[row][6];
+    var lat = dygraph_data[row][7];
+    var percent_grade = dygraph_data[row][8];
+    var LatLong = new google.maps.LatLng(lat,lng);
+
+    if ( Gmaps.map.markers.length > 0 ){
+        //Gmaps.map.markers[0].setMap(null);
+        Gmaps.map.markers[0].setPosition(LatLong);
+        if(percent_grade < 0){
+            Gmaps.map.markers[0].setIcon("/icons/bike_downhill.png");
+        }
+        else if(percent_grade > 0 ){
+            Gmaps.map.markers[0].setIcon("/icons/bike_uphill.png");
+        }
+        else{
+            Gmaps.map.markers[0].setIcon("/icons/cycling.png");
+        }
+    }
+    else {
+    
+        Gmaps.map.markers[0] = Gmaps.map.createMarker({
+            Lat: lat,
+            Lng: lng,
+            rich_marker: null,
+            marker_picture: "",
+            marker_width: 10,
+            marker_height: 10
+        });
+        Gmaps.map.markers[0].setIcon("/icons/cycling.png");
+
+    }
+
 }
 
 // Toggles check boxes shows / hides a dataset on the graph.
 function toggleCheck(el) {
     g.setVisibility(parseInt(el.id), el.checked);
+}
+
+function generateLatLongData(list) {
+    var lat_long = [];
+    for(var i=0; i<list.length; i++){
+        if (list[i][6] > 0 || list[i][7] > 0) {
+            lat_long.push( { lng:list[i][6], lat: list[i][7] } );
+        }
+    }
+    return [lat_long];
 }
 

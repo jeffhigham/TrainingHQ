@@ -60,8 +60,10 @@ class Activity < ActiveRecord::Base
       lap_start_times = []
       data_distance = []
       data_time = []
-      last_trackpoint_distance = 0;
-      time_offset = 0;
+      last_trackpoint_distance = 0
+      last_trackpoint_altitude = 0
+      time_offset = 0
+      percent_grade = 0
 
       self.laps.each_with_index do |lap, lap_index|
 
@@ -74,17 +76,29 @@ class Activity < ActiveRecord::Base
           if ( trackpoint_index == 0)
             lap_start_distances << trackpoint.distance_feet
             lap_start_times << Time.parse(trackpoint.time).to_time.to_i - time_offset
+            percent_grade = 0;
+          else
+            percent_grade = ( (trackpoint.altitude_feet - last_trackpoint_altitude) / (trackpoint.distance_feet - last_trackpoint_distance) )*100
           end
+
+          #logger.info "percent_grade = ( (#{trackpoint.altitude_feet} - #{last_trackpoint_altitude}) / (#{trackpoint.distance_feet} - #{last_trackpoint_distance}) )*100\n"
+          #logger.info "percent_grade = #{percent_grade}\n\n"
+
+
 
           data_time << [ Time.parse(trackpoint.time).to_time.to_i - time_offset, trackpoint.watts, trackpoint.heart_rate, 
-                            trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f ];
+                            trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f, trackpoint.longitude, trackpoint.latitude, percent_grade  ];
 
-          if (trackpoint.distance - last_trackpoint_distance) > 0
+          if (trackpoint.distance_feet - last_trackpoint_distance) > 0
             
-            last_trackpoint_distance = trackpoint.distance
+            #last_trackpoint_distance = trackpoint.distance_feet
+            #last_trackpoint_altitude = trackpoint.altitude_feet
             data_distance << [ trackpoint.distance_feet , trackpoint.watts, trackpoint.heart_rate, 
-                            trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f ] unless trackpoint.distance_miles == 0
+                            trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f, trackpoint.longitude, 
+                            trackpoint.latitude, percent_grade ] unless trackpoint.distance_miles == 0
           end
+          last_trackpoint_distance = trackpoint.distance_feet
+          last_trackpoint_altitude = trackpoint.altitude_feet
 
         end
 
