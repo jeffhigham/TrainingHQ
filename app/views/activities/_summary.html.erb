@@ -1,44 +1,38 @@
 
 <table>
 <tr>
-    <th colspan=8>Summary "<%= @activity.name %>"</th>
+    <th colspan=7>Summary "<%= @activity.name %>"</th>
 </tr>
 <tr>
     <th colspan=2>Totals</th>
     <th colspan=2>Averages</th>
     <th colspan=2>Maximums</th>
-    <th colspan=2>Metrics</th>
 </tr>
 
 <tr>
     <td>Time:</td><td><%= @activity.total_time_formatted %></td>
     <td>Speed (mph):</td><td><%= @activity.avg_speed %></td>
     <td>Speed (mph):</td><td><%= @activity.max_speed %></td>
-    <td>xPower (watts):</td><td>NA</td>
 </tr>
 <tr>
     <td>Time Riding:</td><td><%= @activity.ride_time_formatted %></td>
     <td>Power (watts):</td><td><%= @activity.avg_watts %></td>
     <td>Power (watts):</td><td><%= @activity.max_watts %></td>
-    <td>Relative Intensity:</td><td>NA</td>
 </tr>
 <tr>    
     <td>Distance (miles):</td><td><%= @activity.distance_miles %></td>
     <td>Heart Rate (bpm):</td><td><%= @activity.avg_heart_rate %></td>
     <td>Heart Rate (bpm):</td><td><%= @activity.max_heart_rate %></td>
-    <td>Bike Score:</td><td>NA</td>
 </tr>
 <tr>
     <td>Work (kJ):</td><td><%= @activity.kjoules %></td>
     <td>Cadence (rpm):</td><td><%= @activity.avg_cadence %></td>
     <td>Cadence (rpm):</td><td><%= @activity.max_cadence %></td>
-    <td>Daniels EqP (watts):</td><td>NA</td>
 </tr>
 <tr>
     <td>Elevation Gain(Feet):</td><td><%= @activity.elevation_feet %></td>    
     <td>Temp (F):</td><td>NA</td>
     <td>Temp (F):</td><td>NA</td>
-    <td>TRIMP Points:</td><td>NA</td>
 <tr>     
 </table>
 <br/>
