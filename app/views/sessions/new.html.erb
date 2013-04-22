@@ -1,13 +1,11 @@
 
-<br/>
+<div id="login" class="rounded-corners">
+
 <%= form_tag sessions_path do %>
-  <div class="field">
-    <%= label_tag :email %>
-    <%= text_field_tag :email, params[:email] %>
-  </div>
-  <div class="field">
-    <%= label_tag :password %>
-    <%= password_field_tag :password %>
-  </div>
-  <div class="actions"><%= submit_tag "Log in" %></div>
+    <label style="position:absolute; left:10%; top:20px" for="email">Email</label>
+    <input style="position:absolute; left:30%; top:15px" id="email"  name="email" type="text" /><br/>
+    <label style="position:absolute; left:10%; top:50px" for="password">Password</label>
+    <input style="position:absolute; left:30%; top:45px" id="password" name="password" type="password" /><br/>
+  	<input style="position:absolute; left:243px; top:75px; background-color:#999; color:#333; border:0px" name="commit" type="submit" value="Log in" />
 <% end %>
+</div>

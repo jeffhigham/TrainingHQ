@@ -21,7 +21,9 @@
     <% if current_user %>
       <%= link_to "Activities", activities_path %>&nbsp;|&nbsp;
       <%= link_to "Upload", new_user_activity_path(current_user) %>&nbsp;|&nbsp; 
-      <%= link_to "User Profile", user_path(current_user) %>&nbsp;|&nbsp; 
+      <%= 
+      #link_to "User Profile", user_path(current_user) 
+      %> <!-- &nbsp;|&nbsp; //--> 
       <%= link_to "Log Out", logout_path, confirm: "Really log out?" %>
     <% else %>
       <%= link_to "Sign up", signup_path %>&nbsp;|&nbsp;
