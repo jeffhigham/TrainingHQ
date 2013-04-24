@@ -9,13 +9,13 @@ class SessionsController < ApplicationController
     user = User.find_by_email(params[:email])
     if user && user.authenticate(params[:password])
       session[:user_id] = user.id
-      if user.is_admin?
+      #if user.is_admin?
         #redirect_to users_path, :notice => "Logged in as an Admin!"
-        redirect_to users_path
-      else
+       # redirect_to users_path
+      #else
         #redirect_to user_activities_path(user), :notice => "Logged in as a regular Joe!"
         redirect_to user_activities_path(user)
-      end
+      #end
     else
       redirect_to login_path, :notice => "Invalid email or password"
     end

@@ -1,5 +1,9 @@
 //Dynamic content from the activity controller.
 
+var power_zones = <%= @user_power_zones.to_json.html_safe %>;
+
+var hr_zones = <%= @user_hr_zones.to_json.html_safe %>;
+
 var lap_start_distances = <%= @javascript_data[:lap_start_distances] %>;
 
 var lap_start_times = <%= @javascript_data[:lap_start_times].to_s.html_safe %>;
@@ -310,17 +314,19 @@ function mouseOverCanvasCallback(event, x, points, row, seriesName){
     }
 
     if ( data_option == "distance") {
-        $('#distance_label').html("Miles: " + milesFormatFromFeet(x) );
+        $('#distance_label').html("D: " + milesFormatFromFeet(x) );
     }
     else {
-        $('#distance_label').html("Time: " + timeFormatFromSeconds(x) );
+        $('#distance_label').html("T: " + timeFormatFromSeconds(x) );
     }
 
+    var power_zone = dataPointToZoneHighRes(datapoints['Watts'], power_zones);
+    var hr_zone = dataPointToZoneHighRes(datapoints['HR'], hr_zones);
     $('#speed_label').html("Speed: " + roundNumber(datapoints['Speed'],1) );
     $('#cadence_label').html("Cadence: " + roundNumber(datapoints['Cadence'],0) );
-    $('#alt_label').html("Altitude: " + roundNumber(datapoints['Altitude'],1) );
-    $('#power_label').html("Watts: " + roundNumber(datapoints['Watts'],0) );
-    $('#hr_label').html("Heart Rate: " + roundNumber(datapoints['HR'],0) );
+    $('#alt_label').html("Alt: " + roundNumber(datapoints['Altitude'],1) );
+    $('#power_label').html("Power: " + roundNumber(datapoints['Watts'],0) + "w (Z: " + power_zone + ")" );
+    $('#hr_label').html("HR: " + roundNumber(datapoints['HR'],0) + "bpm (Z: " + hr_zone + ")" );
 
     highlightLapRow(x);
 
@@ -371,5 +377,92 @@ function generateLatLongData(list) {
         }
     }
     return [lat_long];
+}
+
+
+function dataPointToZoneHighRes(value, zones){
+
+    if ( withinRange(value,zones['z0'], zones['z1']) ){
+            return roundNumber((value/zones['z1'])+0,2);
+        }
+        
+        else if ( withinRange(value,zones['z1'], zones['z2']) ){
+            return roundNumber((value/zones['z2'])+1,2);
+        }
+
+        else if ( withinRange(value,zones['z2'], zones['z3']) ){
+            return roundNumber((value/zones['z3'])+2,2);
+        }
+
+        else if ( withinRange(value,zones['z3'], zones['z4']) ){
+            return roundNumber((value/zones['z4'])+3,2);
+        }
+
+        else if ( withinRange(value,zones['z4'], zones['z5']) ){
+            return roundNumber((value/zones['z5'])+4,2);
+        }
+
+        else if ( withinRange(value,zones['z5'], zones['z6']) ) {
+            return roundNumber((value/zones['z6'])+5,2);
+        }
+
+        else if ( withinRange(value,zones['z6'], zones['z7']) ) {
+            return roundNumber((value/zones['z7'])+6,2);
+        }
+            
+        else {
+            return 7;
+        }
+}
+
+function percentInZones(list,zones,index){
+
+    var value = 0;
+    var zone_percent = [0,0,0,0,0,0,0,0];
+    var list_length = list.length;
+
+    for(var i = 0; i< list_length; i++){
+        value = list[i][index];
+        
+        if ( withinRange(value,zones['z0'], zones['z1']) ){
+            zone_percent[0]++;
+        }
+        
+        else if ( withinRange(value,zones['z1'], zones['z2']) ){
+            zone_percent[1]++;
+        }
+
+        else if ( withinRange(value,zones['z2'], zones['z3']) ){
+            zone_percent[2]++;
+        }
+
+        else if ( withinRange(value,zones['z3'], zones['z4']) ){
+            zone_percent[3]++;
+        }
+
+        else if ( withinRange(value,zones['z4'], zones['z5']) ){
+            zone_percent[4]++;
+        }
+
+        else if ( withinRange(value,zones['z5'], zones['z6']) ) {
+            zone_percent[5]++;
+        }
+
+        else if ( withinRange(value,zones['z6'], zones['z7']) ) {
+            zone_percent[6]++;
+        }
+            
+        else {
+            zone_percent[7]++;
+        }
+
+    }
+
+    for ( var i=0; i<zone_percent.length; i++){
+        zone_percent[i] = roundNumber( (zone_percent[i]/list_length)*100 ,1);
+    }
+
+    return zone_percent;
+
 }
 

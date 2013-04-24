@@ -31,7 +31,12 @@
 		<% end %>
 	</select>
 
-	<input id="graph_scale_slider" type="range" min=".5" max="10" value="1" step="0.05" onchange="scaleBySlider()"/><br/>
+<!--
+<input id="graph_scale_check" class="css-checkbox" type="checkbox" onchange="$('#graph_scale_slider').val('.1')" style="float:right"/>
+<label for="graph_scale_check" class="css-label" style="color:#999; float:right" id="graph_scale_check_label">All Data (Slower)</label>
+//-->
+
+<input id="graph_scale_slider" style="visibility:hidden" type="range" min=".1" max="10" value="1" step="0.05" onchange="scaleBySlider()" /><br/>
 
 </div>
 <br/>

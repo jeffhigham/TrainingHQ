@@ -35,8 +35,7 @@ class ActivitiesController < ApplicationController
 
   def show
     @activity = Activity.find(params[:id])
-    @javascript_data = @activity.javascript_data
-
+   # @javascript_data = @activity.javascript_data
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @activity }
@@ -60,6 +59,8 @@ class ActivitiesController < ApplicationController
   def graph_data
     @activity = Activity.find(params[:id])
     @javascript_data = @activity.javascript_data
+    @user_power_zones = current_user.power_zones.where(:enabled => true).first
+    @user_hr_zones = current_user.hr_zones.where(:enabled => true).first
     respond_to do |format|
       format.js
     end

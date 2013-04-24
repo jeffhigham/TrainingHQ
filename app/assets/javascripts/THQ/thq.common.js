@@ -36,6 +36,10 @@ function milesFormatFromFeet(feet){
     return roundNumber(feet/5280,2);
 }
 
+function withinRange(x, min, max) {
+  return x >= min && x <= max;
+}
+
 // Returns a max value in a range of values for multi-arrays.
 function maxMultiValuesScaledBy(list,scale_factor) {
     
