@@ -248,3 +248,9 @@ select {
     color: #FFF;
 }
 
+.gauge {
+    width:125px;
+    height:90px;
+    display: inline-block;
+}
+

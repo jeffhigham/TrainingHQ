@@ -25,7 +25,15 @@ var laps_distance = generateLaps(data_distance, lap_start_distances);
 var lat_long_data = generateLatLongData(data_time);
 
 var current_laps = laps_time;
-var dygraph_data = null; 
+var dygraph_data = null;
+var power_gauge;
+var power_zone_gauge;
+var hr_gauge;
+var hr_zone_gauge;
+var cadence_gauge;
+var alt_gauge;
+var percent_grade_gauge;
+var speed_gauge;
 
 window.onload = function() {
     $('#distance_input').prop('checked',true);
@@ -34,6 +42,16 @@ window.onload = function() {
     $('#2').prop('checked',true);
     $('#3').prop('checked',true);
     $('#4').prop('checked',true);
+    
+    power_gauge = drawGauge({id: "power_gauge", value: 0, min: 0, max: 800, title: "Power", levelColors: [power_color]});
+    power_zone_gauge = drawGauge({id: "power_zone_gauge", value: 0, min: 0, max: 7, title: "Power Zone", levelColors: [power_color]});
+    hr_gauge = drawGauge({id: "hr_gauge", value: 0, min: 0, max: 200, title: "HR"});
+    hr_zone_gauge = drawGauge({id: "hr_zone_gauge", value: 0, min: 0, max: 7, title: "HR Zone"});
+    cadence_gauge = drawGauge({id: "cadence_gauge", value: 0, min: 0, max: 160, title: "Cadence"});
+    alt_gauge = drawGauge({id: "alt_gauge", value: 0, min: 0, max: 12000, title: "Altitude"});
+    percent_grade_gauge = drawGauge({id: "percent_grade_gauge", value: 0, min: -25, max: 25, title: "Percent Grade"});
+    speed_gauge = drawGauge({id: "speed_gauge", value: 0, min: 0, max: 70, title: "Speed (MPH)"});
+    
     drawDyGraph(current_data);
     mouseOutCanvasCallback();
 }
@@ -142,6 +160,23 @@ function selectTimeDistance(){
     }
     drawDyGraph(current_data);
 }
+
+
+function drawGauge(params){
+    var gauge = new JustGage({
+        id: params['id'], 
+        value: params['value'], 
+        min: params['min'],
+        max: params['max'],
+        title: params['title'],
+        label: "",
+        valueFontColor: "#999",
+        levelColors: params['colors'],
+        levelColorsGradient: false
+    });
+    return gauge;
+}
+
 
 function drawDyGraph(list){
 
@@ -313,27 +348,40 @@ function mouseOverCanvasCallback(event, x, points, row, seriesName){
         datapoints[ points[i]['name'] ] = points[i]['yval'];
     }
 
+    /*
+
     if ( data_option == "distance") {
         $('#distance_label').html("D: " + milesFormatFromFeet(x) );
     }
     else {
         $('#distance_label').html("T: " + timeFormatFromSeconds(x) );
     }
+    */
 
     var power_zone = dataPointToZoneHighRes(datapoints['Watts'], power_zones);
     var hr_zone = dataPointToZoneHighRes(datapoints['HR'], hr_zones);
+    var lng = dygraph_data[row][6];
+    var lat = dygraph_data[row][7];
+    var percent_grade = dygraph_data[row][8];
+    var LatLong = new google.maps.LatLng(lat,lng);
+
+/*
     $('#speed_label').html("Speed: " + roundNumber(datapoints['Speed'],1) );
     $('#cadence_label').html("Cadence: " + roundNumber(datapoints['Cadence'],0) );
     $('#alt_label').html("Alt: " + roundNumber(datapoints['Altitude'],1) );
     $('#power_label').html("Power: " + roundNumber(datapoints['Watts'],0) + "w (Z: " + power_zone + ")" );
     $('#hr_label').html("HR: " + roundNumber(datapoints['HR'],0) + "bpm (Z: " + hr_zone + ")" );
+*/
+    power_gauge.refresh(roundNumber(datapoints['Watts'],0));
+    power_zone_gauge.refresh(power_zone);
+    hr_gauge.refresh(roundNumber(datapoints['HR'],0));
+    hr_zone_gauge.refresh(hr_zone);
+    cadence_gauge.refresh(roundNumber(datapoints['Cadence'],0));
+    alt_gauge.refresh(roundNumber(datapoints['Altitude'],1));
+    percent_grade_gauge.refresh(roundNumber(percent_grade,1));
+    speed_gauge.refresh(roundNumber(datapoints['Speed'],1));
 
-    highlightLapRow(x);
-
-    var lng = dygraph_data[row][6];
-    var lat = dygraph_data[row][7];
-    var percent_grade = dygraph_data[row][8];
-    var LatLong = new google.maps.LatLng(lat,lng);
+    //highlightLapRow(x);
 
     if ( Gmaps.map.markers.length > 0 ){
         //Gmaps.map.markers[0].setMap(null);

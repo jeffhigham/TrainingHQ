@@ -17,4 +17,5 @@
 //= require_tree ./RGraph/libraries
 //= require_tree ./THQ
 //= require dygraph-combined
-//= require raphael-min
+//= require raphael.2.1.0.min
+//= require justgage.1.0.1

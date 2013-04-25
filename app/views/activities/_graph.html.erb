@@ -1,36 +1,46 @@
 <script src="<%= graph_data_path(@activity) %>.js"></script>
 <div>
 
-	<input id="distance_input" class="css-checkbox" type="checkbox" onchange=""/>
-	<label for="distance_input" class="css-label" style="color:#999" id="distance_label"></label>
+  <table id="graph_output">
+  	<tr>
+  		<td>
+				<input id="distance_input" class="css-checkbox" type="checkbox" onchange=""/>
+				<label for="distance_input" class="css-label" style="color:#999" id="distance_label"></label>
+			</td>
+			<td>
+				<input id="0" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
+				<label for="0" class="css-label" style="color:#FF9900" id="power_label">Power:</label>
+			</td>
+			<td>	
+				<input id="1" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
+				<label for="1" class="css-label" style="color:#ff5600" id="hr_label">Heart Rate:</label>
+			</td>
+			<td>
+				<input id="2" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
+				<label for="2" class="css-label" style="color:#0f8bff" id="cadence_label">Cadence:</label>
+			</td>
+			<td>
+				<input id="3" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
+				<label for="3" class="css-label" style="color:#7fff00" id="alt_label">Altitude:</label>
+			</td>
+			<td>
+				<input id="4" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
+				<label for="4" class="css-label" style="color:#bc65f7" id="speed_label">Speed:</label>
+			</td>
+		</tr>
+	</table>
 
-	<input id="0" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
-	<label for="0" class="css-label" style="color:#FF9900" id="power_label">Power:</label>
+		<select name="graph_dataset" id="graph_dataset_option" onchange="selectTimeDistance()" style="float: right">
+			<option value="time" selected>Time (h:m:s)</option>
+			<option value="distance">Distance (mi)</option>
+		</select>
 
-	<input id="1" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
-	<label for="1" class="css-label" style="color:#ff5600" id="hr_label">Heart Rate:</label>
-
-	<input id="2" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
-	<label for="2" class="css-label" style="color:#0f8bff" id="cadence_label">Cadence:</label>
-
-	<input id="3" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
-	<label for="3" class="css-label" style="color:#7fff00" id="alt_label">Altitude:</label>
-
-	<input id="4" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
-	<label for="4" class="css-label" style="color:#bc65f7" id="speed_label">Speed:</label>
-
-	<select name="graph_dataset" id="graph_dataset_option" onchange="selectTimeDistance()" style="float: right">
-		<option value="time" selected>Time (h:m:s)</option>
-		<option value="distance">Distance (mi)</option>
-	</select>
-
-	<select name="lap_dataset" id="lap_dataset_option" onchange="handleLaps()" style="float: right">
-			<option value="all" selected><%= "All Laps" %></option>
-		<% @activity.laps.each_with_index do |lap, lap_number| %>
-			<option value="<%= lap_number %>"><%= "Lap #{lap_number} (#{lap.start_time})" %></option>
-		<% end %>
-	</select>
-
+		<select name="lap_dataset" id="lap_dataset_option" onchange="handleLaps()" style="float: right">
+				<option value="all" selected><%= "All Laps" %></option>
+			<% @activity.laps.each_with_index do |lap, lap_number| %>
+				<option value="<%= lap_number %>"><%= "Lap #{lap_number} (#{lap.start_time})" %></option>
+			<% end %>
+		</select>
 <!--
 <input id="graph_scale_check" class="css-checkbox" type="checkbox" onchange="$('#graph_scale_slider').val('.1')" style="float:right"/>
 <label for="graph_scale_check" class="css-label" style="color:#999; float:right" id="graph_scale_check_label">All Data (Slower)</label>
@@ -40,6 +50,16 @@
 
 </div>
 <br/>
+<div id="power_gauge" class="gauge"></div>
+<div id="power_zone_gauge" class="gauge"></div>
+<div id="hr_gauge" class="gauge"></div>
+<div id="hr_zone_gauge" class="gauge"></div>
+<div id="cadence_gauge" class="gauge"></div>
+<div id="alt_gauge" class="gauge"></div>
+<div id="percent_grade_gauge" class="gauge"></div>
+<div id="speed_gauge" class="gauge"></div>
+
+
 <div id="chart_labels"></div>
 <div id="chart_canvas" style="width:100%; height:250px; background-color:#000; color:#666"></div>
 <br/>
