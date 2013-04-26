@@ -24,6 +24,14 @@ class Activity < ActiveRecord::Base
     return distance_meters_to_feet(self.elevation_gain)
   end
 
+  def min_altitude_feet
+    return distance_meters_to_feet(self.min_altitude)
+  end
+
+  def max_altitude_feet
+    return distance_meters_to_feet(self.max_altitude)
+  end
+
   def total_time_formatted
     time_formatted(self.total_time.to_i)  # fix total_time data type!! string -> int
   end

@@ -24,6 +24,11 @@ var laps_time = generateLaps(data_time,lap_start_times);
 var laps_distance = generateLaps(data_distance, lap_start_distances);
 var lat_long_data = generateLatLongData(data_time);
 
+var power_color = "#FF9900";
+var hr_color = "#ff5600";
+var alt_color = "#7fff00";
+var cadence_color = "#0f8bff";
+var speed_color = "#bc65f7";
 var current_laps = laps_time;
 var dygraph_data = null;
 var power_gauge;
@@ -43,14 +48,14 @@ window.onload = function() {
     $('#3').prop('checked',true);
     $('#4').prop('checked',true);
     
-    power_gauge = drawGauge({id: "power_gauge", value: 0, min: 0, max: 800, title: "Power", levelColors: [power_color]});
-    power_zone_gauge = drawGauge({id: "power_zone_gauge", value: 0, min: 0, max: 7, title: "Power Zone", levelColors: [power_color]});
-    hr_gauge = drawGauge({id: "hr_gauge", value: 0, min: 0, max: 200, title: "HR"});
-    hr_zone_gauge = drawGauge({id: "hr_zone_gauge", value: 0, min: 0, max: 7, title: "HR Zone"});
-    cadence_gauge = drawGauge({id: "cadence_gauge", value: 0, min: 0, max: 160, title: "Cadence"});
-    alt_gauge = drawGauge({id: "alt_gauge", value: 0, min: 0, max: 12000, title: "Altitude"});
-    percent_grade_gauge = drawGauge({id: "percent_grade_gauge", value: 0, min: -25, max: 25, title: "Percent Grade"});
-    speed_gauge = drawGauge({id: "speed_gauge", value: 0, min: 0, max: 70, title: "Speed (MPH)"});
+    power_gauge = drawGauge({id: "power_gauge", value: <%= @activity.min_watts %>, min: <%= @activity.min_watts %>, max: <%= @activity.max_watts %>, title: "Power", valueFontColor: power_color});
+    power_zone_gauge = drawGauge({id: "power_zone_gauge", value: 0, min: 0, max: 7, title: "Power Zone", valueFontColor: power_color});
+    hr_gauge = drawGauge({id: "hr_gauge", value: <%= @activity.min_heart_rate %>, min: <%= @activity.min_heart_rate %>, max: <%= @activity.max_heart_rate %>, title: "HR", valueFontColor: hr_color });
+    hr_zone_gauge = drawGauge({id: "hr_zone_gauge", value: 0, min: 0, max: 7, title: "HR Zone", valueFontColor: hr_color });
+    cadence_gauge = drawGauge({id: "cadence_gauge", value: <%= @activity.min_cadence %>, min: <%= @activity.min_cadence %>, max: <%= @activity.max_cadence %>, title: "Cadence", valueFontColor: cadence_color });
+    alt_gauge = drawGauge({id: "alt_gauge", value: <%= @activity.min_altitude_feet %>, min: <%= @activity.min_altitude_feet %>, max: <%= @activity.max_altitude_feet %>, title: "Altitude", valueFontColor: alt_color });
+    percent_grade_gauge = drawGauge({id: "percent_grade_gauge", value: 0, min: -25, max: 25, title: "Percent Grade", valueFontColor: alt_color });
+    speed_gauge = drawGauge({id: "speed_gauge", value: 0, min: 0, max: 70, title: "Speed (MPH)", valueFontColor: speed_color });
     
     drawDyGraph(current_data);
     mouseOutCanvasCallback();
@@ -172,7 +177,15 @@ function drawGauge(params){
         label: "",
         valueFontColor: "#999",
         levelColors: params['colors'],
-        levelColorsGradient: false
+        levelColorsGradient: true,
+        valueFontColor: params['valueFontColor'],
+        levelColors: [ "#999999", params['valueFontColor']],
+        gaugeWidthScale: .4,
+        gaugeColor: "#333333",
+        showInnerShadow: true,
+        refreshAnimationType: "linear",
+        refreshAnimationTime: 100
+
     });
     return gauge;
 }
@@ -312,17 +325,29 @@ function drawCanvasUnderlay (canvas, area, g) {
 
 function mouseOutCanvasCallback(event, x, points, row, seriesName){
 
+    /*
     $('#speed_label').html("Speed: 0.0" );
     $('#cadence_label').html("Cadence: 0.0" );
     $('#alt_label').html("Altitude: 0.0" );
     $('#power_label').html("Watts: 0" );
     $('#hr_label').html("Heart Rate: 0" );
 
+
     var lap_selection = $('#lap_dataset_option').val();
     
     if( lap_selection == "all"){
       resetLapRows();  
     }
+    */
+
+    power_gauge.refresh(0);
+    power_zone_gauge.refresh(0);
+    hr_gauge.refresh(0);
+    hr_zone_gauge.refresh(0);
+    cadence_gauge.refresh(0);
+    alt_gauge.refresh(0);
+    percent_grade_gauge.refresh(0);
+    speed_gauge.refresh(0);
 
     if ( Gmaps.map.markers.length > 0 ){
         Gmaps.map.markers[0].setMap(null);

@@ -2,11 +2,7 @@
 //var gutterLeft = 150;
 //var gutterRight = 80;
 //var gutterTop   = 25;
-var power_color = "#FF9900";
-var hr_color = "#ff5600";
-var alt_color = "#7fff00";
-var cadence_color = "#0f8bff";
-var speed_color = "#bc65f7";
+
 
 
 
