@@ -1,9 +1,6 @@
 <p id="notice"><%= notice %></p>
-<b>Athlete: <%= @activity.user.name %> </b><br/>
 <b>Activity: <%= @activity.name %></b><br/>
 <b>Date: <%= @activity.activity_date %></b><br/>
-<b>Device Type: <%= @activity.creator_name %></b><br/>
-<b>Sport: <%= @activity.sport %></b><br/>
 <br/>
 <!-- <div id="summary" class="activity_content">  -->
 	<%= 
@@ -12,6 +9,24 @@
      <%=
      #   render 'lap_data' 
 	%>
-	<%= 
-	   render 'graph' 
-	%>
+
+<div id="tabs">
+	<ul>
+		<li><a href="#tabs-1">Summary</a></li>
+		<li><a href="#tabs-2">Power</a></li>
+		<li><a href="#tabs-3">Tab 3</a></li>
+	</ul>
+	<div id="tabs-1" style="text-align: center;">
+		<%= render 'graph' %>
+	</div>
+	<div id="tabs-2">
+	</div>
+	<div id="tabs-3">
+	</div>
+</div>
+<script>
+$(function() {
+	$( "#tabs" ).tabs();
+	$( "#radioset" ).buttonset();
+});
+</script>

@@ -93,4 +93,16 @@ class Lap < ActiveRecord::Base
     return ride_distance_formatted(distance_meters_to_feet(self.distance)).round(2)
   end
 
+  def max_speed_mph
+    (self.max_speed*2.2369).round(1)
+  end
+
+  def avg_speed_mph
+    (self.avg_speed*2.2369).round(1)
+  end
+
+  def min_speed_mph
+    (self.min_speed*2.2369).round(1)
+  end
+
 end

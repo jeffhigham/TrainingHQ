@@ -4,25 +4,27 @@
  
 
 <input id="0" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
-<label for="0" class="css-label" style="color:#FF9900" id="power_label">Power:</label>
+<label for="0" class="css-label" style="color:#FF9900" id="power_label">Power</label>
 
 <input id="1" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
-<label for="1" class="css-label" style="color:#ff5600" id="hr_label">Heart Rate:</label>
+<label for="1" class="css-label" style="color:#ff5600" id="hr_label">Heart Rate</label>
 
 <input id="2" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
-<label for="2" class="css-label" style="color:#0f8bff" id="cadence_label">Cadence:</label>
+<label for="2" class="css-label" style="color:#0f8bff" id="cadence_label">Cadence</label>
 
 <input id="3" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
-<label for="3" class="css-label" style="color:#7fff00" id="alt_label">Altitude:</label>
+<label for="3" class="css-label" style="color:#7fff00" id="alt_label">Altitude</label>
 
 <input id="4" class="css-checkbox" type="checkbox" onchange="toggleCheck(this)" />
-<label for="4" class="css-label" style="color:#bc65f7" id="speed_label">Speed:</label>
+<label for="4" class="css-label" style="color:#bc65f7" id="speed_label">Speed</label>
 
-
+<!--
 <select name="graph_dataset" id="graph_dataset_option" onchange="selectTimeDistance()" style="float: right">
 	<option value="time" selected>Time (h:m:s)</option>
 	<option value="distance">Distance (mi)</option>
 </select>
+
+//-->
 
 <select name="lap_dataset" id="lap_dataset_option" onchange="handleLaps()" style="float: right">
 		<option value="all" selected><%= "All Laps" %></option>
@@ -35,6 +37,7 @@
 
 </div>
 <br/>
+
 <div id="power_gauge" class="gauge"></div>
 <div id="power_zone_gauge" class="gauge"></div>
 <div id="hr_gauge" class="gauge"></div>
@@ -43,11 +46,18 @@
 <div id="alt_gauge" class="gauge"></div>
 <div id="percent_grade_gauge" class="gauge"></div>
 <div id="speed_gauge" class="gauge"></div>
+<br/>
 
 
 <div id="chart_labels"></div>
 <div id="chart_canvas" style="width:100%; height:250px; background-color:#000; color:#666"></div>
 <br/>
+
+<div id="radioset">
+	<input type="radio" id="time_radio" name="radio" onchange="selectTimeDistance()" checked="checked"><label for="time_radio">Time</label>
+	<input type="radio" id="distance_radio" name="radio" onchange="selectTimeDistance()"><label for="distance_radio">Distance</label>
+</div>
+</br>
 
 <div class="map_container"> 
   <div id="map" class="gmaps4rails_map"></div>

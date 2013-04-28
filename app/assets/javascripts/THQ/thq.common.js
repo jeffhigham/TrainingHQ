@@ -1,11 +1,3 @@
-// Common Config
-//var gutterLeft = 150;
-//var gutterRight = 80;
-//var gutterTop   = 25;
-
-
-
-
 // Supporting functions for 
 Array.max = function(array){
     return Math.max.apply( Math, array);
@@ -30,6 +22,10 @@ function timeFormatFromSeconds(seconds){
 
 function milesFormatFromFeet(feet){
     return roundNumber(feet/5280,2);
+}
+
+function mphFromMps(mps) { // miles/hour from meters/second
+    return roundNumber(mps*2.2369,2);
 }
 
 function withinRange(x, min, max) {

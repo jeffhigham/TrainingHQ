@@ -10,11 +10,12 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
-//= require jquery
-//= require jquery-ui
-//= require jquery_ujs
+// require_tree ./RGraph/libraries
+// require jquery
+// require jquery-ui
+// require jquery_ujs
+//= require_tree ./jqueri-ui-custom
 //= require_tree ./gmaps4rails
-//= require_tree ./RGraph/libraries
 //= require_tree ./THQ
 //= require dygraph-combined
 //= require raphael.2.1.0.min

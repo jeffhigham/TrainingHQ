@@ -53,11 +53,15 @@ class Activity < ActiveRecord::Base
   end
 
   def max_speed_mph
-    speed_kmph_to_mph(self.max_speed)
+    (self.max_speed*2.2369).round(1)
   end
 
   def avg_speed_mph
-    speed_kmph_to_mph(self.avg_speed)
+    (self.avg_speed*2.2369).round(1)
+  end
+
+  def min_speed_mph
+    (self.min_speed*2.2369).round(1)
   end
 
   def javascript_data
@@ -95,14 +99,14 @@ class Activity < ActiveRecord::Base
 
 
           data_time << [ Time.parse(trackpoint.time).to_time.to_i - time_offset, trackpoint.watts, trackpoint.heart_rate, 
-                            trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f, trackpoint.longitude, trackpoint.latitude, percent_grade  ];
+                            trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed_mph, trackpoint.longitude, trackpoint.latitude, percent_grade  ];
 
           if (trackpoint.distance_feet - last_trackpoint_distance) > 0
             
             #last_trackpoint_distance = trackpoint.distance_feet
             #last_trackpoint_altitude = trackpoint.altitude_feet
             data_distance << [ trackpoint.distance_feet , trackpoint.watts, trackpoint.heart_rate, 
-                            trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed.to_f, trackpoint.longitude, 
+                            trackpoint.cadence, trackpoint.altitude_feet, trackpoint.speed_mph, trackpoint.longitude, 
                             trackpoint.latitude, percent_grade ] unless trackpoint.distance_miles == 0
           end
           last_trackpoint_distance = trackpoint.distance_feet

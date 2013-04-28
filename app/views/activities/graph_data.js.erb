@@ -55,7 +55,7 @@ window.onload = function() {
     cadence_gauge = drawGauge({id: "cadence_gauge", value: <%= @activity.min_cadence %>, min: <%= @activity.min_cadence %>, max: <%= @activity.max_cadence %>, title: "Cadence", valueFontColor: cadence_color });
     alt_gauge = drawGauge({id: "alt_gauge", value: <%= @activity.min_altitude_feet %>, min: <%= @activity.min_altitude_feet %>, max: <%= @activity.max_altitude_feet %>, title: "Altitude", valueFontColor: alt_color });
     percent_grade_gauge = drawGauge({id: "percent_grade_gauge", value: 0, min: -25, max: 25, title: "Percent Grade", valueFontColor: alt_color });
-    speed_gauge = drawGauge({id: "speed_gauge", value: 0, min: 0, max: 70, title: "Speed (MPH)", valueFontColor: speed_color });
+    speed_gauge = drawGauge({id: "speed_gauge", value: <%= @activity.min_speed_mph %>, min: <%= @activity.min_speed_mph %> , max: <%= @activity.max_speed_mph %> , title: "Speed (MPH)", valueFontColor: speed_color });
     
     drawDyGraph(current_data);
     mouseOutCanvasCallback();
@@ -116,7 +116,8 @@ function handleLapRowClick(lap_id){
 function handleLaps(){
 
     var lap_selection = $('#lap_dataset_option').val();
-    var data_option = $('#graph_dataset_option').val();
+    //var data_option = $('#graph_dataset_option').val();
+    var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
 
     if( lap_selection == "all" ){
         selectTimeDistance(); // resets current data appropriately.
@@ -140,7 +141,9 @@ function handleLaps(){
 function selectTimeDistance(){
 
     var lap_selection = $('#lap_dataset_option').val();
-    var data_option = $('#graph_dataset_option').val();
+    //var data_option = $('#graph_dataset_option').val();
+
+    var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
 
     if( data_option == "distance"){
         if ( lap_selection == "all"){
@@ -297,7 +300,8 @@ function highlightLapRow(x){
 
 
 function xAxisLabelFormatter(x){
-    var data_option = $('#graph_dataset_option').val();
+    //var data_option = $('#graph_dataset_option').val();
+    var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
     if( data_option == "distance"){
         return milesFormatFromFeet(x);
     }
@@ -325,21 +329,6 @@ function drawCanvasUnderlay (canvas, area, g) {
 
 function mouseOutCanvasCallback(event, x, points, row, seriesName){
 
-    /*
-    $('#speed_label').html("Speed: 0.0" );
-    $('#cadence_label').html("Cadence: 0.0" );
-    $('#alt_label').html("Altitude: 0.0" );
-    $('#power_label').html("Watts: 0" );
-    $('#hr_label').html("Heart Rate: 0" );
-
-
-    var lap_selection = $('#lap_dataset_option').val();
-    
-    if( lap_selection == "all"){
-      resetLapRows();  
-    }
-    */
-
     power_gauge.refresh(0);
     power_zone_gauge.refresh(0);
     hr_gauge.refresh(0);
@@ -359,7 +348,8 @@ function mouseOutCanvasCallback(event, x, points, row, seriesName){
 // Handles dynamic updates when mouse is over the graph.
 function mouseOverCanvasCallback(event, x, points, row, seriesName){
 
-    var data_option = $('#graph_dataset_option').val();
+    //var data_option = $('#graph_dataset_option').val();
+    //var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
 
     var datapoints = {
             Watts: 0,
@@ -373,15 +363,6 @@ function mouseOverCanvasCallback(event, x, points, row, seriesName){
         datapoints[ points[i]['name'] ] = points[i]['yval'];
     }
 
-    /*
-
-    if ( data_option == "distance") {
-        $('#distance_label').html("D: " + milesFormatFromFeet(x) );
-    }
-    else {
-        $('#distance_label').html("T: " + timeFormatFromSeconds(x) );
-    }
-    */
 
     var power_zone = dataPointToZoneHighRes(datapoints['Watts'], power_zones);
     var hr_zone = dataPointToZoneHighRes(datapoints['HR'], hr_zones);
@@ -390,26 +371,17 @@ function mouseOverCanvasCallback(event, x, points, row, seriesName){
     var percent_grade = dygraph_data[row][8];
     var LatLong = new google.maps.LatLng(lat,lng);
 
-/*
-    $('#speed_label').html("Speed: " + roundNumber(datapoints['Speed'],1) );
-    $('#cadence_label').html("Cadence: " + roundNumber(datapoints['Cadence'],0) );
-    $('#alt_label').html("Alt: " + roundNumber(datapoints['Altitude'],1) );
-    $('#power_label').html("Power: " + roundNumber(datapoints['Watts'],0) + "w (Z: " + power_zone + ")" );
-    $('#hr_label').html("HR: " + roundNumber(datapoints['HR'],0) + "bpm (Z: " + hr_zone + ")" );
-*/
     power_gauge.refresh(roundNumber(datapoints['Watts'],0));
-    power_zone_gauge.refresh(power_zone);
+    power_zone_gauge.refresh( roundNumber(power_zone,1) );
     hr_gauge.refresh(roundNumber(datapoints['HR'],0));
-    hr_zone_gauge.refresh(hr_zone);
+    hr_zone_gauge.refresh(roundNumber(hr_zone,1) );
     cadence_gauge.refresh(roundNumber(datapoints['Cadence'],0));
-    alt_gauge.refresh(roundNumber(datapoints['Altitude'],1));
+    alt_gauge.refresh(roundNumber(datapoints['Altitude'],0));
     percent_grade_gauge.refresh(roundNumber(percent_grade,1));
-    speed_gauge.refresh(roundNumber(datapoints['Speed'],1));
+    speed_gauge.refresh(datapoints['Speed']);
 
-    //highlightLapRow(x);
 
     if ( Gmaps.map.markers.length > 0 ){
-        //Gmaps.map.markers[0].setMap(null);
         Gmaps.map.markers[0].setPosition(LatLong);
         if(percent_grade < 0){
             Gmaps.map.markers[0].setIcon("/icons/bike_downhill.png");

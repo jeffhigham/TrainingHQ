@@ -9,9 +9,10 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  * require_tree .
+* require_directory ./RGraph
  *= require_self
  *= require gmaps4rails
- *= require_directory ./RGraph
+ *= require_directory ./vader
 
  */
 
@@ -249,7 +250,7 @@ select {
 }
 
 .gauge {
-    width:125px;
+    width:110px;
     height:90px;
     display: inline-block;
 }

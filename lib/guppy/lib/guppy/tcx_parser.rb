@@ -77,8 +77,8 @@ module Guppy
       track_point.time = Time.parse(track_point_node.xpath('xmlns:Time', namespaces).inner_text)
       track_point.cadence = track_point_node.xpath('xmlns:Cadence', namespaces).inner_text.to_i
       track_point.watts = track_point_node.xpath('xmlns:Extensions/ns3:TPX/ns3:Watts', namespaces ).inner_text.to_i
+      # Speed is in m/sec. Multiply by 2.2369 to get MPH
       track_point.speed = track_point_node.xpath('xmlns:Extensions/ns3:TPX/ns3:Speed', namespaces ).inner_text.to_f
-
       track_point
 
     end

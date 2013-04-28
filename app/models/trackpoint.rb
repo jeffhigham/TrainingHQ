@@ -17,5 +17,9 @@ class Trackpoint < ActiveRecord::Base
   def distance_miles
     distance_meters_to_miles(self.distance)
   end
+
+  def speed_mph
+    (self.speed*2.2369).round(1)
+  end
   
 end
