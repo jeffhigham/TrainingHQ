@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  attr_accessible :email, :name, :password, :password_confirmation, :avatar, :is_admin
+  attr_accessible :email, :name, :password, :password_confirmation, :avatar, :is_admin, :weight, :birthday
   has_secure_password
   has_attached_file :avatar, :styles => { :medium => "300x300>", :thumb => "100x100>" }
 

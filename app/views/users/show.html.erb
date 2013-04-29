@@ -1,13 +1,63 @@
-<h2>Athlete: <%= @user.name %></h2>
-<b>Email: <%= @user.email %></b></br/>
-<b>Journal Entries: <%= @user.journal_entries.count %></b><br/>
-<br/>
-<nav style="width: 400px">
-	<b><%= link_to 'Edit Profile', edit_user_path(@user), remote: true %></b> |
-	<b><%= link_to 'Power Zones', user_power_zones_path(@user), remote: true %></b> |
-	<b><%= link_to 'HR Zones', user_hr_zones_path(@user), remote: true %></b>
-</nav>
+<div id="profile_tabs">
+	<ul>
+		<li><a href="#tabs-profile">User Profile</a></li>
+		<li><a href="#tabs-power">Power Zones</a></li>
+		<li><a href="#tabs-hr">Heart Rate Zones</a></li>
+		<li><a href="#tabs-equipment">Equipment</a></li>
+	</ul>
+	<div id="tabs-profile"  class="tabs_div_container">
+	
+		<%= form_for(@user, :html => { :remote => false } ) do |f| %>
+		<% if @user.errors.any? %>
+		<div id="error_explanation">
+		<h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
 
-<div id="edit_user_settings">
+		<ul>
+		<% @user.errors.full_messages.each do |msg| %>
+		  <li><%= msg %></li>
+		<% end %>
+		</ul>
+		</div>
+		<% end %>
 
+		<div id="user_profile_image">
+			<%= image_tag current_user.avatar.url(:medium) %>
+			<%= f.file_field :avatar %>
+		</div>
+
+		<div id="user_profile_settings" class="formLayout">
+				<%= f.label :name, "Your Name"%>
+				<%= f.text_field :name %>
+				<%= f.label :email , "Your Email"%>
+				<%= f.text_field :email %>
+				<%= f.label :weight, "Your Weight (kg)"%>
+				<%= f.number_field :weight %>
+				<%= f.label :birthday, "Your Birthday"%>
+				<%= f.text_field :birthday, :class => "birthday-datetime" %>
+				<!-- <%= f.date_select :birthday, :order => [:day, :month, :year] %> //-->
+				<%= f.label :password, "New Password"%>
+				<%= f.text_field :password %>
+				<%= f.label :password_confirmation, "Password Conf" %>
+				<%= f.password_field :password_confirmation %>
+				<label for="submit"></label>
+				<%= f.submit %> 
+			<% end %>
+		</div>
+
+	</div>
+
+	<div id="tabs-power" class="tabs_div_container">
+	</div>
+	<div id="tabs-hr" class="tabs_div_container">
+	</div>
+	<div id="tabs-equipment" class="tabs_div_container">
+	</div>
 </div>
+<script>
+$(function() {
+	$( "#profile_tabs" ).tabs();
+	//$( "#radioset" ).buttonset();
+	$('.birthday-datetime').datepicker({ changeYear: true, dateFormat: "yy-mm-dd", constrainInput: true, yearRange: "-100:-10" });
+
+});
+</script>

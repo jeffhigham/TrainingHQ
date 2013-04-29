@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130419165934) do
+ActiveRecord::Schema.define(:version => 20130428215705) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id",                                               :default => 0
@@ -123,11 +123,13 @@ ActiveRecord::Schema.define(:version => 20130419165934) do
 
   create_table "object_stores", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
     t.integer  "activity_id"
-    t.text     "payload"
+    t.text     "payload",     :limit => 2147483647
   end
+
+  add_index "object_stores", ["name"], :name => "name"
 
   create_table "power_zones", :force => true do |t|
     t.integer  "user_id"
@@ -171,6 +173,8 @@ ActiveRecord::Schema.define(:version => 20130419165934) do
     t.boolean  "is_admin",            :default => false
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
+    t.integer  "weight",              :default => 150
+    t.date     "birthday"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

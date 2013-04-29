@@ -33,6 +33,7 @@ var current_laps = laps_time;
 var dygraph_data = null;
 var power_gauge;
 var power_zone_gauge;
+var watts_kg_gauge;
 var hr_gauge;
 var hr_zone_gauge;
 var cadence_gauge;
@@ -50,16 +51,75 @@ window.onload = function() {
     
     power_gauge = drawGauge({id: "power_gauge", value: <%= @activity.min_watts %>, min: <%= @activity.min_watts %>, max: <%= @activity.max_watts %>, title: "Power", valueFontColor: power_color});
     power_zone_gauge = drawGauge({id: "power_zone_gauge", value: 0, min: 0, max: 7, title: "Power Zone", valueFontColor: power_color});
+    watts_kg_gauge = drawGauge({id: "watts_kg_gauge", value: 0, min: 0, max: 7, title: "Watts/Kg", valueFontColor: power_color});
     hr_gauge = drawGauge({id: "hr_gauge", value: <%= @activity.min_heart_rate %>, min: <%= @activity.min_heart_rate %>, max: <%= @activity.max_heart_rate %>, title: "HR", valueFontColor: hr_color });
     hr_zone_gauge = drawGauge({id: "hr_zone_gauge", value: 0, min: 0, max: 7, title: "HR Zone", valueFontColor: hr_color });
     cadence_gauge = drawGauge({id: "cadence_gauge", value: <%= @activity.min_cadence %>, min: <%= @activity.min_cadence %>, max: <%= @activity.max_cadence %>, title: "Cadence", valueFontColor: cadence_color });
-    alt_gauge = drawGauge({id: "alt_gauge", value: <%= @activity.min_altitude_feet %>, min: <%= @activity.min_altitude_feet %>, max: <%= @activity.max_altitude_feet %>, title: "Altitude", valueFontColor: alt_color });
+    //alt_gauge = drawGauge({id: "alt_gauge", value: <%= @activity.min_altitude_feet %>, min: <%= @activity.min_altitude_feet %>, max: <%= @activity.max_altitude_feet %>, title: "Altitude", valueFontColor: alt_color });
+    alt_gauge = drawGauge({id: "alt_gauge", value: 5000, min: 5000, max: <%= @activity.max_altitude_feet %>, title: "Altitude", valueFontColor: alt_color });
     percent_grade_gauge = drawGauge({id: "percent_grade_gauge", value: 0, min: -25, max: 25, title: "Percent Grade", valueFontColor: alt_color });
     speed_gauge = drawGauge({id: "speed_gauge", value: <%= @activity.min_speed_mph %>, min: <%= @activity.min_speed_mph %> , max: <%= @activity.max_speed_mph %> , title: "Speed (MPH)", valueFontColor: speed_color });
     
     drawDyGraph(current_data);
     mouseOutCanvasCallback();
 }
+
+/*
+
+http://www.u.arizona.edu/~sandiway/bike/climb.html
+function totalWeight(f) {
+    f.tw.value = 
+      eval(f.w1.value) 
+      / eval(f.w1Units.options[f.w1Units.options.selectedIndex].value)  
+    + eval(f.w2.value) 
+      / eval(f.w2Units.options[f.w2Units.options.selectedIndex].value);
+}
+
+function timeTaken(f) {
+    var t = 0;
+    if( f.hr.value ) t = t + eval(f.hr.value) * 3600;
+    if( f.min.value ) t = t + eval(f.min.value) * 60;
+    if( f.sec.value ) t = t + eval(f.sec.value);
+
+    return t;
+}
+
+function rr(f) {
+    return eval(f.tyre.options[f.tyre.options.selectedIndex].value);
+}
+
+function a2(f) {
+    return eval(f.position.options[f.position.options.selectedIndex].value);
+}
+
+function speed(f) {
+    var mPs = eval(f.sp.value) * eval(f.spUnits.options[f.spUnits.options.selectedIndex].value);
+    return mPs;
+}
+
+function speed3(f) {
+    var mPs = eval(f.sp.value) * eval(f.spUnits.options[f.spUnits.options.selectedIndex].value);
+    return mPs * mPs * mPs;
+}
+
+function climbRate(f) {
+    var mPs =(eval(f.vg.value) 
+      / eval(f.vgUnits.options[f.vgUnits.options.selectedIndex].value)) 
+    / timeTaken(f);
+    f.cr.value = mPs * 
+    eval(f.crUnits.options[f.crUnits.options.selectedIndex].value);
+
+    return mPs;
+}
+
+function computePower(f) {
+    totalWeight(f);
+    f.gravity.value = 9.81 * eval(f.tw.value) * climbRate(f);
+    f.rr.value =9.81 * eval(f.tw.value) * rr(f) * speed(f);
+    f.aero.value = a2(f) * speed3(f);
+    f.power.value = eval(f.gravity.value) + eval(f.rr.value) + eval(f.aero.value);
+}
+*/
 
 function generateLaps(source_data,start_times){
     var lap_data = [];
@@ -211,7 +271,7 @@ function drawDyGraph(list){
             strokeWidth: 2,
             fillGraph: true,
             errorBars: false,
-            drawXGrid: false,
+            drawXGrid: true,
             drawYGrid: false,
             drawYAxis: false,
             showRangeSelector: true,
@@ -234,14 +294,17 @@ function drawDyGraph(list){
                 'Altitude': {
                     axis: 'Y2',
                     drawYAxis: false
-                }
-            },
+                },
 
+            },
             axes: {
                 x: {
                     axisLabelFormatter: xAxisLabelFormatter,
                     axisLabelFontSize: 12,
                     axisLabelColor: "#FFF"
+                },
+                y2: {
+                    drawYAxis: false
                 }
             },
 
@@ -331,6 +394,7 @@ function mouseOutCanvasCallback(event, x, points, row, seriesName){
 
     power_gauge.refresh(0);
     power_zone_gauge.refresh(0);
+    watts_kg_gauge.refresh(0);
     hr_gauge.refresh(0);
     hr_zone_gauge.refresh(0);
     cadence_gauge.refresh(0);
@@ -371,8 +435,9 @@ function mouseOverCanvasCallback(event, x, points, row, seriesName){
     var percent_grade = dygraph_data[row][8];
     var LatLong = new google.maps.LatLng(lat,lng);
 
-    power_gauge.refresh(roundNumber(datapoints['Watts'],0));
+    power_gauge.refresh(roundNumber(datapoints['Watts'],0) );
     power_zone_gauge.refresh( roundNumber(power_zone,1) );
+    watts_kg_gauge.refresh( roundNumber(datapoints['Watts']/<%= current_user.weight %>,1) );
     hr_gauge.refresh(roundNumber(datapoints['HR'],0));
     hr_zone_gauge.refresh(roundNumber(hr_zone,1) );
     cadence_gauge.refresh(roundNumber(datapoints['Cadence'],0));
