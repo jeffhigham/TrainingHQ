@@ -1,0 +1,13 @@
+<% if @user.errors.any? 
+	problems = pluralize(@user.errors.count, 'problems')
+	reply = "The Minions found #{problems}:<ul>"
+	@user.errors.full_messages.each do |msg|
+		reply << "<li>#{msg}</li>"
+	end
+	reply << "</ul>"
+	logger.debug reply
+%>	
+	$("<div><%= reply.html_safe %></div>").dialog({title: "Oops!",modal: true});
+<% else %>
+	$("<div>Your profile has been successfully updated.</div>").dialog({title: "Success!",modal: true});
+<% end %>
