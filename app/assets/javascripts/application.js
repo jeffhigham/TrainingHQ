@@ -11,10 +11,10 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 // require_tree ./RGraph/libraries
-// require jquery
-// require jquery-ui
-// require jquery_ujs
-//= require_tree ./jqueri-ui-custom
+// require_tree ./jqueri-ui-custom
+//= require jquery
+//= require jquery-ui
+//= require jquery_ujs
 //= require_tree ./gmaps4rails
 //= require_tree ./THQ
 //= require dygraph-combined

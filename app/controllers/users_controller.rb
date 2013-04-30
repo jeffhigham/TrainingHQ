@@ -11,7 +11,8 @@ class UsersController < ApplicationController
         format.json { render json: @users }
       end
     else
-        redirect_to user_path(current_user), :notice => "Non-admins are denied access to user list."
+        #redirect_to user_path(current_user), :notice => "Non-admins are denied access to user list."
+        redirect_to user_activities_path(user)
     end
   end
 
@@ -79,11 +80,13 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.update_attributes(params[:user])
-        format.html { redirect_to user_path(@user), notice: 'Your user profile has been successfully updated!' }
-        format.json { head :no_content }
+       # format.html { redirect_to user_path(@user), notice: 'Your user profile has been successfully updated!' }
+       # format.json { head :no_content }
+       format.js
       else
-        format.html { render action: "edit" }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+        #format.html { render action: "edit" }
+        #format.json { render json: @user.errors, status: :unprocessable_entity }
+        format.js
       end
     end
   end

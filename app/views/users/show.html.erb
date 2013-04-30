@@ -7,47 +7,49 @@
 	</ul>
 	<div id="tabs-profile"  class="tabs_div_container">
 	
-		<%= form_for(@user, :html => { :remote => false } ) do |f| %>
+		
+	<div id="user_profile_image">
+		<%= image_tag current_user.avatar.url(:medium) %>
+	</div>
+
+
+	<%= form_for(@user, :remote => true) do |f| %>
+
 		<% if @user.errors.any? %>
-		<div id="error_explanation">
-		<h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
-
-		<ul>
-		<% @user.errors.full_messages.each do |msg| %>
-		  <li><%= msg %></li>
+			<div id="error_explanation">
+				<h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+				<ul>
+					<% @user.errors.full_messages.each do |msg| %>
+						<li><%= msg %></li>
+					<% end %>
+				</ul>
+			</div>
 		<% end %>
-		</ul>
-		</div>
-		<% end %>
-
-		<div id="user_profile_image">
-			<%= image_tag current_user.avatar.url(:medium) %>
-			<%= f.file_field :avatar %>
-		</div>
 
 		<div id="user_profile_settings" class="formLayout">
-				<%= f.label :name, "Your Name"%>
-				<%= f.text_field :name %>
-				<%= f.label :email , "Your Email"%>
-				<%= f.text_field :email %>
-				<%= f.label :weight, "Your Weight (kg)"%>
-				<%= f.number_field :weight %>
-				<%= f.label :birthday, "Your Birthday"%>
-				<%= f.text_field :birthday, :class => "birthday-datetime" %>
-				<!-- <%= f.date_select :birthday, :order => [:day, :month, :year] %> //-->
-				<%= f.label :password, "New Password"%>
-				<%= f.text_field :password %>
-				<%= f.label :password_confirmation, "Password Conf" %>
-				<%= f.password_field :password_confirmation %>
-				<label for="submit"></label>
-				<%= f.submit %> 
-			<% end %>
+			<%= f.label :name, "Your Name"%>
+			<%= f.text_field :name %>
+			<%= f.label :email , "Your Email"%>
+			<%= f.text_field :email %>
+			<%= f.label :weight, "Your Weight (kg)"%>
+			<%= f.number_field :weight %>
+			<%= f.label :birthday, "Your Birthday"%>
+			<%= f.text_field :birthday, :class => "birthday-datetime" %>
+			<!-- <%= f.date_select :birthday, :order => [:day, :month, :year] %> //-->
+			<%= f.label :password, "New Password"%>
+			<%= f.password_field :password %>
+			<%= f.label :password_confirmation, "Password Conf" %>
+			<%= f.password_field :password_confirmation %>
+			<label for="submit"></label>
+			<%= f.submit "Update Profile" %> 
 		</div>
+
+	<% end %>
 
 	</div>
 
 	<div id="tabs-power" class="tabs_div_container">
-	</div>
+   </div>
 	<div id="tabs-hr" class="tabs_div_container">
 	</div>
 	<div id="tabs-equipment" class="tabs_div_container">
