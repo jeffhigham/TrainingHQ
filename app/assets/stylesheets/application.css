@@ -280,19 +280,24 @@ select {
 
 }
 
- .formLayout label, .formLayout input
-    {
-        display: block;
-        width: 120px;
-        float: left;
-        margin-bottom: 10px;
-        
-    }
+.formLayout label, .formLayout input
+{
+    display: block;
+    width: 120px;
+    float: left;
+    margin-bottom: 10px;
+    
+}
  
+.zone_min {
+    width: 100px;
+    display: inline-block;
+}
+
 .formLayout label
 {
-    text-align: right;
-    padding-right: 20px;
+    text-align: left;
+    padding-right: 30px;
 }
 
 .formLayout input, #user_avatar {

@@ -493,31 +493,32 @@ function generateLatLongData(list) {
 function dataPointToZoneHighRes(value, zones){
 
     if ( withinRange(value,zones['z0'], zones['z1']) ){
-            return roundNumber((value/zones['z1'])+0,2);
+            return roundNumber((value/zones['z1'])+1,2);
         }
         
-        else if ( withinRange(value,zones['z1'], zones['z2']) ){
-            return roundNumber((value/zones['z2'])+1,2);
+        else if ( withinRange(value,zones['z1']+1, zones['z2']) ){
+            return roundNumber((value/zones['z2'])+2,2);
         }
 
-        else if ( withinRange(value,zones['z2'], zones['z3']) ){
-            return roundNumber((value/zones['z3'])+2,2);
+        else if ( withinRange(value,zones['z2']+1, zones['z3']) ){
+            return roundNumber((value/zones['z3'])+3,2);
         }
 
-        else if ( withinRange(value,zones['z3'], zones['z4']) ){
-            return roundNumber((value/zones['z4'])+3,2);
+        else if ( withinRange(value,zones['z3']+1, zones['z4']) ){
+            return roundNumber((value/zones['z4'])+4,2);
         }
 
-        else if ( withinRange(value,zones['z4'], zones['z5']) ){
-            return roundNumber((value/zones['z5'])+4,2);
+        else if ( withinRange(value,zones['z4']+1, zones['z5']) ){
+            return roundNumber((value/zones['z5'])+5,2);
         }
 
-        else if ( withinRange(value,zones['z5'], zones['z6']) ) {
-            return roundNumber((value/zones['z6'])+5,2);
+        // for power Z6 tops at 1500.
+        else if ( withinRange(value,zones['z5']+1, zones['z6']) ) {
+            return roundNumber((value/zones['z6'])+6,2);
         }
-
+        // for power z7 tops at 2000.
         else if ( withinRange(value,zones['z6'], zones['z7']) ) {
-            return roundNumber((value/zones['z7'])+6,2);
+            return roundNumber((value/zones['z7'])+7,2);
         }
             
         else {

@@ -12,7 +12,7 @@ class UsersController < ApplicationController
       end
     else
         #redirect_to user_path(current_user), :notice => "Non-admins are denied access to user list."
-        redirect_to user_activities_path(user)
+        redirect_to user_activities_path(current_user)
     end
   end
 
@@ -21,6 +21,8 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
     @activities = @user.activities.where(:processed => 1).order('activity_date')
+    @power_zone = @user.power_zones.where(:enabled => true).first
+    @hr_zone = @user.hr_zones.where(:enabled => true).first
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @user }

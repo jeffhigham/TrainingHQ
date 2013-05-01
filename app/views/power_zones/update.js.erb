@@ -1,11 +1,10 @@
-<% if @user.errors.any? 
-	problems = pluralize(@user.errors.count, 'problems')
+<% if @power_zone.errors.any? 
+	problems = pluralize(@power_zone.errors.count, 'problems')
 	reply = "The Minions found #{problems}:<ul>"
-	@user.errors.full_messages.each do |msg|
+	@power_zone.errors.full_messages.each do |msg|
 		reply << "<li>#{msg}</li>"
 	end
 	reply << "</ul>"
-	logger.debug reply
 %>	
 	$("<div><%= reply.html_safe %></div>").dialog({
       modal: true,
@@ -17,7 +16,7 @@
       }
     });
 <% else %>
-	$("<div>Your profile has been successfully updated.</div>").dialog({
+	$("<div>Your power zone profile has been successfully updated.</div>").dialog({
       modal: true,
       title: "Update Successful!",
       buttons: {

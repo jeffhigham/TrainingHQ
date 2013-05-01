@@ -1,7 +1,7 @@
 <div id="profile_tabs">
 	<ul>
 		<li><a href="#tabs-profile">User Profile</a></li>
-		<li><a href="#tabs-power">Power Zones</a></li>
+		<li><a href="#tabs-power">Power Zones (Coggan)</a></li>
 		<li><a href="#tabs-hr">Heart Rate Zones</a></li>
 		<li><a href="#tabs-equipment">Equipment</a></li>
 	</ul>
@@ -14,18 +14,6 @@
 
 
 	<%= form_for(@user, :remote => true) do |f| %>
-
-		<% if @user.errors.any? %>
-			<div id="error_explanation">
-				<h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
-				<ul>
-					<% @user.errors.full_messages.each do |msg| %>
-						<li><%= msg %></li>
-					<% end %>
-				</ul>
-			</div>
-		<% end %>
-
 		<div id="user_profile_settings" class="formLayout">
 			<%= f.label :name, "Your Name"%>
 			<%= f.text_field :name %>
@@ -43,14 +31,74 @@
 			<label for="submit"></label>
 			<%= f.submit "Update Profile" %> 
 		</div>
-
 	<% end %>
 
 	</div>
 
 	<div id="tabs-power" class="tabs_div_container">
-   </div>
+		<a href="http://home.trainingpeaks.com/articles/cycling/power-training-levels,-by-andrew-coggan.aspx" target="_new">*More Info On Power Zones</a>
+		<%= form_for(@power_zone, :remote => true) do |f| %>
+			<div id="power_profile_settings" class="formLayout">
+				<%= f.label :z1, "Recovery (Zone 1)"%>
+				<div id="power_z1_min" class="zone_min">0 - </div> 
+				<%= f.number_field :z1, :title => '(1) Active Recovery: (Power <55% FTP)<hr/>"Easy spinning" or "light pedal pressure", i.e., very low level exercise, too low in and of itself to induce significant physiological adaptations. Minimal sensation of leg effort/fatigue. Requires no concentration to maintain pace, and continuous conversation possible. Typically used for active recovery after strenuous training days (or races), between interval efforts, or for socializing.'%>
+				
+				<%= f.label :z2 , "Aerobic (Zone 2)"%>
+				<div id="power_z2_min" class="zone_min">0 - </div>
+				<%= f.number_field :z2, :title => '(2) Endurance: (Power 56-75% FTP)<hr/>"All day" pace, or classic long slow distance (LSD) training. Sensation of leg effort/fatigue generally low, but may rise periodically to higher levels (e.g., when climbing). Concentration generally required to maintain effort only at highest end of range and/or during longer training sessions. Breathing is more regular than at level 1, but continuous conversation still possible. Frequent (daily) training sessions of moderate duration (e.g., 2 h) at level 2 possible (provided dietary carbohydrate intake is adequate), but complete recovery from very long workouts may take more than 24 hs.' %>
+				
+				<%= f.label :z3, "Tempo (Zone 3)"%>
+				<div id="power_z3_min" class="zone_min">0 - </div>
+				<%= f.number_field :z3 , :title => '(3) Tempo: (Power 76-90% FTP)<hr/>Typical intensity of fartlek workout, "spirited" group ride, or briskly moving paceline. More frequent/greater sensation of leg effort/fatigue than at level 2. Requires concentration to maintain alone, especially at upper end of range, to prevent effort from falling back to level 2. Breathing deeper and more rhythmic than level 2, such that any conversation must be somewhat halting, but not as difficult as at level 4. Recovery from level 3 training sessions more difficult than after level 2 workouts, but consecutive days of level 3 training still possible if duration is not excessive and dietary carbohydrate intake is adequate.'%>
+				
+				<%= f.label :z4, "Threshold (Zone 4)"%>
+				<div id="power_z4_min" class="zone_min">0 - </div>
+				<%= f.number_field :z4, :title => '(4) Lactate Threshold: (Power 91-105% FTP)<hr/>Just below to just above TT effort, taking into account duration, current fitness, environmental conditions, etc. Essentially continuous sensation of moderate or even greater leg effort/fatigue. Continuous conversation difficult at best, due to depth/frequency of breathing. Effort sufficiently high that sustained exercise at this level is mentally very taxing - therefore typically performed in training as multiple "repeats", "modules", or "blocks" of 10-30 min duration. Consecutive days of training at level 4 possible, but such workouts generally only performed when sufficiently rested/recovered from prior training so as to be able to maintain intensity.' %>
+				
+				<%= f.label :z5, "VO2 Max (Zone 5)"%>
+				<div id="power_z5_min" class="zone_min">0 - </div>
+				<%= f.number_field :z5, :title => '(5) VO2 Max: (Power 106-120% FTP)<hr/>Typical intensity of longer (3-8 min) intervals intended to increase VO2max. Strong to severe sensations of leg effort/fatigue, such that completion of more than 30-40 min total training time is difficult at best. Conversation not possible due to often "ragged" breathing. Should generally be attempted only when adequately recovered from prior training - consecutive days of level 5 work not necessarily desirable even if possible.' %>
+				
+				<%= f.label :z6, "AWC (Zone 6)" %>
+				<div id="power_z6_min" class="zone_min" title='(6) Anaerobic Capacity: (Power >121% FTP)<hr/>Short (30 s to 3 min), high intensity intervals designed to increase anaerobic capacity. Heart rate generally not useful as guide to intensity due to non-steady-state nature of effort. Severe sensation of leg effort/fatigue, and conversation impossible. Consecutive days of extended level 6 training usually not attempted.'>0 - </div>
+				<!-- <%= f.number_field :z6 %> //-->
+				<label for="submit"></label>
+				<%= f.submit "Update Zones" %> 
+			</div>
+		<% end %>
+  </div>
+	
 	<div id="tabs-hr" class="tabs_div_container">
+		<a href="http://home.trainingpeaks.com/articles/cycling/power-training-levels,-by-andrew-coggan.aspx" target="_new">*More Info On HR Zones</a>
+		<%= form_for(@hr_zone, :remote => true) do |f| %>
+			<div id="hr_profile_settings" class="formLayout">
+
+				<%= f.label :z0, "Resting (Zone 0)"%>
+				<div id="hr_z0_min" class="zone_min">0 - </div> 
+				<%= f.number_field :z0, :title => '(0) Resting Heart Rate<hr/>Sitting on the couch.'%>
+
+				<%= f.label :z1, "Recovery (Zone 1)"%>
+				<div id="hr_z1_min" class="zone_min">0 - </div> 
+				<%= f.number_field :z1, :title => '(1) Active Recovery: (Avg HR < 68% MAX)<hr/>"Easy spinning" or "light pedal pressure", i.e., very low level exercise, too low in and of itself to induce significant physiological adaptations. Minimal sensation of leg effort/fatigue. Requires no concentration to maintain pace, and continuous conversation possible. Typically used for active recovery after strenuous training days (or races), between interval efforts, or for socializing.'%>
+				
+				<%= f.label :z2 , "Aerobic (Zone 2)"%>
+				<div id="hr_z2_min" class="zone_min">0 - </div>
+				<%= f.number_field :z2, :title => '(2) Endurance: (Avg HR 69-83% MAX)<hr/>"All day" pace, or classic long slow distance (LSD) training. Sensation of leg effort/fatigue generally low, but may rise periodically to higher levels (e.g., when climbing). Concentration generally required to maintain effort only at highest end of range and/or during longer training sessions. Breathing is more regular than at level 1, but continuous conversation still possible. Frequent (daily) training sessions of moderate duration (e.g., 2 h) at level 2 possible (provided dietary carbohydrate intake is adequate), but complete recovery from very long workouts may take more than 24 hs.' %>
+				
+				<%= f.label :z3, "Tempo (Zone 3)"%>
+				<div id="hr_z3_min" class="zone_min">0 - </div>
+				<%= f.number_field :z3 , :title => '(3) Tempo: (Avg HR 84-94% MAX)<hr/>Typical intensity of fartlek workout, "spirited" group ride, or briskly moving paceline. More frequent/greater sensation of leg effort/fatigue than at level 2. Requires concentration to maintain alone, especially at upper end of range, to prevent effort from falling back to level 2. Breathing deeper and more rhythmic than level 2, such that any conversation must be somewhat halting, but not as difficult as at level 4. Recovery from level 3 training sessions more difficult than after level 2 workouts, but consecutive days of level 3 training still possible if duration is not excessive and dietary carbohydrate intake is adequate.'%>
+				
+				<%= f.label :z4, "Threshold (Zone 4)"%>
+				<div id="hr_z4_min" class="zone_min">0 - </div>
+				<%= f.number_field :z4, :title => '(4) Lactate Threshold: (Avg HR 95-105% MAX)<hr/>Just below to just above TT effort, taking into account duration, current fitness, environmental conditions, etc. Essentially continuous sensation of moderate or even greater leg effort/fatigue. Continuous conversation difficult at best, due to depth/frequency of breathing. Effort sufficiently high that sustained exercise at this level is mentally very taxing - therefore typically performed in training as multiple "repeats", "modules", or "blocks" of 10-30 min duration. Consecutive days of training at level 4 possible, but such workouts generally only performed when sufficiently rested/recovered from prior training so as to be able to maintain intensity.' %>
+				
+				<%= f.label :z5, "VO2 Max (Zone 5)"%>
+				<div id="hr_z5_min" class="zone_min" title='(5) VO2 Max: (Avg HR >106% MAX)<hr/>Typical intensity of longer (3-8 min) intervals intended to increase VO2max. Strong to severe sensations of leg effort/fatigue, such that completion of more than 30-40 min total training time is difficult at best. Conversation not possible due to often "ragged" breathing. Should generally be attempted only when adequately recovered from prior training - consecutive days of level 5 work not necessarily desirable even if possible.' >0 - </div>
+				<label for="submit"></label>
+				<%= f.submit "Update Zones" %> 
+			</div>
+		<% end %>
 	</div>
 	<div id="tabs-equipment" class="tabs_div_container">
 	</div>
@@ -58,8 +106,32 @@
 <script>
 $(function() {
 	$( "#profile_tabs" ).tabs();
+	updatePowerZoneMins();
+	updateHRZoneMins();
 	//$( "#radioset" ).buttonset();
 	$('.birthday-datetime').datepicker({ changeYear: true, dateFormat: "yy-mm-dd", constrainInput: true, yearRange: "-100:-10" });
+	$('.edit_power_zone').change(updatePowerZoneMins);
+	$('.edit_hr_zone').change(updateHRZoneMins);
+
+
+	function updatePowerZoneMins(){
+		$('#power_z2_min').html( parseInt($('#power_zone_z1').val())+1 + " - " );
+		$('#power_z3_min').html( parseInt($('#power_zone_z2').val())+1 + " - " );
+		$('#power_z4_min').html( parseInt($('#power_zone_z3').val())+1 + " - " );
+		$('#power_z5_min').html( parseInt($('#power_zone_z4').val())+1 + " - " );
+		$('#power_z6_min').html( parseInt($('#power_zone_z5').val())+1 + " - MAX" );
+	}
+
+	function updateHRZoneMins(){
+		$('#hr_z1_min').html( parseInt($('#hr_zone_z0').val())+1 + " - " );
+		$('#hr_z2_min').html( parseInt($('#hr_zone_z1').val())+1 + " - " );
+		$('#hr_z3_min').html( parseInt($('#hr_zone_z2').val())+1 + " - " );
+		$('#hr_z4_min').html( parseInt($('#hr_zone_z3').val())+1 + " - " );
+		$('#hr_z5_min').html( parseInt($('#hr_zone_z4').val())+1 + " - MAX" );
+		//$('#hr_z6_min').html( parseInt($('#hr_zone_z5').val())+1 + " - MAX" );
+	}
+
+	$( document ).tooltip();
 
 });
 </script>

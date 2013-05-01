@@ -47,9 +47,7 @@ class PowerZonesController < ApplicationController
     respond_to do |format|
       if @power_zone.save
         @power_zones = PowerZone.where(:user_id => current_user.id)
-        #format.html { redirect_to user_path(@power_zone.user), notice: 'Power zone was successfully created.' }
         format.js  { render action: "index" }
-        #format.json { render json: @power_zone, status: :created, location: @power_zone }
       else
         format.html { render action: "new" }
         format.json { render json: @power_zone.errors, status: :unprocessable_entity }
@@ -64,13 +62,10 @@ class PowerZonesController < ApplicationController
 
     respond_to do |format|
       if @power_zone.update_attributes(params[:power_zone])
-         @power_zones = PowerZone.where(:user_id => current_user.id)
-        #format.html { redirect_to @power_zone, notice: 'Power zone was successfully updated.' }
-        format.js  { render action: "index" }
-        #format.json { head :no_content }
+        # @power_zone = PowerZone.where(:user_id => current_user.id, :enabled => true).first
+        format.js
       else
-        format.html { render action: "edit" }
-        format.json { render json: @power_zone.errors, status: :unprocessable_entity }
+        format.js
       end
     end
   end

@@ -63,16 +63,12 @@ class HrZonesController < ApplicationController
   # PUT /hr_zones/1.json
   def update
     @hr_zone = HrZone.find(params[:id])
-
     respond_to do |format|
       if @hr_zone.update_attributes(params[:hr_zone])
-        @hr_zone = HrZone.where(:user_id => current_user.id)
-        #format.html { redirect_to @hr_zone, notice: 'Hr zone was successfully updated.' }
-        format.js  { render action: "index" }
-        #format.json { head :no_content }
+        #@hr_zone = HRZone.where(:user_id => current_user.id, :enabled => true).first
+        format.js
       else
-        format.html { render action: "edit" }
-        format.json { render json: @hr_zone.errors, status: :unprocessable_entity }
+        format.js
       end
     end
   end
