@@ -32,6 +32,73 @@ function withinRange(x, min, max) {
   return x >= min && x <= max;
 }
 
+/* 
+    
+    Raw data for NP, IF, TSS calculations.
+*/
+function calcNpRawData(data){
+
+    var time_sum = 0;
+    var pr4_sum = 0; 
+
+    for (var i =0; i<data.length; i++){
+        
+        // First iteration:  power^4 * time
+        if( i == 0 ){ 
+            pr4_sum += Math.pow(data[i].watts,4)*data[i].time;
+        }
+        // Subsequent iterations:
+        // ( power^4 * time - 0.5 ) + ( ( ( power + previous power ) / 2 )^4 ) * 0.5
+        else {
+            pr4_sum += Math.pow(data[i].watts,4)*(data[i].time-0.5)+
+                                                ( Math.pow( ((data[i].watts+data[i-1].watts)/2),4 ) )*0.5
+        }
+        time_sum += data[i].time;
+    }
+    return [roundNumber(pr4_sum,2), time_sum ];
+}
+
+// Normalized Power
+function calcNP(pr4,time) { // calcNpRawData[0], calcNpRawData[1]
+    var np = Math.pow((pr4/time),0.25);
+    return roundNumber(np,2);
+}
+
+// Normalized Work
+function calcNW(np,time){
+    var nw = np*time*60;
+    return roundNumber(nw,3);
+}
+
+// Raw TSS = normalized work * intensity factor
+function calcRawTss(nw,IF){
+    var raw_tss = nw*IF
+    return roundNumber(raw_tss,2);
+}
+
+// Intensity Factor = normalized power / functional threshold power
+function calcIF(np,ftp){
+    return roundNumber(np/ftp,2);
+}
+
+/* Training Stress Score = 
+    (normalized work * functional threshold power)/(functional threshold power * 3600)*100
+*/ 
+function calcTSS(nw,ftp){ 
+    var raw_tss = nw*IF;
+    var tss = raw_tss/(ftp*3600)*100;
+    return roundNumber(tss,2);
+}
+
+// Straight average power calculation
+function calcAvgP(data){
+    var power_sum = 0;
+    for (var i =0; i<data.length; i++){
+        power_sum += data[i].watts;
+    }
+    return roundNumber(power_sum/data.length,1);
+}
+
 // Returns a max value in a range of values for multi-arrays.
 function maxMultiValuesScaledBy(list,scale_factor) {
     

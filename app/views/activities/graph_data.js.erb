@@ -1,5 +1,7 @@
 //Dynamic content from the activity controller.
 
+var np_raw_data = <%= @javascript_data[:np_raw_data].to_json %>; // pr4, time
+
 var power_zones = <%= @user_power_zones.to_json.html_safe %>;
 
 var hr_zones = <%= @user_hr_zones.to_json.html_safe %>;
