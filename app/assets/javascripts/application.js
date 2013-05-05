@@ -16,7 +16,10 @@
 //= require jquery-ui
 //= require jquery_ujs
 //= require_tree ./gmaps4rails
-//= require_tree ./THQ
+//= require ./THQ/thq.common
+//= require ./THQ/thq.wattage
+//= require ./THQ/thq.datafile
+//= require ./THQ/thq.activity
 //= require dygraph-combined
 //= require raphael.2.1.0.min
 //= require justgage.1.0.1

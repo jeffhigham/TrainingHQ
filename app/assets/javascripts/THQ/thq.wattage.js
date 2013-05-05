@@ -1,4 +1,4 @@
-function wattage(power_time_data){
+function ThqWattage(power_time_data){
 
 	/*
 		power_time_data = [{watts: nn, time:nn}, {watts:nn, time:nn}, {}];
@@ -14,6 +14,12 @@ function wattage(power_time_data){
 	this.data = power_time_data;
 	this.total_time_seconds = 0; // sum of time for each sample.
 	this.total_joules_based_on_lactate = 0; // sum of segment^4 * 10
+
+	function round(number, digits) {
+	  var multiple = Math.pow(10, digits);
+	  var rndedNum = Math.round(number * multiple) / multiple;
+	  return rndedNum;
+	}
 	
 	this.init = function(){
 		this.calcJoulesBolAndTotalTime();
@@ -27,12 +33,12 @@ function wattage(power_time_data){
 	
 	// Intensity Factor = Normalized Power / Functional Threshold Power
 	this.calcIF = function(){
-    this.IF = this.NP/this.FTP
+    this.IF = round(this.NP/this.FTP,2);
 	}
 
 	// Normalized power is (sum of lactate based on power / sum of total time time)^.25
 	this.calcNP = function(){
-	 this.NP =  Math.pow((this.total_joules_based_on_lactate/this.total_time_seconds),0.25)
+	 this.NP =  round( Math.pow((this.total_joules_based_on_lactate/this.total_time_seconds),0.25),1);
 	}
 
 	// Average power.
@@ -43,12 +49,12 @@ function wattage(power_time_data){
         w +=  this.data[i].watts*this.data[i].time;
         t += this.data[i].time;
     }
-    this.AP = Math.round(w/t);
+    this.AP = round(w/t,1);
 	}
 
 	// Normaized Work = normalized power*time.
 	this.calcNW = function (){
-		this.NW = this.NP*this.total_time_seconds;
+		this.NW = round(this.NP*this.total_time_seconds,2);
 	}
 
 	/*
@@ -73,7 +79,7 @@ function wattage(power_time_data){
 	}
 
 	this.calcTSS = function(){
-		this.TSS = this.raw_tss()/( this.FTP * 3600 )*100;
+		this.TSS = round(this.raw_tss()/( this.FTP * 3600 )*100,2);
 	}
 
 	this.init();

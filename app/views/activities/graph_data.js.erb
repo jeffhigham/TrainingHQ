@@ -1,30 +1,14 @@
 //Dynamic content from the activity controller.
 
-var np_raw_data = <%= @javascript_data[:np_raw_data].to_json %>; // pr4, time
-
 var power_zones = <%= @user_power_zones.to_json.html_safe %>;
 
 var hr_zones = <%= @user_hr_zones.to_json.html_safe %>;
 
-var lap_start_distances = <%= @javascript_data[:lap_start_distances] %>;
+var trackpoint_data = <%= @trackpoint_data.to_json.html_safe %>;
 
-var lap_start_times = <%= @javascript_data[:lap_start_times].to_s.html_safe %>;
-
-var data_time = <%= @javascript_data[:data_time] %>;
-
-var data_distance = <%= @javascript_data[:data_distance] %>;
-
-var current_data = data_time;
-
-var current_lap_start = lap_start_times;
-
-lap_start_times.push(data_time[data_time.length - 1 ][0]);
-
-lap_start_distances.push(data_distance[data_distance.length - 1][0]);
-
-var laps_time = generateLaps(data_time,lap_start_times);
-var laps_distance = generateLaps(data_distance, lap_start_distances);
-var lat_long_data = generateLatLongData(data_time);
+//var laps_time = generateLaps(data_time,lap_start_times);
+//var laps_distance = generateLaps(data_distance, lap_start_distances);
+//var lat_long_data = generateLatLongData(data_time);
 
 var power_color = "#FF9900";
 var hr_color = "#ff5600";

@@ -13,6 +13,10 @@ function roundNumber(number, digits) {
             return rndedNum;
 }
 
+function round(number, digits){
+    return roundNumber(number,digits);
+}
+
 function timeFormatFromSeconds(seconds){
     var hours = parseInt( seconds / 3600 ) % 24;
     var minutes = parseInt( seconds / 60 ) % 60;

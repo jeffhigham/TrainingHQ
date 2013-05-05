@@ -25,6 +25,8 @@ TrainingHQ::Application.routes.draw do
   get 'activities/:id/summary' => 'activities#summary', :as => "activity_summary"
   get 'activities/:id/map' => 'activities#map', :as => "activity_map"
   get 'activities/:id/graph_data' => 'activities#graph_data', :as => "graph_data"
+  get 'activities/:id/load_trackpoint' => 'activities#load_trackpoint', :as => "load_trackpoint"
+
 
 
   root :to => "users#index"
