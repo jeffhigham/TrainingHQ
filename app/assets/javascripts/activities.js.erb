@@ -1,0 +1,32 @@
+$.blockUI({ css: { 
+            border: 'none', 
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px', 
+            opacity: .5, 
+            color: '#fff' 
+        } });
+
+Gmaps.map = new Gmaps4RailsGoogle();
+Gmaps.load_map = function() {
+	Gmaps.map.map_options.type = "TERRAIN";
+	Gmaps.map.initialize();
+	Gmaps.map.polylines = lat_long_data;
+	Gmaps.map.polylines_conf.strokeColor = "#FF9900";
+	Gmaps.map.polylines_conf.strokeOpacity = 1;
+	Gmaps.map.polylines_conf.strokeWeight = 2;
+	Gmaps.map.create_polylines();
+	Gmaps.map.adjustMapToBounds();
+	Gmaps.map.callback();
+};
+Gmaps.oldOnload = window.onload;
+
+window.onload = function() { 
+	Gmaps.triggerOldOnload(); Gmaps.loadMaps();
+	$( "#tabs" ).tabs();
+	$( "#radioset" ).buttonset();
+	$("#activity_summary").css({'visibility':'visible'});
+	$("#tabs").css({'visibility':'visible'});
+	$.unblockUI();
+};

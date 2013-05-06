@@ -4,18 +4,20 @@ var power_zones = <%= @user_power_zones.to_json.html_safe %>;
 
 var hr_zones = <%= @user_hr_zones.to_json.html_safe %>;
 
-var trackpoint_data = <%= @trackpoint_data.to_json.html_safe %>;
+var activity = new ThqActivity(<%= @activity.id %>);
+
+//var trackpoint_data = <%= @trackpoint_data.to_json.html_safe %>;
 
 //var laps_time = generateLaps(data_time,lap_start_times);
 //var laps_distance = generateLaps(data_distance, lap_start_distances);
-//var lat_long_data = generateLatLongData(data_time);
+var lat_long_data = activity.datafile.map_data;
 
 var power_color = "#FF9900";
 var hr_color = "#ff5600";
 var alt_color = "#7fff00";
 var cadence_color = "#0f8bff";
 var speed_color = "#bc65f7";
-var current_laps = laps_time;
+//var current_laps = laps_time;
 var dygraph_data = null;
 var power_gauge;
 var power_zone_gauge;
@@ -27,7 +29,9 @@ var alt_gauge;
 var percent_grade_gauge;
 var speed_gauge;
 
-window.onload = function() {
+
+$(document).ready( function() {
+
     $('#distance_input').prop('checked',true);
     $('#0').prop('checked',true);
     $('#1').prop('checked', true);
@@ -46,67 +50,12 @@ window.onload = function() {
     percent_grade_gauge = drawGauge({id: "percent_grade_gauge", value: 0, min: -25, max: 25, title: "Percent Grade", valueFontColor: alt_color });
     speed_gauge = drawGauge({id: "speed_gauge", value: <%= @activity.min_speed_mph %>, min: <%= @activity.min_speed_mph %> , max: <%= @activity.max_speed_mph %> , title: "Speed (MPH)", valueFontColor: speed_color });
     
-    drawDyGraph(current_data);
+    drawDyGraph(activity.datafile.current_dataset);
     mouseOutCanvasCallback();
-}
+} );
+
 
 /*
-
-http://www.u.arizona.edu/~sandiway/bike/climb.html
-function totalWeight(f) {
-    f.tw.value = 
-      eval(f.w1.value) 
-      / eval(f.w1Units.options[f.w1Units.options.selectedIndex].value)  
-    + eval(f.w2.value) 
-      / eval(f.w2Units.options[f.w2Units.options.selectedIndex].value);
-}
-
-function timeTaken(f) {
-    var t = 0;
-    if( f.hr.value ) t = t + eval(f.hr.value) * 3600;
-    if( f.min.value ) t = t + eval(f.min.value) * 60;
-    if( f.sec.value ) t = t + eval(f.sec.value);
-
-    return t;
-}
-
-function rr(f) {
-    return eval(f.tyre.options[f.tyre.options.selectedIndex].value);
-}
-
-function a2(f) {
-    return eval(f.position.options[f.position.options.selectedIndex].value);
-}
-
-function speed(f) {
-    var mPs = eval(f.sp.value) * eval(f.spUnits.options[f.spUnits.options.selectedIndex].value);
-    return mPs;
-}
-
-function speed3(f) {
-    var mPs = eval(f.sp.value) * eval(f.spUnits.options[f.spUnits.options.selectedIndex].value);
-    return mPs * mPs * mPs;
-}
-
-function climbRate(f) {
-    var mPs =(eval(f.vg.value) 
-      / eval(f.vgUnits.options[f.vgUnits.options.selectedIndex].value)) 
-    / timeTaken(f);
-    f.cr.value = mPs * 
-    eval(f.crUnits.options[f.crUnits.options.selectedIndex].value);
-
-    return mPs;
-}
-
-function computePower(f) {
-    totalWeight(f);
-    f.gravity.value = 9.81 * eval(f.tw.value) * climbRate(f);
-    f.rr.value =9.81 * eval(f.tw.value) * rr(f) * speed(f);
-    f.aero.value = a2(f) * speed3(f);
-    f.power.value = eval(f.gravity.value) + eval(f.rr.value) + eval(f.aero.value);
-}
-*/
-
 function generateLaps(source_data,start_times){
     var lap_data = [];
     var lap_index = 0;
@@ -141,6 +90,7 @@ function generateLaps(source_data,start_times){
 
     return lap_data;
 }
+*/
 
 function scaleBySlider(){
     //var scale_factor = $('#graph_scale_slider').val();
@@ -153,9 +103,9 @@ function handleLapRowClick(lap_id){
     var lap_number = (lap_id.length == 9 ) ? parseInt(lap_id[8]) : parseInt(lap_id[8] + lap_id[9]);
 
     $('#lap_dataset_option').val(lap_number);
-    handleLaps();
-    resetLapRows();
-    highlightTableRow("#" + lap_id);
+    //handleLaps();
+    //resetLapRows();
+    //highlightTableRow("#" + lap_id);
 }
 
 
@@ -192,6 +142,7 @@ function selectTimeDistance(){
     var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
 
     if( data_option == "distance"){
+        /*
         if ( lap_selection == "all"){
             current_data = data_distance;
             current_laps = laps_distance;
@@ -200,9 +151,11 @@ function selectTimeDistance(){
            current_data = laps_distance[parseInt(lap_selection)]; 
         }
         current_lap_start = lap_start_distances;
+        */
 
     }
     else {
+        /*
         if ( lap_selection == "all"){
             current_data = data_time;
             current_laps = laps_time;
@@ -211,8 +164,9 @@ function selectTimeDistance(){
            current_data = laps_time[parseInt(lap_selection)]; 
         }
         current_lap_start = lap_start_times;
+        */
+        drawDyGraph(activity.get.current_dataset);
     }
-    drawDyGraph(current_data);
 }
 
 
@@ -242,9 +196,11 @@ function drawGauge(params){
 
 function drawDyGraph(list){
 
+
     // capture current state of graph.
-    var scale_factor = $('#graph_scale_slider').val();
-    dygraph_data = maxMultiValuesScaledBy(list,scale_factor);
+    //var scale_factor = $('#graph_scale_slider').val();
+    //dygraph_data = maxMultiValuesScaledBy(list,scale_factor);
+    dygraph_data = list;
 
     g = new Dygraph(
           document.getElementById("chart_canvas"),
@@ -260,7 +216,7 @@ function drawDyGraph(list){
             drawXGrid: true,
             drawYGrid: false,
             drawYAxis: false,
-            showRangeSelector: true,
+            showRangeSelector: false,
             rangeSelectorPlotFillColor: "rgba(127,255,0,0.2)",
             rangeSelectorPlotStrokeColor: alt_color,
             labelsSeparateLines: false,
@@ -300,6 +256,7 @@ function drawDyGraph(list){
 
           }
 
+
     );
 
     // show visibility based on what is currently checked.
@@ -311,7 +268,6 @@ function drawDyGraph(list){
 
     // zero out display values.
     mouseOutCanvasCallback();
-
 }
 
 function highlightTableRow(id){
@@ -362,6 +318,7 @@ function xAxisLabelFormatter(x){
 // Draws canvas underlay for laps
 function drawCanvasUnderlay (canvas, area, g) {
 
+    /*
     for (var i=0; i < current_lap_start.length; i++ ) {
 
         var bottom_left = g.toDomCoords(current_lap_start[i], -20);
@@ -374,6 +331,8 @@ function drawCanvasUnderlay (canvas, area, g) {
         canvas.fillRect(left, area.y, right - left, area.h);
     }
 
+    */
+    return true;
 }
 
 function mouseOutCanvasCallback(event, x, points, row, seriesName){

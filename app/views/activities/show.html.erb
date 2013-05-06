@@ -1,8 +1,10 @@
+<%= javascript_include_tag params[:controller] %>
+<div id="activity_summary" style="visibility:hidden">
 <p id="notice"><%= notice %></p>
 <b>Activity: <%= @activity.name %></b><br/>
 <b>Date: <%= @activity.activity_date %></b><br/>
-<br/>
-<div id="tabs">
+<div>
+<div id="tabs" style="visibility:hidden">
 	<ul>
 		<li><a href="#tabs-1">Summary</a></li>
 		<li><a href="#tabs-2">Analysis</a></li>
@@ -16,9 +18,3 @@
 	<div id="tabs-3">
 	</div>
 </div>
-<script>
-$(function() {
-	$( "#tabs" ).tabs();
-	$( "#radioset" ).buttonset();
-});
-</script>

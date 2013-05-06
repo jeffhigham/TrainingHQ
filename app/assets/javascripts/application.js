@@ -23,3 +23,4 @@
 //= require dygraph-combined
 //= require raphael.2.1.0.min
 //= require justgage.1.0.1
+//= require jquery.blockUI

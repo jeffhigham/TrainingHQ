@@ -3,14 +3,18 @@ ThqDataFile = function(){
 	this.data_source = null;
 	this.request = null;
 	this.laps = 0;
+	this.context = "time" // 'time' or 'distance'
+	this.lap_context = "all" // 'all' or lap_index
+	this.scale_factor = 100; //constant to base data scailing % on.
 	this.laps_time = [];
 	this.laps_distance = [];
 	this.all_time = [];
 	this.all_distance = [];
 	this.wattage_data = []; //[{watts: nn, time:nn}, {watts:nn, time:nn}, {}];
-	this.wattage_laps = [];
-	this.map_data = []; //[{watts: nn, time:nn}, {watts:nn, time:nn}, {}];
-
+	this.wattage_laps = []; //[{watts: nn, time:nn}, {watts:nn, time:nn}, {}];
+	this.map_data = [[]]; //[{lng: nn, lat:nn}];
+	this.wattage = null;
+	this.current_dataset = [];
 
 	this.loadRemote = function(data_source) {
 		this.data_source = data_source;
@@ -20,10 +24,57 @@ ThqDataFile = function(){
   		async: false
 		});
 		this.parse();
+		this.wattage = new ThqWattage(this.wattage_data);
 	}
 
 	this.trackpoints = function(){
 		return $.parseJSON(this.request.responseText.replace(';',''));
+	}
+
+	this.wattage_at_lap = function(lap_id){
+		return new ThqWattage(this.wattage_laps[lap_id]);
+	}
+
+	this.scaled = function (scale_factor){
+		this.scale_factor = scale_factor;
+		var source_dataset = [];
+		var scaled_dataset = [];
+		console.info("Scaling at "+ scale_factor +"%, context: "+ this.context +"  lap.context: "+ this.lap_context );
+
+		if( this.lap_context == "all"){
+			if(this.context == "time"){
+				source_dataset = this.all_time;
+			}
+			else {
+				source_dataset = this.all_distance;
+			}
+		}
+		else{
+			if(this.context == "time"){
+				source_dataset = this.laps_time[this.lap_context];
+			}
+			else {
+				source_dataset = this.laps_distance[this.lap_context];
+			}
+		}
+
+		var scale_now = Math.round( source_dataset.length / (source_dataset.length - (source_dataset.length*(scale_factor*.01))));
+		var loop_count = 0;	
+		console.info("Scaling "+ source_dataset.length +" values every "+ scale_now +" iterations." );
+		for(var i=0; i<source_dataset.length; i++){
+			if( loop_count == scale_now){
+				loop_count=0;
+				// skip adding to scaled_dataset
+			}	
+			else {
+				scaled_dataset.push(source_dataset[i]);
+				loop_count++;
+			}
+		}
+
+		console.info("Dataset reduced to "+ scaled_dataset.length +" values every "+ scale_now +" iterations." );
+
+		return scaled_dataset;
 	}
 
 	this.parse = function(){ // this is a horrible mess.
@@ -126,7 +177,7 @@ ThqDataFile = function(){
 				);
 
         if (this_trackpoint['lng'] > 0 || this_trackpoint['lat'] > 0) {
-            this.map_data.push( { lng: this_trackpoint['lng'], lat: this_trackpoint['lat'] } );
+            this.map_data[0].push( { lng: this_trackpoint['lng'], lat: this_trackpoint['lat'] } );
         }
  
 
@@ -170,6 +221,7 @@ ThqDataFile = function(){
 		} // lap_id
 
 		this.laps = this.laps_time.length;
+		this.current_dataset = this.scaled(90);
 
 	} // this.parse
 
