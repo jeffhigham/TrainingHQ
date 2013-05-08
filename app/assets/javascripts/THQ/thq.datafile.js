@@ -5,7 +5,7 @@ ThqDataFile = function(){
 	var lap_count = 0; // number of lap_count in the activity.
 	var context = "time" // 'time' or 'distance'
 	var lap_context = "all" // 'all' or lap_index
-	var scale_factor = 99; //constant to base data scailing % on.
+	var scale_factor = 1; //constant to base data scailing % on.
 	var lap_data_time = []; // lap array based on activity time (all data)
 	var lap_data_distance = []; // lap array based on distance (all data)
 	var all_data_time = []; // array of the whole activity based on time (all data)
@@ -15,6 +15,7 @@ ThqDataFile = function(){
 	var map_lap_data = []; //[{lng: nn, lat:nn}];
 	var wattage_obj = null; // ThqWattage object created in loadRemote()
 	var current_dataset = []; // array of current dataset. This is updated often.
+	var scaled_data_cache = {}; // cache previously scaled datasets.
 
 	this.loadRemote = function(data_url) {
 			ajax_request_obj = $.ajax({
@@ -138,31 +139,20 @@ ThqDataFile = function(){
 	}
 
 	this.scaled = function (percentage){
+		console.info("Calling datafile.scaled.");
 		if(typeof(percentage) != "undefined"){
 			scale_factor = percentage;
 		}
+
+		var cache_key = context + "_" + lap_context + "_" + scale_factor;
+		if( typeof(scaled_data_cache[cache_key]) == "object"){
+			console.log("Found cached value for: "+ cache_key);
+			return scaled_data_cache[cache_key];
+		}
+
 		var source_dataset = current_dataset; // set by dataset() and lap();
 		var scaled_dataset = [];
 		console.info("Scaling at "+ scale_factor +"%, context: "+ context +"  lap_context: "+ lap_context );
-
-		/*
-		if( lap_context == "all"){
-			if(context == "time"){
-				source_dataset = all_data_time;
-			}
-			else {
-				source_dataset = all_data_distance;
-			}
-		}
-		else{
-			if(context == "time"){
-				source_dataset = lap_data_time[lap_context];
-			}
-			else {
-				source_dataset = lap_data_distance[lap_context];
-			}
-		}
-		*/
 
 		var scale_now = Math.round( source_dataset.length / (source_dataset.length - (source_dataset.length*(scale_factor*.01))));
 		var loop_count = 0;	
@@ -180,6 +170,7 @@ ThqDataFile = function(){
 
 		console.info("Dataset reduced to "+ scaled_dataset.length +" values every "+ scale_now +" iterations." );
 
+		scaled_data_cache[cache_key] = scaled_dataset;
 		return scaled_dataset;
 	}
 
@@ -331,7 +322,7 @@ ThqDataFile = function(){
 		lap_context = "all";
 		context = "time";
 		current_dataset = all_data_time;
-		//current_dataset = this.scaled(90);
+		//current_dataset = this.scaled(scale_factor);
 
 	} // this.parse
 

@@ -47,17 +47,27 @@
 <div id="percent_grade_gauge" class="gauge"></div>
 <div id="speed_gauge" class="gauge"></div>
 <br/>
+<hr style="background-color:#333"/>
 
 
 <div id="chart_labels"></div>
 <div id="chart_canvas" style="height:250px; background-color:#000; color:#666"></div>
 <br/>
 
-<div id="radioset">
-	<input type="radio" id="time_radio" name="radio" onchange="selectTimeDistance()" checked="checked"><label for="time_radio">Time</label>
-	<input type="radio" id="distance_radio" name="radio" onchange="selectTimeDistance()"><label for="distance_radio">Distance</label>
+<div id="time_distance_radioset" style="display:inline; float:right">
+	<input type="radio" id="time_radio" name="time_distance_radioset" onchange="selectTimeDistance()" checked="checked"><label for="time_radio">Time</label>
+	<input type="radio" id="distance_radio" name="time_distance_radioset" onchange="selectTimeDistance()"><label for="distance_radio">Distance</label>
+</div>
+
+<div id="scale_factor_radioset">
+	<input type="radio" id="25p_radio" name="scale_factor_radioset" onchange=""><label for="25p_radio">25%</label>
+	<input type="radio" id="50p_radio" name="scale_factor_radioset" onchange="" checked="checked"><label for="50p_radio">50%</label>
+	<input type="radio" id="75p_radio" name="scale_factor_radioset" onchange=""><label for="75p_radio">75%</label>
+	<input type="radio" id="100p_radio" name="scale_factor_radioset" onchange=""><label for="100p_radio">100%</label>
 </div>
 </br>
+<hr style="background-color:#333"/>
+
 
 <div class="map_container"> 
   <div id="map" class="gmaps4rails_map"></div>

@@ -1,4 +1,4 @@
-function ThqWattage(power_time_data){
+ThqWattage = function(power_time_data){
 
 	/*
 		power_time_data = [{watts: nn, time:nn}, {watts:nn, time:nn}, {}];
@@ -6,12 +6,13 @@ function ThqWattage(power_time_data){
 		time = seconds
 	*/
 
-	this.FTP = 300;
+	this.FTP = 290;
 	this.NP = 0;
 	this.NW = 0;
 	this.AP = 0;
 	this.TSS = 0;
 	this.data = power_time_data;
+	this.rolling_average = new ThqRollingAverage(30);
 	this.total_time_seconds = 0; // sum of time for each sample.
 	this.total_joules_based_on_lactate = 0; // sum of segment^4 * 10
 
@@ -62,14 +63,21 @@ function ThqWattage(power_time_data){
 		Lactate = Power^4
 
 		total_joules_based_on_lactate =  Sum of (each segment's watts^4 ) x (each segment's time).
-		total_time_seconds =  Sum of each segment's time
+		total_time_seconds =  Sum of each segment's time.
+
+		** Uses a rolling average of 30 seconds.
+
 	*/
 	this.calcJoulesBolAndTotalTime = function(){ 
 		var lactate = 0;
     for (var i =0; i<this.data.length; i++){
-    		lactate = Math.pow(this.data[i].watts,4);
-        this.total_joules_based_on_lactate +=  this.data[i].time * lactate;
-        this.total_time_seconds += this.data[i].time;
+			this.rolling_average.push(this.data[i].watts);	
+			if( this.rolling_average.ready() ){ // we have primed the rolling average pump.
+				//console.info ( "Rolling average: " + this.rolling_average.show() );
+				lactate = Math.pow(this.rolling_average.show(),4);
+	    	this.total_joules_based_on_lactate +=  this.data[i].time * lactate;
+	    	this.total_time_seconds += this.data[i].time;
+	  	}
     }
 
 	}

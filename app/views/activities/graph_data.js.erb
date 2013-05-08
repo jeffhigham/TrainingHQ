@@ -10,7 +10,7 @@ var activity = new ThqActivity(<%= @activity.id %>);
 
 //var laps_time = generateLaps(data_time,lap_start_times);
 //var laps_distance = generateLaps(data_distance, lap_start_distances);
-var lat_long_data = activity.datafile.map_data;
+var lat_long_data = activity.datafile.map_data();
 
 var power_color = "#FF9900";
 var hr_color = "#ff5600";
@@ -50,7 +50,7 @@ $(document).ready( function() {
     percent_grade_gauge = drawGauge({id: "percent_grade_gauge", value: 0, min: -25, max: 25, title: "Percent Grade", valueFontColor: alt_color });
     speed_gauge = drawGauge({id: "speed_gauge", value: <%= @activity.min_speed_mph %>, min: <%= @activity.min_speed_mph %> , max: <%= @activity.max_speed_mph %> , title: "Speed (MPH)", valueFontColor: speed_color });
     
-    drawDyGraph(activity.datafile.current_dataset);
+    drawDyGraph( activity.datafile.dataset() );
     mouseOutCanvasCallback();
 } );
 
@@ -112,9 +112,11 @@ function handleLapRowClick(lap_id){
 function handleLaps(){
 
     var lap_selection = $('#lap_dataset_option').val();
+    drawDyGraph( activity.datafile.lap(lap_selection) );
     //var data_option = $('#graph_dataset_option').val();
-    var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
+    //var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
 
+    /*
     if( lap_selection == "all" ){
         selectTimeDistance(); // resets current data appropriately.
     }
@@ -131,42 +133,14 @@ function handleLaps(){
         resetLapRows();
         highlightTableRow("#lap_row_" + lap_selection);
     }
+    */
+
 
 }
 
 function selectTimeDistance(){
-
-    var lap_selection = $('#lap_dataset_option').val();
-    //var data_option = $('#graph_dataset_option').val();
-
-    var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
-
-    if( data_option == "distance"){
-        /*
-        if ( lap_selection == "all"){
-            current_data = data_distance;
-            current_laps = laps_distance;
-        }
-        else {
-           current_data = laps_distance[parseInt(lap_selection)]; 
-        }
-        current_lap_start = lap_start_distances;
-        */
-
-    }
-    else {
-        /*
-        if ( lap_selection == "all"){
-            current_data = data_time;
-            current_laps = laps_time;
-        }
-        else {
-           current_data = laps_time[parseInt(lap_selection)]; 
-        }
-        current_lap_start = lap_start_times;
-        */
-        drawDyGraph(activity.get.current_dataset);
-    }
+    var dataset_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
+    drawDyGraph(activity.datafile.dataset(dataset_option));
 }
 
 
@@ -201,6 +175,7 @@ function drawDyGraph(list){
     //var scale_factor = $('#graph_scale_slider').val();
     //dygraph_data = maxMultiValuesScaledBy(list,scale_factor);
     dygraph_data = list;
+    console.info("Dygraph: dataset contains "+ list.length +" values.");
 
     g = new Dygraph(
           document.getElementById("chart_canvas"),
@@ -208,6 +183,9 @@ function drawDyGraph(list){
           {
             //rollPeriod: 14,
             //showRoller: true,
+            title:  "TSS:"+ activity.datafile.wattage().TSS + 
+                    " IF:" + activity.datafile.wattage().IF +
+                    " NP:" + activity.datafile.wattage().NP,
             legend: false,
             highlightCircleSize: 5,
             strokeWidth: 2,

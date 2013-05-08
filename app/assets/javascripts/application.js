@@ -17,6 +17,7 @@
 //= require jquery_ujs
 //= require_tree ./gmaps4rails
 //= require ./THQ/thq.common
+//= require ./THQ/thq.rollingaverage.js
 //= require ./THQ/thq.wattage
 //= require ./THQ/thq.datafile
 //= require ./THQ/thq.activity
