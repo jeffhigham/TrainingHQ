@@ -6,10 +6,6 @@ var hr_zones = <%= @user_hr_zones.to_json.html_safe %>;
 
 var activity = new ThqActivity(<%= @activity.id %>);
 
-//var trackpoint_data = <%= @trackpoint_data.to_json.html_safe %>;
-
-//var laps_time = generateLaps(data_time,lap_start_times);
-//var laps_distance = generateLaps(data_distance, lap_start_distances);
 var lat_long_data = activity.datafile.map_data();
 
 var power_color = "#FF9900";
@@ -45,7 +41,6 @@ $(document).ready( function() {
     hr_gauge = drawGauge({id: "hr_gauge", value: <%= @activity.min_heart_rate %>, min: <%= @activity.min_heart_rate %>, max: <%= @activity.max_heart_rate %>, title: "HR", valueFontColor: hr_color });
     hr_zone_gauge = drawGauge({id: "hr_zone_gauge", value: 0, min: 0, max: 7, title: "HR Zone", valueFontColor: hr_color });
     cadence_gauge = drawGauge({id: "cadence_gauge", value: <%= @activity.min_cadence %>, min: <%= @activity.min_cadence %>, max: <%= @activity.max_cadence %>, title: "Cadence", valueFontColor: cadence_color });
-    //alt_gauge = drawGauge({id: "alt_gauge", value: <%= @activity.min_altitude_feet %>, min: <%= @activity.min_altitude_feet %>, max: <%= @activity.max_altitude_feet %>, title: "Altitude", valueFontColor: alt_color });
     alt_gauge = drawGauge({id: "alt_gauge", value: 5000, min: 5000, max: <%= @activity.max_altitude_feet %>, title: "Altitude", valueFontColor: alt_color });
     percent_grade_gauge = drawGauge({id: "percent_grade_gauge", value: 0, min: -25, max: 25, title: "Percent Grade", valueFontColor: alt_color });
     speed_gauge = drawGauge({id: "speed_gauge", value: <%= @activity.min_speed_mph %>, min: <%= @activity.min_speed_mph %> , max: <%= @activity.max_speed_mph %> , title: "Speed (MPH)", valueFontColor: speed_color });
@@ -53,44 +48,6 @@ $(document).ready( function() {
     drawDyGraph( activity.datafile.dataset() );
     mouseOutCanvasCallback();
 } );
-
-
-/*
-function generateLaps(source_data,start_times){
-    var lap_data = [];
-    var lap_index = 0;
-
-    if( start_times.length == 1){
-        lap_data[lap_index] = source_data;
-    }
-    else {
-
-        for (var i = 0; i < source_data.length; i++){
-
-            if( typeof(lap_data[lap_index]) == "undefined"){
-                lap_data[lap_index] = [];
-            }
-
-            if( source_data[i][0] >= start_times[lap_index] && source_data[i][0] < start_times[lap_index + 1] ){
-                lap_data[lap_index].push(source_data[i]);
-            }
-
-            else {
-                // The last start_times value is the last datapoint
-                // in the activity. If this is "undefined" we are at the 
-                // last datapoint and will break out of the loop and return.
-                if( typeof(start_times[lap_index + 1]) ==  "number" ){
-                  lap_index++;
-                    lap_data[lap_index] = [];
-                    lap_data[lap_index].push(source_data[i]);
-                }
-            }
-        }
-    }
-
-    return lap_data;
-}
-*/
 
 function scaleBySlider(){
     //var scale_factor = $('#graph_scale_slider').val();
@@ -171,9 +128,6 @@ function drawGauge(params){
 function drawDyGraph(list){
 
 
-    // capture current state of graph.
-    //var scale_factor = $('#graph_scale_slider').val();
-    //dygraph_data = maxMultiValuesScaledBy(list,scale_factor);
     dygraph_data = list;
     console.info("Dygraph: dataset contains "+ list.length +" values.");
 
@@ -191,12 +145,12 @@ function drawDyGraph(list){
             strokeWidth: 2,
             fillGraph: true,
             errorBars: false,
-            drawXGrid: true,
+            drawXGrid: false,
             drawYGrid: false,
             drawYAxis: false,
-            showRangeSelector: false,
-            rangeSelectorPlotFillColor: "rgba(127,255,0,0.2)",
-            rangeSelectorPlotStrokeColor: alt_color,
+            //showRangeSelector: false,
+            //rangeSelectorPlotFillColor: "rgba(127,255,0,0.2)",
+            //rangeSelectorPlotStrokeColor: alt_color,
             labelsSeparateLines: false,
             hideOverlayOnMouseOut: true,
             showLabelsOnHighlight: false,
@@ -285,12 +239,17 @@ function highlightLapRow(x){
 function xAxisLabelFormatter(x){
     //var data_option = $('#graph_dataset_option').val();
     var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
+    return   ( data_option == "distance") ? milesFormatFromFeet(x) : timeFormatFromSeconds(x);
+    
+    /*
     if( data_option == "distance"){
-        return milesFormatFromFeet(x);
+        return_value = milesFormatFromFeet(x);
     }
     else {
-        return timeFormatFromSeconds(x);
+        return_value = timeFormatFromSeconds(x);
     }
+    return return_value;
+    */
 }
 
 // Draws canvas underlay for laps
@@ -368,6 +327,13 @@ function mouseOverCanvasCallback(event, x, points, row, seriesName){
     percent_grade_gauge.refresh(roundNumber(percent_grade,1));
     speed_gauge.refresh(datapoints['Speed']);
 
+    var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
+    if ( $('#time_radio:checked').val() == "on" ){
+        $('#chart_xvalues').html( timeFormatFromSeconds(x) );
+    }
+    else {
+        $('#chart_xvalues').html(milesFormatFromFeet(x) +" miles");
+    }
 
     if ( Gmaps.map.markers.length > 0 ){
         Gmaps.map.markers[0].setPosition(LatLong);

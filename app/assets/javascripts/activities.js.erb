@@ -25,8 +25,8 @@ Gmaps.oldOnload = window.onload;
 window.onload = function() { 
 	Gmaps.triggerOldOnload(); Gmaps.loadMaps();
 	$( "#tabs" ).tabs();
-	$( "#time_distance_radioset" ).buttonset();
-	$( "#scale_factor_radioset" ).buttonset();
+	$( "#time_distance" ).buttonset();
+	$( "#scale_best_fit" ).buttonset();
 	$("#activity_summary").css({'visibility':'visible'});
 	$("#tabs").css({'visibility':'visible'});
 	$.unblockUI();

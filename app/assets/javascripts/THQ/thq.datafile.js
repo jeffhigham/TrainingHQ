@@ -5,7 +5,8 @@ ThqDataFile = function(){
 	var lap_count = 0; // number of lap_count in the activity.
 	var context = "time" // 'time' or 'distance'
 	var lap_context = "all" // 'all' or lap_index
-	var scale_factor = 1; //constant to base data scailing % on.
+	var scale_factor = 25; //constant to base data scailing % on.
+	var scale_algorithm = "performance"; // Calculates appropriate scale_factor ("performance" or "detail"); 
 	var lap_data_time = []; // lap array based on activity time (all data)
 	var lap_data_distance = []; // lap array based on distance (all data)
 	var all_data_time = []; // array of the whole activity based on time (all data)
@@ -32,7 +33,8 @@ ThqDataFile = function(){
 		return {
 			context: context,
 			lap_context: lap_context,
-			scale_factor: scale_factor
+			scale_factor: scale_factor,
+			scale_algorithm: scale_algorithm
 		};
 	}
 
@@ -73,8 +75,8 @@ ThqDataFile = function(){
 			}			
 		}
 
-		//return current_dataset scaled appropriately with current scale_factor
-		return this.scaled();
+
+		return this.scale_best_fit(scale_algorithm);
 	}
 
 	this.lap = function(lap_id){
@@ -138,6 +140,36 @@ ThqDataFile = function(){
 		return $.parseJSON(ajax_request_obj.responseText.replace(';',''));
 	}
 
+	this.scale_best_fit = function(selection){ // "performance", "detail"
+	
+		//selection = (typeof(selection) == "undefined") ? "performance" : "detail";
+		var percentage = 0;
+		var standard_tp = 150;
+		var detailed_tp = 600;
+		var full_tp = 3000; // this might blow stuff up.
+		if( selection == "performance" || selection == "detail" || "full"){
+			scale_algorithm = selection;
+		}
+		else {
+			colsole.error("Error! " + selection +" is an invalid selection.");
+			return false;
+		}
+		
+		if(selection=="performance"){
+			percentage = (current_dataset.length > standard_tp) ? Math.round(standard_tp/current_dataset.length * 100) : 100;
+		}
+		else if (selection == "detail") {
+			percentage = (current_dataset.length > detailed_tp) ? Math.round(detailed_tp/current_dataset.length * 100) : 100;
+		}
+		else {
+			percentage = (current_dataset.length > full_tp) ? Math.round(full_tp/current_dataset.length * 100) : 100;
+		}
+
+		if (percentage == 0) { percentage = 1; }
+		console.info("Best fit setting for "+ selection +" is "+ percentage +"%");
+		return this.scaled(percentage);
+	}
+
 	this.scaled = function (percentage){
 		console.info("Calling datafile.scaled.");
 		if(typeof(percentage) != "undefined"){
@@ -152,23 +184,50 @@ ThqDataFile = function(){
 
 		var source_dataset = current_dataset; // set by dataset() and lap();
 		var scaled_dataset = [];
+		var max_values = [0,0,0,0,0,0,0,0,0];
 		console.info("Scaling at "+ scale_factor +"%, context: "+ context +"  lap_context: "+ lap_context );
 
-		var scale_now = Math.round( source_dataset.length / (source_dataset.length - (source_dataset.length*(scale_factor*.01))));
+		var scale_now = round(source_dataset.length / (source_dataset.length*(scale_factor/100) ), 2);
 		var loop_count = 0;	
-		console.info("Scaling "+ source_dataset.length +" values every "+ scale_now +" iterations." );
+
+		console.info("Scaling "+ source_dataset.length +" values, capturing every "+ scale_now +"th dataset." );
+
 		for(var i=0; i<source_dataset.length; i++){
-			if( loop_count == scale_now){
-				loop_count=0;
-				// skip adding to scaled_dataset
-			}	
-			else {
-				scaled_dataset.push(source_dataset[i]);
-				loop_count++;
+
+			// Promote the max values for watts, hr, cadence, and speed when we scale down.
+			max_values[0] = source_dataset[i][0]; // time / distance
+			max_values[1] = (source_dataset[i][1] > max_values[1])? source_dataset[i][1] : max_values[1]; // watts
+			max_values[2] = (source_dataset[i][2] > max_values[2])? source_dataset[i][2] : max_values[2]; // hr
+			max_values[3] = (source_dataset[i][3] > max_values[3])? source_dataset[i][3] : max_values[3]; // cadence
+			max_values[4] = source_dataset[i][4]; // altitude
+			max_values[5] = (source_dataset[i][5] > max_values[5])? source_dataset[i][5] : max_values[5]; // speed
+			max_values[6] = source_dataset[i][6]; // lng
+			max_values[7] = source_dataset[i][7]; // lat
+			max_values[8] = source_dataset[i][8]; // percent grade
+
+			/* 
+				It is possible for scale_now to be < 1 for higher scale_factors.
+			  so let's capture that here.
+			*/
+			loop_count += (scale_now < 1) ? scale_now : 1;
+
+			if( scale_now < 1){
+				if( loop_count >= 1){
+					//scaled_dataset.push(source_dataset[i]);
+					scaled_dataset.push(max_values);
+					loop_count=0;
+					max_values = [0,0,0,0,0,0,0,0,0];
+				}
 			}
+			else if( loop_count == Math.round(scale_now)){ // time to record a value.
+				//scaled_dataset.push(source_dataset[i]);
+				scaled_dataset.push(max_values);
+				loop_count=0;
+				max_values = [0,0,0,0,0,0,0,0,0];
+			}	
 		}
 
-		console.info("Dataset reduced to "+ scaled_dataset.length +" values every "+ scale_now +" iterations." );
+		console.info("Dataset reduced to: "+ scaled_dataset.length +" values.");
 
 		scaled_data_cache[cache_key] = scaled_dataset;
 		return scaled_dataset;

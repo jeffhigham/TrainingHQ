@@ -32,7 +32,7 @@
 	<% end %>
 </select>
 
-<input id="graph_scale_slider" style="visibility:hidden" type="range" min=".1" max="10" value="1" step="0.05" onchange="scaleBySlider()" /><br/>
+<!-- <input id="graph_scale_slider" style="visibility:hidden" type="range" min=".1" max="10" value="1" step="0.05" onchange="scaleBySlider()" /><br/> //-->
 
 </div>
 <br/>
@@ -51,19 +51,19 @@
 
 
 <div id="chart_labels"></div>
+<div id="chart_xvalues"></div>
 <div id="chart_canvas" style="height:250px; background-color:#000; color:#666"></div>
 <br/>
 
-<div id="time_distance_radioset" style="display:inline; float:right">
-	<input type="radio" id="time_radio" name="time_distance_radioset" onchange="selectTimeDistance()" checked="checked"><label for="time_radio">Time</label>
-	<input type="radio" id="distance_radio" name="time_distance_radioset" onchange="selectTimeDistance()"><label for="distance_radio">Distance</label>
+<div id="time_distance" style="display:inline; float:right">
+	<input type="radio" id="time_radio" name="time_distance" onchange="selectTimeDistance()" checked="checked"><label for="time_radio">Time</label>
+	<input type="radio" id="distance_radio" name="time_distance" onchange="selectTimeDistance()"><label for="distance_radio">Distance</label>
 </div>
 
-<div id="scale_factor_radioset">
-	<input type="radio" id="25p_radio" name="scale_factor_radioset" onchange=""><label for="25p_radio">25%</label>
-	<input type="radio" id="50p_radio" name="scale_factor_radioset" onchange="" checked="checked"><label for="50p_radio">50%</label>
-	<input type="radio" id="75p_radio" name="scale_factor_radioset" onchange=""><label for="75p_radio">75%</label>
-	<input type="radio" id="100p_radio" name="scale_factor_radioset" onchange=""><label for="100p_radio">100%</label>
+<div id="scale_best_fit">
+	<input type="radio" id="standard_view" name="scale_best_fit" onchange="drawDyGraph(activity.datafile.scale_best_fit('performance'))" checked="checked"><label for="standard_view">Standard View</label>
+	<input type="radio" id="detail_view" name="scale_best_fit" onchange="drawDyGraph(activity.datafile.scale_best_fit('detail'))"><label for="detail_view">Detail View</label>
+	<input type="radio" id="full_view" name="scale_best_fit" onchange="drawDyGraph(activity.datafile.scale_best_fit('full'))"><label for="full_view">Full View (Slow)</label>
 </div>
 </br>
 <hr style="background-color:#333"/>

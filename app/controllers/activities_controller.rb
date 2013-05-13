@@ -59,7 +59,7 @@ class ActivitiesController < ApplicationController
 
   def graph_data
     @activity = Activity.find(params[:id])
-    @trackpoint_data = @activity.get_trackpoint_data
+   # @trackpoint_data = @activity.get_trackpoint_data
     @user_power_zones = current_user.power_zones.where(:enabled => true).first
     @user_hr_zones = current_user.hr_zones.where(:enabled => true).first
     respond_to do |format|
