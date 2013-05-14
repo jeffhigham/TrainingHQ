@@ -28,6 +28,22 @@ module Guppy
       end
     end
 
+    def distance_feet
+    return (self.distance * 3.281).round(1) 
+    end
+
+    def altitude_feet
+      return (self.altitude * 3.281).round(1)
+    end
+
+    def distance_miles # self.distance is in meters.
+      (self.distance/1609.34).to_f.round(1)
+    end
+
+    def speed_mph
+      (self.speed*2.2369).round(1)
+    end
+
     def to_hash
      @@attributes.each_with_object({}) { 
         |a,h| h[a] = instance_variable_get "@#{a}" 

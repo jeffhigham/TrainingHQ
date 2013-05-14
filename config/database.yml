@@ -15,7 +15,7 @@ development:
   pool: 5
   username: rails
   password:
-  host: localhost
+  host: database-server
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -29,9 +29,9 @@ test:
 production:
   adapter: mysql2
   encoding: utf8
-  reconnect: false
+  reconnect: true
   database: TrainingHQ_dev
   pool: 5
   username: rails
   password:
-  host: localhost
+  host: database-server

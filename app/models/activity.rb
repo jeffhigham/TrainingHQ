@@ -68,7 +68,6 @@ class Activity < ActiveRecord::Base
   def found_in_cache?(cache_key)
     cache_stores = {
     mem_cache_store:  ActiveSupport::Cache.lookup_store(:mem_cache_store),
-    #memory_store:  ActiveSupport::Cache.lookup_store(:memory_store),
     file_store:  ActiveSupport::Cache.lookup_store(:file_store, "/tmp/ramdisk/cache")
     }
 
@@ -84,7 +83,6 @@ class Activity < ActiveRecord::Base
   def send_from_cache(cache_key)
     cache_stores = {
     mem_cache_store:  ActiveSupport::Cache.lookup_store(:mem_cache_store),
-    #memory_store:  ActiveSupport::Cache.lookup_store(:memory_store),
     file_store:  ActiveSupport::Cache.lookup_store(:file_store, "/tmp/ramdisk/cache")
     }
     cache_stores.each_pair do |k,v|
@@ -99,7 +97,6 @@ class Activity < ActiveRecord::Base
   def write_to_cache(cache_key, data)
     cache_stores = {
     mem_cache_store:  ActiveSupport::Cache.lookup_store(:mem_cache_store),
-    #memory_store:  ActiveSupport::Cache.lookup_store(:memory_store),
     file_store:  ActiveSupport::Cache.lookup_store(:file_store, "/tmp/ramdisk/cache")
     }
     cache_stores.each_pair do |k,v|
@@ -112,80 +109,28 @@ class Activity < ActiveRecord::Base
   end
 
   def get_trackpoint_data
-    logger.info("Controller called activity.get_trackpoint_data!")
 
+    logger.info("Controller called activity.get_trackpoint_data!")
     cache_key = "#{self.id}_trackpoints"
-    #if ( self.object_stores.count == 0 )
-    #cached_data = Rails.cache.read(cache_key)
 
     if( found_in_cache? cache_key )
-
       logger.info("Found activity: #{self.id}!") 
       return send_from_cache cache_key
-    
     else
-
       logger.info("Failed to find activity:#{self.id} in any cache store. Digging it from the database.\n")
-
-      trackpoint_data = []
-      last_trackpoint_distance = 0
-      last_trackpoint_altitude = 0
-      percent_grade = 0
-      trackpoint_percent_grade_rollover = 20 # number of samples to avg for %grade
-      trackpoint_percent_grade_values = [0,0] # holds trackpoint_percent_grade_rollover values
-      trackpoint_avg_percent_grade = 0 # average %grade based on trackpoint_percent_grade_rollover
-      trackpoint_current_time = 0 # trackpoint time in unix time (seconds)
-
-      self.laps.each_with_index do |lap, lap_index|
-
-        trackpoint_data[lap_index] = []
-
-        lap.trackpoints.each_with_index do |trackpoint,trackpoint_index|
-
-            # find percent grade if we actually traveled any distance. Otherwise it will remain 0 or last average calculation.
-            if ( trackpoint.distance_feet - last_trackpoint_distance) > 0
-              percent_grade = ( (trackpoint.altitude_feet - last_trackpoint_altitude) / (trackpoint.distance_feet - last_trackpoint_distance) )*100
-            end
-
-            # average out %grade values based on trackpoint_percent_grade_rollover
-            trackpoint_avg_percent_grade = (trackpoint_percent_grade_values.inject{ |sum, el| sum + el }/trackpoint_percent_grade_values.count).round 
-            # remove the oldest value if we have reached trackpoint_percent_grade_rollover
-            trackpoint_percent_grade_values.shift if ( trackpoint_percent_grade_values.count == trackpoint_percent_grade_rollover )
-            # add a new value to the array
-            trackpoint_percent_grade_values << percent_grade
-          
-          trackpoint_data [lap_index]<< {
-            time_seconds_epoch: Time.parse(trackpoint.time).to_time.to_i,
-            distance_feet: trackpoint.distance_feet.round,
-            watts: trackpoint.watts, 
-            heart_rate: trackpoint.heart_rate, 
-            cadence: trackpoint.cadence,
-            altitude_feet: trackpoint.altitude_feet.round,
-            speed_mph: trackpoint.speed_mph,
-            lng: trackpoint.longitude, 
-            lat: trackpoint.latitude,
-            percent_grade: trackpoint_avg_percent_grade,
-            temp_c: 0
-          }
-
-          last_trackpoint_distance = trackpoint.distance_feet
-          last_trackpoint_altitude = trackpoint.altitude_feet
-
-        end
-
-      end
-
-     #self.object_stores.create( name: "trackpoint_data", payload: trackpoint_data)
-      if( !write_to_cache(cache_key, trackpoint_data))
-        logger.warn("Attempt to add activity: #{self.id} to the cache failed! Returning database data.")
-       # return trackpoint_data
-      else
-        logger.info("Successfully added activity: #{self.id} to the cache!")
-        cached_data = send_from_cache(cache_key)
-      end
+      trackpoint_data = self.object_stores.where( name: "trackpoint_data").first.payload
     end
+
+    if( !write_to_cache(cache_key, trackpoint_data))
+      logger.warn("Attempt to add activity: #{self.id} to the cache failed! Returning database data.")
+      return trackpoint_data
+    else
+      logger.info("Successfully added activity: #{self.id} to the cache!")
+      cached_data = send_from_cache(cache_key)
+    end
+
     cached_data
-    #self.object_stores.where( name: "trackpoint_data").first.payload
+  
   end
 
 

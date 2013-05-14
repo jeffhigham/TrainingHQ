@@ -74,7 +74,7 @@ module Guppy
       track_point.altitude = track_point_node.xpath('xmlns:AltitudeMeters', namespaces).inner_text.to_f
       track_point.distance = track_point_node.xpath('xmlns:DistanceMeters', namespaces).inner_text.to_f
       track_point.heart_rate = track_point_node.xpath('xmlns:HeartRateBpm/xmlns:Value', namespaces).inner_text.to_i
-      track_point.time = Time.parse(track_point_node.xpath('xmlns:Time', namespaces).inner_text)
+      track_point.time = Time.parse( track_point_node.xpath('xmlns:Time', namespaces).inner_text )
       track_point.cadence = track_point_node.xpath('xmlns:Cadence', namespaces).inner_text.to_i
       track_point.watts = track_point_node.xpath('xmlns:Extensions/ns3:TPX/ns3:Watts', namespaces ).inner_text.to_i
       # Speed is in m/sec. Multiply by 2.2369 to get MPH
