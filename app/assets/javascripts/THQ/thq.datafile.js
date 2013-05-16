@@ -236,13 +236,13 @@ ThqDataFile = function(){
 	this.parse_datafile = function(){ // this is a horrible mess.
 
 		/*
-			trackpoints[lap_id] = [{},{}, ...];
+			trackpoints[lap_id] = [[{},{}, ...]];
 			{	"time_seconds_epoch":1366833927,"distance_feet":25021,"watts":92,"heart_rate":110,"cadence":74,
 			"altitude_feet":6057,"speed_mph":6.8,"lng":-111.8356535,"lat":40.4808697,"percent_grade":2,"temp_c":0}
 		*/
 		
 		var trackpoints = this.trackpoints();
-		var activity_time_offset = trackpoints[0][0]['time_seconds_epoch'];
+		var activity_time_offset = trackpoints[0][0][0]['time_seconds_epoch'];
 		var lap_data_time_offset = 0;
 		var lap_data_distance_offset = 0;
 		var this_trackpoint = null;
@@ -257,15 +257,15 @@ ThqDataFile = function(){
 			map_lap_data[lap_id] = [];
 			
 			// lap-based time and distance offsets.
-			lap_data_time_offset = trackpoints[lap_id][0]['time_seconds_epoch'];
-			lap_data_distance_offset = trackpoints[lap_id][0]['distance_feet'];
+			lap_data_time_offset = trackpoints[lap_id][0][0]['time_seconds_epoch'];
+			lap_data_distance_offset = trackpoints[lap_id][0][0]['distance_feet'];
 
 			// loop for trackpoints in current lap.
-			for(var trackpoint_id=0; trackpoint_id<trackpoints[lap_id].length; trackpoint_id++){
+			for(var trackpoint_id=0; trackpoint_id<trackpoints[lap_id][0].length; trackpoint_id++){
 				//console.info("Entering lap["+ lap_id +"] trackpoint["+ trackpoint_id +"]" );
 
 				// make it easy on ourselves.
-				this_trackpoint = trackpoints[lap_id][trackpoint_id];
+				this_trackpoint = trackpoints[lap_id][0][trackpoint_id];
 				
 				// find out if this is the first trackpoint in the activity.
 				if(lap_id == 0 && trackpoint_id ==0 ){ 
@@ -276,11 +276,11 @@ ThqDataFile = function(){
 					// find out if we started a new lap.
 					if( trackpoint_id == 0 ){
 						// last trackpoint in the previous lap.
-						last_trackpoint = trackpoints[lap_id-1][ trackpoints[lap_id-1].length-1 ];
+						last_trackpoint = trackpoints[lap_id-1][0][ trackpoints[lap_id-1][0].length-1 ];
 					}
 					else {
 						// last trackpoint in current lap.
-						last_trackpoint = trackpoints[lap_id][trackpoint_id-1];
+						last_trackpoint = trackpoints[lap_id][0][trackpoint_id-1];
 					}
 					// find out if we moved
 					trackpoint_distance = this_trackpoint['distance_feet'] - last_trackpoint['distance_feet'];

@@ -59,7 +59,6 @@ class ActivitiesController < ApplicationController
 
   def graph_data
     @activity = Activity.find(params[:id])
-   # @trackpoint_data = @activity.get_trackpoint_data
     @user_power_zones = current_user.power_zones.where(:enabled => true).first
     @user_hr_zones = current_user.hr_zones.where(:enabled => true).first
     respond_to do |format|
@@ -67,13 +66,24 @@ class ActivitiesController < ApplicationController
     end
   end
 
-  def load_trackpoint
+  def load_trackpoints_scaled
     @activity = Activity.find(params[:id])
-    @trackpoint_data = @activity.get_trackpoint_data
-    respond_to do |format|
-      format.js
-      format.json
-    end
+    render :inline =>  "<%= @activity.load_trackpoints_scaled.to_json.html_safe %>"
+  end
+
+  def load_lap_scaled
+    @activity = Activity.find(params[:id])
+    render :inline =>  "<%= @activity.load_lap_scaled(:lap_id).to_json.html_safe %>"
+  end
+
+  def load_laps_scaled
+    @activity = Activity.find(params[:id])
+    render :inline =>  "<%= @activity.load_laps_scaled.to_json.html_safe %>"
+  end
+
+  def load_wattage
+    @activity = Activity.find(params[:id])
+    render :inline =>  "<%= @activity.load_wattage.to_json.html_safe %>"
   end
 
   # GET /activities/new

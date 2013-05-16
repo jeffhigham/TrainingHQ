@@ -15,7 +15,7 @@ module Guppy
 
 		def parse
 			fit2tcx_path = "/usr/local/Fit2TCX/fit2tcx"
-			tmp_file = "/tmp/#{SecureRandom.hex(16)}.tcx"
+			tmp_file = "/tmp/ramdisk/parser/#{SecureRandom.hex(16)}.tcx"
 			system "#{fit2tcx_path} #{@file} #{tmp_file}"
 			@doc = Guppy::TcxParser.open(tmp_file)
 			system "rm #{tmp_file}"

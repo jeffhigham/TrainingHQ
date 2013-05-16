@@ -108,10 +108,11 @@ class Activity < ActiveRecord::Base
     return false
   end
 
-  def get_trackpoint_data
+  def load_trackpoints_scaled
 
     logger.info("Controller called activity.get_trackpoint_data!")
-    cache_key = "#{self.id}_trackpoints"
+    #cache_key = "#{self.id}_trackpoints"
+    cache_key = "#{self.id}_scaled"
 
     if( found_in_cache? cache_key )
       logger.info("Found activity: #{self.id}!") 
@@ -131,6 +132,20 @@ class Activity < ActiveRecord::Base
 
     cached_data
   
+  end
+
+  def load_laps_scaled
+
+      trackpoints = []
+      logger.info("Controller called activity.load_laps_scaled!")
+
+      # Put laps together from cache stores.
+      self.laps.each_with_index do |lap,lap_id|
+        cache_key = "#{self.id}_lap_#{lap_id}"
+        trackpoints[lap_id] = []
+        trackpoints[lap_id] << send_from_cache(cache_key)
+      end
+      trackpoints
   end
 
 
