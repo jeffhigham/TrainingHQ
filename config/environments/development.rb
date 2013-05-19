@@ -38,6 +38,6 @@ TrainingHQ::Application.configure do
   config.action_controller.perform_caching = true
   config.cache_store = :mem_cache_store, "localhost"
   config.cache_store = :file_store, "/tmp/ramdisk/cache"
-  config.cache_store = :memory_store
+  #config.cache_store = :memory_store
 
 end

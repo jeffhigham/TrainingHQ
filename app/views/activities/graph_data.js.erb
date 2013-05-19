@@ -49,50 +49,27 @@ $(document).ready( function() {
     mouseOutCanvasCallback();
 } );
 
+/*
 function scaleBySlider(){
     //var scale_factor = $('#graph_scale_slider').val();
     drawDyGraph(current_data);
 }
 
+
 function handleLapRowClick(lap_id){
 
     // lap_id = N or lap_id = NN. Assuming no more than 99 laps.
     var lap_number = (lap_id.length == 9 ) ? parseInt(lap_id[8]) : parseInt(lap_id[8] + lap_id[9]);
-
     $('#lap_dataset_option').val(lap_number);
-    //handleLaps();
-    //resetLapRows();
-    //highlightTableRow("#" + lap_id);
 }
+*/
 
 
 function handleLaps(){
 
     var lap_selection = $('#lap_dataset_option').val();
     drawDyGraph( activity.datafile.lap(lap_selection) );
-    //var data_option = $('#graph_dataset_option').val();
-    //var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
-
-    /*
-    if( lap_selection == "all" ){
-        selectTimeDistance(); // resets current data appropriately.
-    }
-    else {
-
-        if( data_option == "distance"){
-            current_data = laps_distance[parseInt(lap_selection)];
-        }
-        else {
-            current_data = laps_time[parseInt(lap_selection)];
-        }
-
-        drawDyGraph(current_data);
-        resetLapRows();
-        highlightTableRow("#lap_row_" + lap_selection);
-    }
-    */
-
-
+    
 }
 
 function selectTimeDistance(){
@@ -202,6 +179,7 @@ function drawDyGraph(list){
     mouseOutCanvasCallback();
 }
 
+/*
 function highlightTableRow(id){
     $(id).css({'background-color':'#7fff00', 'color':'#666'}).animate({'background-color':'#FFF'}, 2000);
 }
@@ -220,7 +198,9 @@ function findLapFromX(x){
 
     return false;
 }
+*/
 
+/*
 function resetLapRows(){
     for ( var i = 0; i < current_lap_start.length; i++){
         resetTableRow('#lap_row_' + i);
@@ -234,22 +214,11 @@ function highlightLapRow(x){
         highlightTableRow('#lap_row_' + lap_id);
     }
 }
-
+*/
 
 function xAxisLabelFormatter(x){
-    //var data_option = $('#graph_dataset_option').val();
     var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
     return   ( data_option == "distance") ? milesFormatFromFeet(x) : timeFormatFromSeconds(x);
-    
-    /*
-    if( data_option == "distance"){
-        return_value = milesFormatFromFeet(x);
-    }
-    else {
-        return_value = timeFormatFromSeconds(x);
-    }
-    return return_value;
-    */
 }
 
 // Draws canvas underlay for laps
@@ -293,9 +262,6 @@ function mouseOutCanvasCallback(event, x, points, row, seriesName){
 
 // Handles dynamic updates when mouse is over the graph.
 function mouseOverCanvasCallback(event, x, points, row, seriesName){
-
-    //var data_option = $('#graph_dataset_option').val();
-    //var data_option = ($('#time_radio:checked').val() == "on") ? "time" : "distance";
 
     var datapoints = {
             Watts: 0,
@@ -368,6 +334,7 @@ function toggleCheck(el) {
     g.setVisibility(parseInt(el.id), el.checked);
 }
 
+/*
 function generateLatLongData(list) {
     var lat_long = [];
     for(var i=0; i<list.length; i++){
@@ -377,6 +344,7 @@ function generateLatLongData(list) {
     }
     return [lat_long];
 }
+*/
 
 
 function dataPointToZoneHighRes(value, zones){
