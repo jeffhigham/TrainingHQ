@@ -4,7 +4,9 @@ module THQ
 
     def self.open(file)
       tcx_parser = self.new(file)
+      puts "Entering THQ::TcxParser..."
       tcx_parser.parse
+      puts "Leaving THQ::TcxParser..."
       tcx_parser
     end
 

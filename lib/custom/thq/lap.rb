@@ -39,7 +39,7 @@ module THQ
     # Given the large number of trackpoints in an activity we want to minimize
     # iterating over these a much as possible. This is an atempt to calculate
     # the useful data needed in a single loop through the trackpoints in the
-    # current lap.
+    # current lap. Her we also add additional attributes like percent_grade
     #
     # This should be called before doing anything else with the object.
     #
@@ -54,9 +54,15 @@ module THQ
       total_cadence = 0
       total_speed = 0
       total_altitude = 0
+
+      last_trackpoint_distance = 0
+      last_trackpoint_altitude = 0
+      percent_grade = 0
+      trackpoint_percent_grade_rollover = 20 # number of samples to avg for %grade
+      trackpoint_percent_grade_values = [0,0] # holds trackpoint_percent_grade_rollover values
+      trackpoint_avg_percent_grade = 0 # average %grade based on trackpoint_percent_grade_rollover
    
       track_points.each do |track_point|
-       
         # Initialize 
         last_time = track_point.time if last_time == 0
         last_distance = track_point.distance if last_distance == 0
@@ -66,6 +72,21 @@ module THQ
         @min_cadence = track_point.cadence if @min_cadence == 0
         @min_speed = track_point.speed.round(2) if @min_speed == 0
         @min_altitude = track_point.altitude.round(2) if @min_altitude == 0
+
+        # % grade averaged over 20 trackpoints.
+        # find percent grade if we actually traveled any distance. Otherwise it will remain 0 or last average calculation.
+        if ( track_point.distance_feet - last_trackpoint_distance) > 0
+         percent_grade = ( (track_point.altitude_feet - last_trackpoint_altitude) / (track_point.distance_feet - last_trackpoint_distance) )*100
+        end
+
+        # average out %grade values based on trackpoint_percent_grade_rollover
+        trackpoint_avg_percent_grade = (trackpoint_percent_grade_values.inject{ |sum, el| sum + el }/trackpoint_percent_grade_values.count).round 
+        # remove the oldest value if we have reached trackpoint_percent_grade_rollover
+        trackpoint_percent_grade_values.shift if ( trackpoint_percent_grade_values.count == trackpoint_percent_grade_rollover )
+        # add a new value to the array
+        trackpoint_percent_grade_values << percent_grade
+        # update the current trackpoint.
+        track_point.percent_grade = trackpoint_avg_percent_grade
 
         # Max/min watts, hr, cadence, speed, altitude, temp
         @max_watts = track_point.watts if track_point.watts > @max_watts

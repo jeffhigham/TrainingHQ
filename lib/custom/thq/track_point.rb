@@ -11,10 +11,11 @@ module THQ
     attr_accessor :watts
     attr_accessor :speed
     attr_accessor :joules
+    attr_accessor :percent_grade
 
     @@attributes = [ :altitude, :cadence, :distance, :heart_rate,
                      :latitude, :longitude, :time, :watts,
-                     :speed, :joules ]
+                     :speed, :joules, :percent_grade ]
 
     attr_accessor *@@attributes
 

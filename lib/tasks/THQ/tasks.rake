@@ -5,8 +5,6 @@ namespace :THQ do
   # to be re-written properly.
   desc "Load unprocessed TCX files for all users, update activity, lap, and trackpoint data."
     task :load_new_activities => :environment do
-
-        #require './lib/guppy/lib/guppy.rb'
         
         file_store = ActiveSupport::Cache.lookup_store(:file_store, "/tmp/ramdisk/cache")
         mem_cache_store = ActiveSupport::Cache.lookup_store(:mem_cache_store)
@@ -16,10 +14,9 @@ namespace :THQ do
           puts "There are #{db_activities.count} activities in the queue.\n"
           # Process and store activity summary in the database.          
           db_activities.each do |db_activity|
-
               
+              beginning_time = Time.now
               puts "Crunching datafile for activity named \"#{db_activity.name}\"\n"
-              #device_activity = THQ::Datafile.open(db_activity.datafile.path).activities.first # assuming only 1 per garmin file.
               datafile = THQ::Datafile.open(db_activity.datafile.path)
               device_activity = datafile.activities.first
               compressed_activity = datafile.compress
@@ -56,14 +53,14 @@ namespace :THQ do
                 file_store.write("#{cache_key}_wattage", compressed_activity[:wattage_data][lap_index])
                 puts "\t****************************************************************"
                 
-                # puts "Adding #{trackpoint_lap_data[lap_index]}  to the object_stores database."
-                # db_activity.object_stores.create( name: "#{trackpoint_lap_data[lap_index]}", payload: trackpoint_lap_data)
-
               end
+              end_time = Time.now
               puts "Cache stores populated..."
               puts "Marking activity as 100% complete."
+              puts "Process time: #{ ((end_time - beginning_time)*1000).round(4) }ms (#{(end_time-beginning_time).round(1)}s)."
               db_activity.update_attributes({:status => "100", :processed => true})
               puts "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+
           end
 
         else

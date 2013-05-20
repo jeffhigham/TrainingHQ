@@ -7,7 +7,9 @@ module THQ
 
     def self.open(file_path)
       datafile = self.new(file_path)
+      puts "Entering THQ::Datafile..."
       datafile.parse
+      puts "Leaving THQ::Datafile..."
       return datafile
     end
 

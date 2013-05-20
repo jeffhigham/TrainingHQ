@@ -2,17 +2,17 @@ module THQ
   
   class Compressor
 
-    @@attributes = [ :activity_obj, :max_values]
+    @@attributes = [ :activity_obj, :trackpoint_max]
     attr_accessor *@@attributes
 
-    def self.open(activity_obj,max_values)
-      compressor = self.new(activity_obj,max_values)
+    def self.open(activity_obj,trackpoint_max)
+      compressor = self.new(activity_obj,trackpoint_max)
       compressor.compress
     end
 
-    def initialize(activity_obj,max_values)
+    def initialize(activity_obj,trackpoint_max)
       @activity_obj = activity_obj
-      @max_values = max_values
+      @trackpoint_max = trackpoint_max
     end
 
     def compress
@@ -21,27 +21,18 @@ module THQ
           trackpoint_data = []
           trackpoint_lap_data = []
           wattage_data = []
-          last_trackpoint_distance = 0
-          last_trackpoint_altitude = 0
-          percent_grade = 0
-          trackpoint_percent_grade_rollover = 20 # number of samples to avg for %grade
-          trackpoint_percent_grade_values = [0,0] # holds trackpoint_percent_grade_rollover values
-          trackpoint_avg_percent_grade = 0 # average %grade based on trackpoint_percent_grade_rollover
-          trackpoint_current_time = 0 # trackpoint time in unix time (seconds)
           percentage = 0  # percentage of trackpoints to scale.
           scale_now = 0 # number of trackpoints to loop through before adding to scaled_dataset.
-          trackpoint_max = @max_values  # Max number of trackpoints on the database for map display.
-          max_values = { watts: 0, heart_rate: 0, cadence: 0, altitude_feet: 0, speed_mph: 0}
+          max_values = { watts: 0, heart_rate: 0, cadence: 0, altitude_feet: 0, speed_mph: 0, percent_grade: 0}
           loop_count = 0  # trackpoint loop counter.
 
           device_activity = @activity_obj.activities.first
           puts "\tLocated activity #{device_activity.garmin_activity_id}"
 
-          # Grab the percentage trackpoint_max is of all trackpoints.
-          percentage = (device_activity.total_trackpoints > trackpoint_max) ? (trackpoint_max/device_activity.total_trackpoints.to_f) * 100 : 100
+          # Grab the percentage @trackpoint_max is of all trackpoints.
+          percentage = (device_activity.total_trackpoints > @trackpoint_max) ? (@trackpoint_max/device_activity.total_trackpoints.to_f) * 100 : 100
           percentage = 1 if percentage == 0 # sometimes we have a large dataset that scales uner 1%
-          puts "\tBest fit setting for #{device_activity.garmin_activity_id} is #{percentage}% maximum #{trackpoint_max} trackpoints"
-          #puts "debug:(#{device_activity.total_trackpoints} / (#{device_activity.total_trackpoints}*(#{percentage}/100)) ) "
+          puts "\tBest fit setting for #{device_activity.garmin_activity_id} is #{percentage}% maximum #{@trackpoint_max} trackpoints"
           scale_now = (device_activity.total_trackpoints / (device_activity.total_trackpoints*(percentage/100.to_f)) ).round(2)
           puts "\tScaling #{device_activity.total_trackpoints} values, capturing every #{scale_now}th dataset."
 
@@ -55,18 +46,6 @@ module THQ
               wattage_data[lap_index] = []
 
               device_lap.track_points.each_with_index do |trackpoint,trackpoint_index|
-              
-                # find percent grade if we actually traveled any distance. Otherwise it will remain 0 or last average calculation.
-                if ( trackpoint.distance_feet - last_trackpoint_distance) > 0
-                  percent_grade = ( (trackpoint.altitude_feet - last_trackpoint_altitude) / (trackpoint.distance_feet - last_trackpoint_distance) )*100
-                end
-
-                # average out %grade values based on trackpoint_percent_grade_rollover
-                trackpoint_avg_percent_grade = (trackpoint_percent_grade_values.inject{ |sum, el| sum + el }/trackpoint_percent_grade_values.count).round 
-                # remove the oldest value if we have reached trackpoint_percent_grade_rollover
-                trackpoint_percent_grade_values.shift if ( trackpoint_percent_grade_values.count == trackpoint_percent_grade_rollover )
-                # add a new value to the array
-                trackpoint_percent_grade_values << percent_grade
 
                 # Promote the max values for watts, hr, cadence, and speed when we scale down.
                 max_values[:time_seconds_epoch] = trackpoint.time.to_time.to_i
@@ -78,7 +57,7 @@ module THQ
                 max_values[:speed_mph] = trackpoint.speed_mph > max_values[:speed_mph] ? trackpoint.speed_mph : max_values[:speed_mph]
                 max_values[:lng] = trackpoint.longitude
                 max_values[:lat] = trackpoint.latitude
-                max_values[:percent_grade] = trackpoint_avg_percent_grade
+                max_values[:percent_grade] = trackpoint.percent_grade > max_values[:percent_grade] ? trackpoint.percent_grade : max_values[:percent_grade]
 
                 # It is possible for scale_now to be < 1 for higher scale_factors.
                 # so let's capture that here.
@@ -100,7 +79,7 @@ module THQ
                       temp_c: 0
                       }
                     loop_count=0
-                    max_values = { watts: 0, heart_rate: 0, cadence: 0, altitude_feet: 0, speed_mph: 0}
+                    max_values = { watts: 0, heart_rate: 0, cadence: 0, altitude_feet: 0, speed_mph: 0, percent_grade: 0}
                   end
                 elsif loop_count == scale_now.round()  # time to record a value.
                   trackpoint_data << {
@@ -117,7 +96,7 @@ module THQ
                       temp_c: 0
                       }
                   loop_count=0
-                  max_values = { watts: 0, heart_rate: 0, cadence: 0, altitude_feet: 0, speed_mph: 0}
+                  max_values = { watts: 0, heart_rate: 0, cadence: 0, altitude_feet: 0, speed_mph: 0, percent_grade: 0}
                 end
 
                 trackpoint_lap_data[lap_index] << {
@@ -130,7 +109,7 @@ module THQ
                   speed_mph: trackpoint.speed_mph,
                   lng: trackpoint.longitude,
                   lat: trackpoint.latitude,
-                  percent_grade: trackpoint_avg_percent_grade,
+                  percent_grade: trackpoint.percent_grade,
                   temp_c: 0
                 }
 
