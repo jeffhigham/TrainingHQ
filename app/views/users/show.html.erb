@@ -97,7 +97,7 @@
 				<td>
 					<!-- <button id="calc_power_zones">Calculate Power Zones</button> //-->
 					<input id="calc_power_zones" type="submit" value="Calculate Power Zones" title="Calculate power zones based on current FTP value." />
-					<%= f.submit "Update Zones", :title => "Save currently calculated power zones to the database." %>
+					<%= f.submit "Save", :title => "Save currently calculated power zones to the database." %>
 				</td>
 			</tr>
 		</table>
@@ -185,6 +185,7 @@ $(function() {
 	$("#calc_power_zones").click(function( event ) {
   	event.preventDefault();
   	calcPowerZones();
+  	/*
   	$("<div>Power Zones Updated.</div>").dialog({
       modal: true,
       title: "Update Successful!",
@@ -194,6 +195,7 @@ $(function() {
         }
       }
     });
+		*/
   });
 
 });

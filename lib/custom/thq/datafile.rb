@@ -2,14 +2,17 @@ module THQ
 
   class Datafile
 
+    require "benchmark"
     @@attributes = [ :file_type, :file_name, :datafile, :thq_obj]
     attr_accessor *@@attributes
 
     def self.open(file_path)
       datafile = self.new(file_path)
       puts "Entering THQ::Datafile..."
-      datafile.parse
-      puts "Leaving THQ::Datafile..."
+      time = Benchmark.realtime do
+        datafile.parse 
+      end
+      puts "Leaving THQ::Datafile Time: #{(time*1000).round(4)}ms (#{time.round(1)}s)."
       return datafile
     end
 

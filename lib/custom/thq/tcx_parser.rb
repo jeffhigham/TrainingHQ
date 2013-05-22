@@ -2,11 +2,15 @@ module THQ
   
   class TcxParser
 
+    require "benchmark"
+    
     def self.open(file)
-      tcx_parser = self.new(file)
       puts "Entering THQ::TcxParser..."
-      tcx_parser.parse
-      puts "Leaving THQ::TcxParser..."
+      tcx_parser = self.new(file)
+      time = Benchmark.realtime do
+        tcx_parser.parse
+      end
+      puts "Leaving THQ::TcxParser Time: #{(time*1000).round(4)}ms (#{time.round(1)}s)."
       tcx_parser
     end
 

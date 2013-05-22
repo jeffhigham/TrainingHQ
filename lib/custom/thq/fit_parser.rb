@@ -4,8 +4,12 @@ module THQ
 		require 'securerandom'
 
 		def self.open(file)
+      puts "Entering THQ::FitParser..."
       fit_parser = self.new(file)
-      fit_parser.parse
+      time = Benchmark.realtime do
+        fit_parser.parse
+      end
+      puts "Leaving THQ::FitParser Time: #{(time*1000).round(4)}ms (#{time.round(1)}s)."
       fit_parser
     end
 
