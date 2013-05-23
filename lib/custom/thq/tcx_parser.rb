@@ -3,12 +3,24 @@ module THQ
   class TcxParser
 
     require "benchmark"
+    @@attributes = [ :activities_obj]
+    attr_accessor *@@attributes
+
     
     def self.open(file)
       puts "Entering THQ::TcxParser..."
       tcx_parser = self.new(file)
       time = Benchmark.realtime do
-        tcx_parser.parse
+        puts "\tParsing document..."
+        time_parse = Benchmark.realtime do
+          tcx_parser.parse
+        end
+        puts "\tParsed Document Time: #{(time_parse*1000).round(4)}ms (#{time_parse.round(1)}s)."
+        puts "\tCreating Object..."
+        time_activities = Benchmark.realtime do
+          tcx_parser.build_activities
+        end
+        puts "\tCreated Activity Obj Time: #{(time_activities*1000).round(4)}ms (#{time_activities.round(1)}s)."
       end
       puts "Leaving THQ::TcxParser Time: #{(time*1000).round(4)}ms (#{time.round(1)}s)."
       tcx_parser
@@ -24,18 +36,24 @@ module THQ
       f.close
     end
 
-    def activity(activity_id)
-      activity_node = @doc.xpath('//xmlns:Activity', namespaces).find {|a| a.xpath('xmlns:Id', namespaces).inner_text == activity_id}
-      if activity_node
-        build_activity(activity_node)
-      else
-        nil
-      end
-    end
+    #def activity(activity_id)
+    #  activity_node = @doc.xpath('//xmlns:Activity', namespaces).find {|a| a.xpath('xmlns:Id', namespaces).inner_text == activity_id}
+    #  if activity_node
+    #    build_activity(activity_node)
+    #  else
+    #    nil
+    #  end
+    #end
     
-    def activities(id=nil)
+    def activities
+      return @activities_obj
+    end
+
+    # Pre-load the activity before returning the object.
+    def build_activities(id=nil)
       @doc.xpath('//xmlns:Activity', namespaces).map do |activity_node|
-        build_activity(activity_node)
+        # Assuming only 1 activity in a file for now. This will need to be fixed.
+        @activities_obj =  build_activity(activity_node)
       end
     end
 

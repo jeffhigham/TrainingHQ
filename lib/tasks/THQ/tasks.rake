@@ -13,8 +13,8 @@ namespace :THQ do
         time = Benchmark.realtime do
           file_store = ActiveSupport::Cache.lookup_store(:file_store, "/tmp/ramdisk/cache")
           mem_cache_store = ActiveSupport::Cache.lookup_store(:mem_cache_store)
-          #db_activities = Activity.where(:processed => 0)
-          db_activities = Activity.where(:id => 51)
+          db_activities = Activity.where(:processed => 0)
+          #db_activities = Activity.where(:id => 51)
         end
         puts "Loaded file_store, mem_cache_store, db_activities Time: #{(time*1000).round(4)}ms (#{time.round(1)}s)."
         
@@ -27,7 +27,8 @@ namespace :THQ do
               total_time = Benchmark.realtime do
                 puts "Crunching datafile for activity named \"#{db_activity.name}\"\n"
                 datafile = THQ::Datafile.open(db_activity.datafile.path)
-                device_activity = datafile.activities.first # assuming only 1 activity in the datafile.
+                #device_activity = datafile.activities.first # assuming only 1 activity in the datafile.
+                device_activity = datafile.activities
                 compressed_activity = datafile.compress
                 puts "Performing database updates..."
                 puts "Updating activity attributes..."

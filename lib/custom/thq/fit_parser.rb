@@ -20,10 +20,13 @@ module THQ
 		def parse
 			fit2tcx_path = "/usr/local/Fit2TCX/fit2tcx"
 			tmp_file = "/tmp/ramdisk/parser/#{SecureRandom.hex(16)}.tcx"
-			system "#{fit2tcx_path} #{@file} #{tmp_file}"
+      puts "\tConverting .fit to .tcx..."
+      time = Benchmark.realtime do
+			 system "#{fit2tcx_path} #{@file} #{tmp_file}"
+      end
+      puts "\tConverted .fit to .tcx Time: #{(time*1000).round(4)}ms (#{time.round(1)}s)."
 			@doc = THQ::TcxParser.open(tmp_file)
 			system "rm #{tmp_file}"
-
 			@doc
     end
 

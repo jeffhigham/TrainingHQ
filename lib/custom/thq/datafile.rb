@@ -10,10 +10,11 @@ module THQ
       datafile = self.new(file_path)
       puts "Entering THQ::Datafile..."
       time = Benchmark.realtime do
-        datafile.parse 
+        datafile.parse
+        #datafile.compress
       end
       puts "Leaving THQ::Datafile Time: #{(time*1000).round(4)}ms (#{time.round(1)}s)."
-      return datafile
+      datafile
     end
 
     def initialize(file_path)

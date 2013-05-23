@@ -22,7 +22,7 @@ module THQ
 
     require "benchmark"
     @@attributes = [ 
-            :activity_obj, # Parsed activity object.
+            :activity_obj, # Parsed XML Document.
             :trackpoint_max, # Max values to return in the scaled dataset.
             :compressed, # Hash we return after compressing activity_obj to trackpoit_max values.
             :debug
@@ -31,7 +31,11 @@ module THQ
 
     def self.open(activity_obj,trackpoint_max)
       puts "Entering THQ::Compressor..."
-      compressor = self.new(activity_obj,trackpoint_max)
+      compressor = nil
+      time = Benchmark.realtime do
+        compressor = self.new(activity_obj,trackpoint_max)
+      end
+      puts "New compressor obj create. Time: #{(time*1000).round(4)}ms (#{time.round(1)}s)."
       time = Benchmark.realtime do
        @compressed = compressor.compress
       end
@@ -51,7 +55,7 @@ module THQ
       #scale_now = (total / (total*(percentage/100.to_f)) ).round(2)
       scale_now = (total/ (total*(percentage/100.to_f)) ).round()
       scale_now = 1 if scale_now == 0 # minimum time we can push a trackpoint is every loop.
-      puts "\tTotal Values: #{total}, Scale Now: #{scale_now}, Percentage: #{percentage}." if @debug
+      puts "\t**THQ:Compressor.calculate_scale.Total Values: #{total}, Scale Now: #{scale_now}, Percentage: #{percentage}." if @debug
       scale_now
     end
 
@@ -68,31 +72,21 @@ module THQ
           max_values = { watts: 0, heart_rate: 0, cadence: 0, 
                         altitude_feet: 0, speed_mph: 0, percent_grade: 0}
 
-          loop_count = 0  # trackpoint loop counter. Activity as a whole, independedt of a lap index.
+          loop_count = 0  # Activity-specific loop counter.
           device_activity = nil 
           ###########################################################################################
 
-          device_activity = @activity_obj.activities.first  # assuming only 1 activity in each datafile.
-          puts "\tLocated activity #{device_activity.garmin_activity_id}" if @debug
+          puts "\tLoading activities..." if @debug
+          time = Benchmark.realtime do
+            #device_activity = @activity_obj.activities.first  # assuming only 1 activity in each datafile.
+            device_activity = @activity_obj.activities
+          end
+          puts "\tLocated activity #{device_activity.garmin_activity_id} Time: #{(time*1000).round(4)}ms (#{time.round(1)}s)." if @debug
 
-          # Grab the percentage @trackpoint_max is of all trackpoints. If the total number of trackpoints
-          # is greater than @trackpoint_max we calculate that percentage otherwise no scaling is done and
-          # we just set it to 100%.
-#          percentage = (device_activity.total_trackpoints > @trackpoint_max) ? (@trackpoint_max/device_activity.total_trackpoints.to_f) * 100 : 100
-          
-          # Sometimes we have a large dataset that calculates under 1% for scaling so this hacks that a bit.
-          # The downside is we will exceed @trackpoint_max in some cases.
-#          percentage = 1 if percentage == 0 
-
-          # Calculate the number of trackpoints to skip based on percentage to decide when to push to a scaled dataset.
-#          puts "\tBest fit setting for #{device_activity.garmin_activity_id} is #{percentage}% maximum #{@trackpoint_max} trackpoints" if @debug
-          #push_to_scaled_dataset_now = (device_activity.total_trackpoints / (device_activity.total_trackpoints*(percentage/100.to_f)) ).round(2)
-#          push_to_scaled_dataset_now = (device_activity.total_trackpoints / (device_activity.total_trackpoints*(percentage/100.to_f)) ).round()
-#          push_to_scaled_dataset_now = 1 if push_to_scaled_dataset_now == 0 # minimum time we can push a trackpoint is every loop.
           push_to_scaled_dataset_now = calculate_scale(device_activity.total_trackpoints, @trackpoint_max)
           puts "\tActivity: Scaling #{device_activity.total_trackpoints} trackpoints, capturing every #{push_to_scaled_dataset_now} trackpoint." if @debug
 
-
+          puts "\tLocating laps..." if @debug
           # LAP: Loop through the laps in device_activity
           device_activity.laps.each_with_index do |device_lap, lap_index|
               puts "\t\tLocated lap in #{device_activity.garmin_activity_id} with #{device_lap.total_trackpoints} trackpoints.\n" if @debug
@@ -101,14 +95,12 @@ module THQ
               trackpoint_lap_data[lap_index] = []
               wattage_lap_data[lap_index] = []
               # Hash for max values scaled per lap.
-              max_lap_values = { watts: 0, heart_rate: 0, cadence: 0, 
-                                 altitude_feet: 0, speed_mph: 0, percent_grade: 0}
+              max_lap_values = { watts: 0, heart_rate: 0, cadence: 0, altitude_feet: 0, speed_mph: 0, percent_grade: 0}
+              lap_loop_count = 0 # Lap-specific trackpoint loop counter.
 
-              ## TODO
               # Set a lap-specific percentag and push_to_scaled_dataset_now value here.
               push_to_lap_scaled_dataset_now = calculate_scale(device_lap.total_trackpoints, @trackpoint_max)
               puts "\t\tLap: Scaling #{device_lap.total_trackpoints} trackpoints, capturing every #{push_to_lap_scaled_dataset_now} trackpoint." if @debug
-              ##
 
               # TRACKPOINT: Loop through the track_points in device_lap.
               device_lap.track_points.each_with_index do |trackpoint,trackpoint_index|
@@ -116,41 +108,29 @@ module THQ
                 # Promote the max values for watts, hr, cadence, and speed when we scale down.
                 max_values[:time_seconds_epoch] = trackpoint.time.to_time.to_i
                 max_values[:distance_feet] = trackpoint.distance_feet.round
-                max_values[:watts] = trackpoint.watts > max_values[:watts] ? trackpoint.watts : max_values[:watts]
-                max_values[:heart_rate] = trackpoint.heart_rate > max_values[:heart_rate] ? trackpoint.heart_rate : max_values[:heart_rate]
-                max_values[:cadence] = trackpoint.cadence > max_values[:cadence] ? trackpoint.cadence : max_values[:cadence]
+                max_values[:watts] = trackpoint.watts if (trackpoint.watts > max_values[:watts])
+                max_values[:heart_rate] = trackpoint.heart_rate if (trackpoint.heart_rate > max_values[:heart_rate])
+                max_values[:cadence] =  trackpoint.cadence if (trackpoint.cadence > max_values[:cadence])
                 max_values[:altitude_feet] = trackpoint.altitude_feet.round
-                max_values[:speed_mph] = trackpoint.speed_mph > max_values[:speed_mph] ? trackpoint.speed_mph : max_values[:speed_mph]
+                max_values[:speed_mph] = trackpoint.speed_mph if (trackpoint.speed_mph > max_values[:speed_mph])
                 max_values[:lng] = trackpoint.longitude
                 max_values[:lat] = trackpoint.latitude
-                max_values[:percent_grade] = trackpoint.percent_grade > max_values[:percent_grade] ? trackpoint.percent_grade : max_values[:percent_grade]
-
-                ## TODO
-                # Promote max_lap_values here.
-                ##
-
-                # Track the loop_count.
-                #loop_count += (push_to_scaled_dataset_now < 1) ? push_to_scaled_dataset_now : 1;
+                max_values[:percent_grade] = trackpoint.percent_grade
                 loop_count += 1
 
-                #if push_to_scaled_dataset_now < 1 
-                #  if loop_count >= 1 
-                #    trackpoint_data << {
-                #      time_seconds_epoch: max_values[:time_seconds_epoch],
-                #      distance_feet: max_values[:distance_feet],
-                #      watts: max_values[:watts], 
-                #      heart_rate: max_values[:heart_rate], 
-                #      cadence: max_values[:cadence],
-                #      altitude_feet: max_values[:altitude_feet],
-                #      speed_mph: max_values[:speed_mph],
-                #      lng: max_values[:lng],
-                #      lat: max_values[:lat],
-                #      percent_grade: max_values[:percent_grade],
-                #      temp_c: 0
-                #      }
-                #    loop_count=0
-                #    max_values = { watts: 0, heart_rate: 0, cadence: 0, altitude_feet: 0, speed_mph: 0, percent_grade: 0}
-                #  end
+                # Promote the max values as above but for each lap.
+                max_lap_values[:time_seconds_epoch] = trackpoint.time.to_time.to_i
+                max_lap_values[:distance_feet] = trackpoint.distance_feet.round
+                max_lap_values[:watts] = trackpoint.watts if (trackpoint.watts > max_lap_values[:watts])
+                max_lap_values[:heart_rate] = trackpoint.heart_rate if (trackpoint.heart_rate > max_lap_values[:heart_rate])
+                max_lap_values[:cadence] = trackpoint.cadence if (trackpoint.cadence > max_lap_values[:cadence])
+                max_lap_values[:altitude_feet] = trackpoint.altitude_feet.round
+                max_lap_values[:speed_mph] = trackpoint.speed_mph if (trackpoint.speed_mph > max_lap_values[:speed_mph])
+                max_lap_values[:lng] = trackpoint.longitude
+                max_lap_values[:lat] = trackpoint.latitude
+                max_lap_values[:percent_grade] = trackpoint.percent_grade
+                lap_loop_count += 1
+
                 if (loop_count == push_to_scaled_dataset_now)  # time to record a value.
                   trackpoint_data << {
                       time_seconds_epoch: max_values[:time_seconds_epoch],
@@ -169,19 +149,23 @@ module THQ
                   max_values = { watts: 0, heart_rate: 0, cadence: 0, altitude_feet: 0, speed_mph: 0, percent_grade: 0}
                 end
 
-                trackpoint_lap_data[lap_index] << {
-                  time_seconds_epoch: trackpoint.time.to_time.to_i,
-                  distance_feet: trackpoint.distance_feet.round,
-                  watts: trackpoint.watts, 
-                  heart_rate: trackpoint.heart_rate, 
-                  cadence: trackpoint.cadence,
-                  altitude_feet: trackpoint.altitude_feet.round,
-                  speed_mph: trackpoint.speed_mph,
-                  lng: trackpoint.longitude,
-                  lat: trackpoint.latitude,
-                  percent_grade: trackpoint.percent_grade,
-                  temp_c: 0
-                }
+                if (lap_loop_count == push_to_lap_scaled_dataset_now)  # time to record a value.
+                  trackpoint_lap_data[lap_index] << {
+                    time_seconds_epoch: max_lap_values[:time_seconds_epoch],
+                    distance_feet: max_lap_values[:distance_feet],
+                    watts: max_lap_values[:watts], 
+                    heart_rate: max_lap_values[:heart_rate], 
+                    cadence: max_lap_values[:cadence],
+                    altitude_feet: max_lap_values[:altitude_feet],
+                    speed_mph: max_lap_values[:speed_mph],
+                    lng: max_lap_values[:lng],
+                    lat: max_lap_values[:lat],
+                    percent_grade: max_lap_values[:percent_grade],
+                    temp_c: 0
+                  }
+                  lap_loop_count=0
+                  max_lap_values = { watts: 0, heart_rate: 0, cadence: 0, altitude_feet: 0, speed_mph: 0, percent_grade: 0}
+                end
 
                 # data needed to calculate NP,FTP,ETC
                 wattage_lap_data[lap_index] << {

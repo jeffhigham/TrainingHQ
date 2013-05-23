@@ -58,7 +58,7 @@ module THQ
       last_trackpoint_distance = 0
       last_trackpoint_altitude = 0
       percent_grade = 0
-      trackpoint_percent_grade_rollover = 20 # number of samples to avg for %grade
+      trackpoint_percent_grade_rollover = 5 # number of samples to avg for %grade
       trackpoint_percent_grade_values = [0,0] # holds trackpoint_percent_grade_rollover values
       trackpoint_avg_percent_grade = 0 # average %grade based on trackpoint_percent_grade_rollover
    
